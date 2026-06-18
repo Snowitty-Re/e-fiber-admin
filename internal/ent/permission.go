@@ -9,7 +9,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/Snowitty/e-fiber-admin/internal/ent/permission"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/permission"
 )
 
 // Permission is the model entity for the Permission schema.

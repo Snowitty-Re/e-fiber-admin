@@ -11,8 +11,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/Snowitty/e-fiber-admin/internal/ent/predicate"
-	"github.com/Snowitty/e-fiber-admin/internal/ent/store"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/predicate"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/store"
 )
 
 // StoreUpdate is the builder for updating Store entities.

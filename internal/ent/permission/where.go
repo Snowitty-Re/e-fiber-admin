@@ -7,7 +7,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"github.com/Snowitty/e-fiber-admin/internal/ent/predicate"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/predicate"
 )
 
 // ID filters vertices based on their ID field.

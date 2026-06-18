@@ -8,10 +8,10 @@ import (
 	"github.com/redis/go-redis/v9"
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/Snowitty/e-fiber-admin/internal/ent"
-	"github.com/Snowitty/e-fiber-admin/internal/ent/adminuser"
-	"github.com/Snowitty/e-fiber-admin/internal/pkg/auth"
-	pkgerr "github.com/Snowitty/e-fiber-admin/internal/pkg/errors"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/adminuser"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/pkg/auth"
+	pkgerr "github.com/Snowitty-Re/e-fiber-admin/internal/pkg/errors"
 )
 
 type Service struct {

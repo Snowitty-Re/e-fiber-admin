@@ -3,7 +3,7 @@ package middleware
 import (
 	"github.com/gofiber/fiber/v3"
 
-	pkgerr "github.com/Snowitty/e-fiber-admin/internal/pkg/errors"
+	pkgerr "github.com/Snowitty-Re/e-fiber-admin/internal/pkg/errors"
 )
 
 func ErrorHandler(c fiber.Ctx, err error) error {

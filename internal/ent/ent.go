@@ -12,10 +12,10 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"github.com/Snowitty/e-fiber-admin/internal/ent/adminuser"
-	"github.com/Snowitty/e-fiber-admin/internal/ent/permission"
-	"github.com/Snowitty/e-fiber-admin/internal/ent/role"
-	"github.com/Snowitty/e-fiber-admin/internal/ent/store"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/adminuser"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/permission"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/role"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/store"
 )
 
 // ent aliases to avoid import conflicts in user's code.

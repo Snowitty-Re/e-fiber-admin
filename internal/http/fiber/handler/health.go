@@ -7,7 +7,7 @@ import (
 	"github.com/gofiber/fiber/v3"
 	"github.com/redis/go-redis/v9"
 
-	"github.com/Snowitty/e-fiber-admin/internal/ent"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent"
 )
 
 type HealthHandler struct {

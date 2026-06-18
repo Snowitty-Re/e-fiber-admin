@@ -9,7 +9,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/Snowitty/e-fiber-admin/internal/ent/role"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/role"
 )
 
 // Role is the model entity for the Role schema.

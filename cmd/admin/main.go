@@ -6,9 +6,9 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/Snowitty/e-fiber-admin/internal/config"
-	"github.com/Snowitty/e-fiber-admin/internal/database"
-	fiberapp "github.com/Snowitty/e-fiber-admin/internal/http/fiber"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/config"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/database"
+	fiberapp "github.com/Snowitty-Re/e-fiber-admin/internal/http/fiber"
 )
 
 func main() {

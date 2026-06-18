@@ -12,8 +12,8 @@ import (
 
 	"entgo.io/ent/dialect"
 	entsql "entgo.io/ent/dialect/sql"
-	"github.com/Snowitty/e-fiber-admin/internal/config"
-	"github.com/Snowitty/e-fiber-admin/internal/ent"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/config"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent"
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 

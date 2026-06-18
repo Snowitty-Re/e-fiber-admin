@@ -6,8 +6,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/Snowitty/e-fiber-admin/internal/config"
-	"github.com/Snowitty/e-fiber-admin/internal/database"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/config"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/database"
 )
 
 func main() {

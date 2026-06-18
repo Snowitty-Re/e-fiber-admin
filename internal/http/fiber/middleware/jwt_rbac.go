@@ -5,8 +5,8 @@ import (
 
 	"github.com/gofiber/fiber/v3"
 
-	authsvc "github.com/Snowitty/e-fiber-admin/internal/domain/auth"
-	pkgerr "github.com/Snowitty/e-fiber-admin/internal/pkg/errors"
+	authsvc "github.com/Snowitty-Re/e-fiber-admin/internal/domain/auth"
+	pkgerr "github.com/Snowitty-Re/e-fiber-admin/internal/pkg/errors"
 )
 
 func extractToken(c fiber.Ctx) string {

@@ -1,4 +1,4 @@
-module github.com/Snowitty/e-fiber-admin
+module github.com/Snowitty-Re/e-fiber-admin
 
 go 1.25.0
 

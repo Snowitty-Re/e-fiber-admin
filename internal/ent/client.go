@@ -9,16 +9,16 @@ import (
 	"log"
 	"reflect"
 
-	"github.com/Snowitty/e-fiber-admin/internal/ent/migrate"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/migrate"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"github.com/Snowitty/e-fiber-admin/internal/ent/adminuser"
-	"github.com/Snowitty/e-fiber-admin/internal/ent/permission"
-	"github.com/Snowitty/e-fiber-admin/internal/ent/role"
-	"github.com/Snowitty/e-fiber-admin/internal/ent/store"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/adminuser"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/permission"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/role"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/store"
 )
 
 // Client is the client that holds all ent builders.

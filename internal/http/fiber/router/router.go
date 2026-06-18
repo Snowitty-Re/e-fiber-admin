@@ -5,8 +5,8 @@ import (
 	"github.com/gofiber/fiber/v3/middleware/adaptor"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
-	"github.com/Snowitty/e-fiber-admin/internal/http/fiber/handler"
-	"github.com/Snowitty/e-fiber-admin/internal/http/fiber/middleware"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/http/fiber/handler"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/http/fiber/middleware"
 )
 
 type Deps struct {

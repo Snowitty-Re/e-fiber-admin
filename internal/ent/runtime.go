@@ -5,11 +5,11 @@ package ent
 import (
 	"time"
 
-	"github.com/Snowitty/e-fiber-admin/internal/ent/adminuser"
-	"github.com/Snowitty/e-fiber-admin/internal/ent/permission"
-	"github.com/Snowitty/e-fiber-admin/internal/ent/role"
-	"github.com/Snowitty/e-fiber-admin/internal/ent/schema"
-	"github.com/Snowitty/e-fiber-admin/internal/ent/store"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/adminuser"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/permission"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/role"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/schema"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/store"
 )
 
 // The init function reads all schema descriptors with runtime code

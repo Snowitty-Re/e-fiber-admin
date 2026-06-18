@@ -6,7 +6,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/Snowitty/e-fiber-admin/internal/ent"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent"
 )
 
 // The AdminUserFunc type is an adapter to allow the use of ordinary

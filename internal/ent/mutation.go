@@ -11,11 +11,11 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/Snowitty/e-fiber-admin/internal/ent/adminuser"
-	"github.com/Snowitty/e-fiber-admin/internal/ent/permission"
-	"github.com/Snowitty/e-fiber-admin/internal/ent/predicate"
-	"github.com/Snowitty/e-fiber-admin/internal/ent/role"
-	"github.com/Snowitty/e-fiber-admin/internal/ent/store"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/adminuser"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/permission"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/predicate"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/role"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/store"
 )
 
 const (

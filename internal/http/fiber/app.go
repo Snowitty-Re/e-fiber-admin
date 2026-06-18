@@ -14,13 +14,13 @@ import (
 	"github.com/gofiber/fiber/v3/middleware/requestid"
 	"github.com/redis/go-redis/v9"
 
-	"github.com/Snowitty/e-fiber-admin/internal/config"
-	authsvc "github.com/Snowitty/e-fiber-admin/internal/domain/auth"
-	"github.com/Snowitty/e-fiber-admin/internal/ent"
-	"github.com/Snowitty/e-fiber-admin/internal/http/fiber/handler"
-	pkgmw "github.com/Snowitty/e-fiber-admin/internal/http/fiber/middleware"
-	"github.com/Snowitty/e-fiber-admin/internal/http/fiber/router"
-	"github.com/Snowitty/e-fiber-admin/internal/pkg/auth"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/config"
+	authsvc "github.com/Snowitty-Re/e-fiber-admin/internal/domain/auth"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/http/fiber/handler"
+	pkgmw "github.com/Snowitty-Re/e-fiber-admin/internal/http/fiber/middleware"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/http/fiber/router"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/pkg/auth"
 )
 
 type Deps struct {

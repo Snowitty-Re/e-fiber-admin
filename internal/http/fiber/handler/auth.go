@@ -3,9 +3,9 @@ package handler
 import (
 	"github.com/gofiber/fiber/v3"
 
-	authsvc "github.com/Snowitty/e-fiber-admin/internal/domain/auth"
-	"github.com/Snowitty/e-fiber-admin/internal/http/fiber/dto"
-	pkgerr "github.com/Snowitty/e-fiber-admin/internal/pkg/errors"
+	authsvc "github.com/Snowitty-Re/e-fiber-admin/internal/domain/auth"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/http/fiber/dto"
+	pkgerr "github.com/Snowitty-Re/e-fiber-admin/internal/pkg/errors"
 )
 
 type AuthHandler struct {

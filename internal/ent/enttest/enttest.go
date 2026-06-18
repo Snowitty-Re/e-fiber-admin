@@ -5,12 +5,12 @@ package enttest
 import (
 	"context"
 
-	"github.com/Snowitty/e-fiber-admin/internal/ent"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent"
 	// required by schema hooks.
-	_ "github.com/Snowitty/e-fiber-admin/internal/ent/runtime"
+	_ "github.com/Snowitty-Re/e-fiber-admin/internal/ent/runtime"
 
 	"entgo.io/ent/dialect/sql/schema"
-	"github.com/Snowitty/e-fiber-admin/internal/ent/migrate"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/migrate"
 )
 
 type (
