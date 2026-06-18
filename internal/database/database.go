@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"time"
 
@@ -10,7 +11,22 @@ import (
 	"github.com/redis/go-redis/v9"
 
 	"github.com/Snowitty/e-fiber-admin/internal/config"
+	"github.com/Snowitty/e-fiber-admin/internal/ent"
+	entsql "entgo.io/ent/dialect/sql"
+	_ "github.com/jackc/pgx/v5/stdlib"
 )
+
+func NewEntClient(cfg config.PostgresConfig) (*ent.Client, error) {
+	db, err := sql.Open("pgx", cfg.URL)
+	if err != nil {
+		return nil, fmt.Errorf("open pg: %w", err)
+	}
+	db.SetMaxOpenConns(cfg.MaxConns)
+	db.SetMaxIdleConns(cfg.MaxConns / 2)
+	db.SetConnMaxLifetime(30 * time.Minute)
+	drv := entsql.OpenDB("pgx", db)
+	return ent.NewClient(ent.Driver(drv)), nil
+}
 
 func NewRedisClient(cfg config.RedisConfig) (*redis.Client, error) {
 	opt, err := redis.ParseURL(cfg.URL)
