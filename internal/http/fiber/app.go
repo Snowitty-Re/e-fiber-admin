@@ -15,10 +15,12 @@ import (
 	"github.com/redis/go-redis/v9"
 
 	"github.com/Snowitty/e-fiber-admin/internal/config"
+	authsvc "github.com/Snowitty/e-fiber-admin/internal/domain/auth"
 	"github.com/Snowitty/e-fiber-admin/internal/ent"
 	"github.com/Snowitty/e-fiber-admin/internal/http/fiber/handler"
 	pkgmw "github.com/Snowitty/e-fiber-admin/internal/http/fiber/middleware"
 	"github.com/Snowitty/e-fiber-admin/internal/http/fiber/router"
+	"github.com/Snowitty/e-fiber-admin/internal/pkg/auth"
 )
 
 type Deps struct {
@@ -52,8 +54,22 @@ func NewApp(deps Deps) *fiber.App {
 		Expiration: time.Minute,
 	}))
 
+	tokenManager := auth.NewTokenManager(
+		deps.Config.JWT.AccessSecret,
+		deps.Config.JWT.RefreshSecret,
+		deps.Config.JWT.AccessTTL,
+		deps.Config.JWT.RefreshTTL,
+	)
+	authService := authsvc.NewService(deps.EntClient, deps.RedisClient, tokenManager)
+
 	healthH := handler.NewHealthHandler(deps.EntClient, deps.RedisClient)
-	router.Register(app, healthH)
+	authH := handler.NewAuthHandler(authService)
+
+	router.Register(app, router.Deps{
+		HealthH:     healthH,
+		AuthH:       authH,
+		JWTAuthFunc: pkgmw.JWTAuth(authService),
+	})
 
 	return app
 }
