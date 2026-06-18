@@ -1,0 +1,66 @@
+version: "3.9"
+
+# =============================================================================
+# 开发环境中间件 —— 统一通过 Docker 拉取，禁止本机安装。
+# 禁止 AI 自行修改服务版本/端口/卷映射/环境变量，除非用户明确要求。
+# 连接串由 .env 注入（.env.example 为模板，.env 被忽略）。
+# =============================================================================
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: efa-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-efa}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-efa_secret}
+      POSTGRES_DB: ${POSTGRES_DB:-efa}
+      TZ: UTC
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-efa} -d ${POSTGRES_DB:-efa}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: efa-redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  minio:
+    image: minio/minio:latest
+    container_name: efa-minio
+    restart: unless-stopped
+    command: ["server", "/data", "--console-address", ":9001"]
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-efa}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-efa_secret}
+    ports:
+      - "${MINIO_API_PORT:-9000}:9000"
+      - "${MINIO_CONSOLE_PORT:-9001}:9001"
+    volumes:
+      - miniodata:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  pgdata:
+  redisdata:
+  miniodata:
