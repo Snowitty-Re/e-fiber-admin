@@ -7,8 +7,8 @@ import (
 )
 
 type FieldError struct {
-	Field  string `json:"field"`
-	Issue  string `json:"issue"`
+	Field string `json:"field"`
+	Issue string `json:"issue"`
 }
 
 type AppError struct {
@@ -55,15 +55,15 @@ func As(err error) (*AppError, bool) {
 }
 
 var (
-	ErrInternal         = New("INTERNAL_ERROR", http.StatusInternalServerError, "internal server error")
-	ErrBadRequest       = New("BAD_REQUEST", http.StatusBadRequest, "bad request")
-	ErrUnauthorized     = New("AUTH_TOKEN_MISSING", http.StatusUnauthorized, "authentication required")
-	ErrTokenExpired     = New("AUTH_TOKEN_EXPIRED", http.StatusUnauthorized, "token expired")
-	ErrTokenInvalid     = New("AUTH_TOKEN_INVALID", http.StatusUnauthorized, "token invalid")
-	ErrForbidden        = New("AUTH_FORBIDDEN", http.StatusForbidden, "insufficient permissions")
-	ErrNotFound         = New("NOT_FOUND", http.StatusNotFound, "resource not found")
-	ErrConflict         = New("CONFLICT", http.StatusConflict, "resource conflict")
-	ErrValidation       = New("VALIDATION_ERROR", http.StatusUnprocessableEntity, "validation failed")
-	ErrRateLimited      = New("RATE_LIMITED", http.StatusTooManyRequests, "rate limit exceeded")
+	ErrInternal           = New("INTERNAL_ERROR", http.StatusInternalServerError, "internal server error")
+	ErrBadRequest         = New("BAD_REQUEST", http.StatusBadRequest, "bad request")
+	ErrUnauthorized       = New("AUTH_TOKEN_MISSING", http.StatusUnauthorized, "authentication required")
+	ErrTokenExpired       = New("AUTH_TOKEN_EXPIRED", http.StatusUnauthorized, "token expired")
+	ErrTokenInvalid       = New("AUTH_TOKEN_INVALID", http.StatusUnauthorized, "token invalid")
+	ErrForbidden          = New("AUTH_FORBIDDEN", http.StatusForbidden, "insufficient permissions")
+	ErrNotFound           = New("NOT_FOUND", http.StatusNotFound, "resource not found")
+	ErrConflict           = New("CONFLICT", http.StatusConflict, "resource conflict")
+	ErrValidation         = New("VALIDATION_ERROR", http.StatusUnprocessableEntity, "validation failed")
+	ErrRateLimited        = New("RATE_LIMITED", http.StatusTooManyRequests, "rate limit exceeded")
 	ErrServiceUnavailable = New("SERVICE_UNAVAILABLE", http.StatusServiceUnavailable, "service unavailable")
 )

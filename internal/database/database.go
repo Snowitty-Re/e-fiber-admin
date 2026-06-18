@@ -10,10 +10,10 @@ import (
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/redis/go-redis/v9"
 
-	"github.com/Snowitty/e-fiber-admin/internal/config"
-	"github.com/Snowitty/e-fiber-admin/internal/ent"
 	"entgo.io/ent/dialect"
 	entsql "entgo.io/ent/dialect/sql"
+	"github.com/Snowitty/e-fiber-admin/internal/config"
+	"github.com/Snowitty/e-fiber-admin/internal/ent"
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 

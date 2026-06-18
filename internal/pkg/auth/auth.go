@@ -12,19 +12,19 @@ import (
 type TokenType string
 
 const (
-	AdminAccess        TokenType = "admin"
-	AdminRefresh       TokenType = "admin_refresh"
-	CustomerAccess     TokenType = "customer"
-	CustomerRefresh    TokenType = "customer_refresh"
+	AdminAccess     TokenType = "admin"
+	AdminRefresh    TokenType = "admin_refresh"
+	CustomerAccess  TokenType = "customer"
+	CustomerRefresh TokenType = "customer_refresh"
 )
 
 type Claims struct {
 	jwt.RegisteredClaims
-	TokenType TokenType `json:"typ"`
-	AdminID   int64     `json:"admin_id,omitempty"`
-	CustomerID int64    `json:"customer_id,omitempty"`
-	Roles     []string  `json:"roles,omitempty"`
-	Perms     []string  `json:"perms,omitempty"`
+	TokenType  TokenType `json:"typ"`
+	AdminID    int64     `json:"admin_id,omitempty"`
+	CustomerID int64     `json:"customer_id,omitempty"`
+	Roles      []string  `json:"roles,omitempty"`
+	Perms      []string  `json:"perms,omitempty"`
 }
 
 type TokenManager struct {

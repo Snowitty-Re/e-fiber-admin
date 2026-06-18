@@ -25,12 +25,12 @@ func NewService(entClient *ent.Client, redisClient *redis.Client, tm *auth.Token
 }
 
 type AdminIdentity struct {
-	ID     int64
-	Email  string
+	ID        int64
+	Email     string
 	FirstName string
 	LastName  string
-	Roles  []string
-	Perms  []string
+	Roles     []string
+	Perms     []string
 }
 
 type TokenPair struct {

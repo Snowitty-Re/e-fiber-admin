@@ -11,7 +11,7 @@ import (
 )
 
 type HealthHandler struct {
-	entClient  *ent.Client
+	entClient   *ent.Client
 	redisClient *redis.Client
 }
 

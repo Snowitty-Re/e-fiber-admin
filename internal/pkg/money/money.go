@@ -65,7 +65,7 @@ func (m Money) Format() string {
 	if prec == 0 {
 		return fmt.Sprintf("%d %s", m.Amount, m.CurrencyCode)
 	}
- divisor := int64(1)
+	divisor := int64(1)
 	for i := 0; i < prec; i++ {
 		divisor *= 10
 	}
