@@ -5,6 +5,9 @@ package ent
 import (
 	"time"
 
+	"github.com/Snowitty/e-fiber-admin/internal/ent/adminuser"
+	"github.com/Snowitty/e-fiber-admin/internal/ent/permission"
+	"github.com/Snowitty/e-fiber-admin/internal/ent/role"
 	"github.com/Snowitty/e-fiber-admin/internal/ent/schema"
 	"github.com/Snowitty/e-fiber-admin/internal/ent/store"
 )
@@ -13,6 +16,103 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	adminuserMixin := schema.AdminUser{}.Mixin()
+	adminuserMixinFields0 := adminuserMixin[0].Fields()
+	_ = adminuserMixinFields0
+	adminuserFields := schema.AdminUser{}.Fields()
+	_ = adminuserFields
+	// adminuserDescVersion is the schema descriptor for version field.
+	adminuserDescVersion := adminuserMixinFields0[3].Descriptor()
+	// adminuser.DefaultVersion holds the default value on creation for the version field.
+	adminuser.DefaultVersion = adminuserDescVersion.Default.(int)
+	// adminuserDescCreatedAt is the schema descriptor for created_at field.
+	adminuserDescCreatedAt := adminuserMixinFields0[4].Descriptor()
+	// adminuser.DefaultCreatedAt holds the default value on creation for the created_at field.
+	adminuser.DefaultCreatedAt = adminuserDescCreatedAt.Default.(func() time.Time)
+	// adminuserDescUpdatedAt is the schema descriptor for updated_at field.
+	adminuserDescUpdatedAt := adminuserMixinFields0[5].Descriptor()
+	// adminuser.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	adminuser.DefaultUpdatedAt = adminuserDescUpdatedAt.Default.(func() time.Time)
+	// adminuser.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	adminuser.UpdateDefaultUpdatedAt = adminuserDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// adminuserDescEmail is the schema descriptor for email field.
+	adminuserDescEmail := adminuserFields[0].Descriptor()
+	// adminuser.EmailValidator is a validator for the "email" field. It is called by the builders before save.
+	adminuser.EmailValidator = adminuserDescEmail.Validators[0].(func(string) error)
+	// adminuserDescPasswordHash is the schema descriptor for password_hash field.
+	adminuserDescPasswordHash := adminuserFields[1].Descriptor()
+	// adminuser.PasswordHashValidator is a validator for the "password_hash" field. It is called by the builders before save.
+	adminuser.PasswordHashValidator = adminuserDescPasswordHash.Validators[0].(func(string) error)
+	// adminuserDescFirstName is the schema descriptor for first_name field.
+	adminuserDescFirstName := adminuserFields[2].Descriptor()
+	// adminuser.DefaultFirstName holds the default value on creation for the first_name field.
+	adminuser.DefaultFirstName = adminuserDescFirstName.Default.(string)
+	// adminuserDescLastName is the schema descriptor for last_name field.
+	adminuserDescLastName := adminuserFields[3].Descriptor()
+	// adminuser.DefaultLastName holds the default value on creation for the last_name field.
+	adminuser.DefaultLastName = adminuserDescLastName.Default.(string)
+	permissionMixin := schema.Permission{}.Mixin()
+	permissionMixinFields0 := permissionMixin[0].Fields()
+	_ = permissionMixinFields0
+	permissionFields := schema.Permission{}.Fields()
+	_ = permissionFields
+	// permissionDescVersion is the schema descriptor for version field.
+	permissionDescVersion := permissionMixinFields0[3].Descriptor()
+	// permission.DefaultVersion holds the default value on creation for the version field.
+	permission.DefaultVersion = permissionDescVersion.Default.(int)
+	// permissionDescCreatedAt is the schema descriptor for created_at field.
+	permissionDescCreatedAt := permissionMixinFields0[4].Descriptor()
+	// permission.DefaultCreatedAt holds the default value on creation for the created_at field.
+	permission.DefaultCreatedAt = permissionDescCreatedAt.Default.(func() time.Time)
+	// permissionDescUpdatedAt is the schema descriptor for updated_at field.
+	permissionDescUpdatedAt := permissionMixinFields0[5].Descriptor()
+	// permission.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	permission.DefaultUpdatedAt = permissionDescUpdatedAt.Default.(func() time.Time)
+	// permission.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	permission.UpdateDefaultUpdatedAt = permissionDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// permissionDescResource is the schema descriptor for resource field.
+	permissionDescResource := permissionFields[0].Descriptor()
+	// permission.ResourceValidator is a validator for the "resource" field. It is called by the builders before save.
+	permission.ResourceValidator = permissionDescResource.Validators[0].(func(string) error)
+	// permissionDescAction is the schema descriptor for action field.
+	permissionDescAction := permissionFields[1].Descriptor()
+	// permission.ActionValidator is a validator for the "action" field. It is called by the builders before save.
+	permission.ActionValidator = permissionDescAction.Validators[0].(func(string) error)
+	// permissionDescDescription is the schema descriptor for description field.
+	permissionDescDescription := permissionFields[2].Descriptor()
+	// permission.DefaultDescription holds the default value on creation for the description field.
+	permission.DefaultDescription = permissionDescDescription.Default.(string)
+	roleMixin := schema.Role{}.Mixin()
+	roleMixinFields0 := roleMixin[0].Fields()
+	_ = roleMixinFields0
+	roleFields := schema.Role{}.Fields()
+	_ = roleFields
+	// roleDescVersion is the schema descriptor for version field.
+	roleDescVersion := roleMixinFields0[3].Descriptor()
+	// role.DefaultVersion holds the default value on creation for the version field.
+	role.DefaultVersion = roleDescVersion.Default.(int)
+	// roleDescCreatedAt is the schema descriptor for created_at field.
+	roleDescCreatedAt := roleMixinFields0[4].Descriptor()
+	// role.DefaultCreatedAt holds the default value on creation for the created_at field.
+	role.DefaultCreatedAt = roleDescCreatedAt.Default.(func() time.Time)
+	// roleDescUpdatedAt is the schema descriptor for updated_at field.
+	roleDescUpdatedAt := roleMixinFields0[5].Descriptor()
+	// role.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	role.DefaultUpdatedAt = roleDescUpdatedAt.Default.(func() time.Time)
+	// role.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	role.UpdateDefaultUpdatedAt = roleDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// roleDescName is the schema descriptor for name field.
+	roleDescName := roleFields[0].Descriptor()
+	// role.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	role.NameValidator = roleDescName.Validators[0].(func(string) error)
+	// roleDescDescription is the schema descriptor for description field.
+	roleDescDescription := roleFields[2].Descriptor()
+	// role.DefaultDescription holds the default value on creation for the description field.
+	role.DefaultDescription = roleDescDescription.Default.(string)
+	// roleDescIsSystem is the schema descriptor for is_system field.
+	roleDescIsSystem := roleFields[3].Descriptor()
+	// role.DefaultIsSystem holds the default value on creation for the is_system field.
+	role.DefaultIsSystem = roleDescIsSystem.Default.(bool)
 	storeMixin := schema.Store{}.Mixin()
 	storeMixinFields0 := storeMixin[0].Fields()
 	_ = storeMixinFields0

@@ -17,6 +17,7 @@ type Config struct {
 	MinIO    MinIOConfig
 	JWT      JWTConfig
 	Asynq    AsynqConfig
+	Seed     SeedConfig
 }
 
 type AppConfig struct {
@@ -63,6 +64,11 @@ type JWTConfig struct {
 
 type AsynqConfig struct {
 	Concurrency int
+}
+
+type SeedConfig struct {
+	OwnerEmail    string
+	OwnerPassword string
 }
 
 func Load() (*Config, error) {
@@ -112,6 +118,10 @@ func Load() (*Config, error) {
 		},
 		Asynq: AsynqConfig{
 			Concurrency: envInt("ASYNQ_CONCURRENCY", 10),
+		},
+		Seed: SeedConfig{
+			OwnerEmail:    env("INIT_OWNER_EMAIL", "admin@e-fiber.local"),
+			OwnerPassword: env("INIT_OWNER_PASSWORD", "change-me-now"),
 		},
 	}
 

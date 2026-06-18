@@ -12,6 +12,9 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/Snowitty/e-fiber-admin/internal/ent/adminuser"
+	"github.com/Snowitty/e-fiber-admin/internal/ent/permission"
+	"github.com/Snowitty/e-fiber-admin/internal/ent/role"
 	"github.com/Snowitty/e-fiber-admin/internal/ent/store"
 )
 
@@ -73,7 +76,10 @@ var (
 func checkColumn(t, c string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			store.Table: store.ValidColumn,
+			adminuser.Table:  adminuser.ValidColumn,
+			permission.Table: permission.ValidColumn,
+			role.Table:       role.ValidColumn,
+			store.Table:      store.ValidColumn,
 		})
 	})
 	return columnCheck(t, c)

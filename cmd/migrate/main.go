@@ -34,6 +34,10 @@ func main() {
 		logger.Error("apply schema migration failed", "err", err)
 		os.Exit(1)
 	}
-
 	logger.Info("schema migration applied successfully")
+
+	if err := database.Seed(ctx, client, cfg.Seed); err != nil {
+		logger.Error("seed failed", "err", err)
+		os.Exit(1)
+	}
 }

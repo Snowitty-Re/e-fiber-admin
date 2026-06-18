@@ -12,6 +12,12 @@ import (
 // Tx is a transactional client that is created by calling Client.Tx().
 type Tx struct {
 	config
+	// AdminUser is the client for interacting with the AdminUser builders.
+	AdminUser *AdminUserClient
+	// Permission is the client for interacting with the Permission builders.
+	Permission *PermissionClient
+	// Role is the client for interacting with the Role builders.
+	Role *RoleClient
 	// Store is the client for interacting with the Store builders.
 	Store *StoreClient
 
@@ -145,6 +151,9 @@ func (tx *Tx) Client() *Client {
 }
 
 func (tx *Tx) init() {
+	tx.AdminUser = NewAdminUserClient(tx.config)
+	tx.Permission = NewPermissionClient(tx.config)
+	tx.Role = NewRoleClient(tx.config)
 	tx.Store = NewStoreClient(tx.config)
 }
 
@@ -155,7 +164,7 @@ func (tx *Tx) init() {
 // of them in order to commit or rollback the transaction.
 //
 // If a closed transaction is embedded in one of the generated entities, and the entity
-// applies a query, for example: Store.QueryXXX(), the query will be executed
+// applies a query, for example: AdminUser.QueryXXX(), the query will be executed
 // through the driver which created this transaction.
 //
 // Note that txDriver is not goroutine safe.
