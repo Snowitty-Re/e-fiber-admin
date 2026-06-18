@@ -1,0 +1,71 @@
+# Error codes catalog for e-fiber-admin API
+# 详见 docs/04-api-design.md §7.3
+# 格式: <DOMAIN>_<REASON>
+
+codes:
+  # Auth
+  AUTH_TOKEN_MISSING:
+    status: 401
+    message: authentication required
+  AUTH_TOKEN_EXPIRED:
+    status: 401
+    message: token expired
+  AUTH_TOKEN_INVALID:
+    status: 401
+    message: token invalid
+  AUTH_FORBIDDEN:
+    status: 403
+    message: insufficient permissions
+  AUTH_INVALID_CREDENTIALS:
+    status: 401
+    message: invalid email or password
+  AUTH_ACCOUNT_DISABLED:
+    status: 403
+    message: account is disabled
+
+  # Generic
+  INTERNAL_ERROR:
+    status: 500
+    message: internal server error
+  BAD_REQUEST:
+    status: 400
+    message: bad request
+  NOT_FOUND:
+    status: 404
+    message: resource not found
+  CONFLICT:
+    status: 409
+    message: resource conflict
+  VALIDATION_ERROR:
+    status: 422
+    message: validation failed
+  RATE_LIMITED:
+    status: 429
+    message: rate limit exceeded
+  SERVICE_UNAVAILABLE:
+    status: 503
+    message: service unavailable
+
+  # Product (示例，后续模块按域扩展)
+  PRODUCT_NOT_FOUND:
+    status: 404
+    message: product not found
+  PRODUCT_INVALID_STATE:
+    status: 409
+    message: product state invalid for operation
+
+  # Order
+  ORDER_NOT_FOUND:
+    status: 404
+    message: order not found
+  ORDER_INVALID_STATE:
+    status: 409
+    message: order state invalid for operation
+  VARIANT_OUT_OF_STOCK:
+    status: 409
+    message: variant out of stock
+
+  # Version conflict (optimistic concurrency)
+  VERSION_CONFLICT:
+    status: 409
+    message: version conflict, resource modified by another request
