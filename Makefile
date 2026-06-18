@@ -61,9 +61,9 @@ tidy: ## 整理依赖
 ent-gen: ## 生成 ent 代码
 	go generate ./internal/ent
 
-migrate-apply: ## 应用迁移到数据库
-	atlas migrate apply --dir "file://migrations" --env local
+migrate-apply: ## 应用迁移到数据库（dev: ent auto-migrate）
+	go run ./cmd/migrate
 
-migrate-diff: ## 生成迁移差异（用法: make migrate-diff name=add_product_table）
+migrate-diff: ## 生成版本化迁移差异（用法: make migrate-diff name=add_product_table）
 	@[ -z "$(name)" ] && echo "usage: make migrate-diff name=<migration_name>" && exit 1 || \
-	atlas migrate diff $(name) --dir "file://migrations" --env local --to "ent://internal/ent/schema"
+	go run ariga.io/atlas/cmd/atlas migrate diff $(name) --dir "file://migrations" --env local --to "ent://internal/ent/schema"

@@ -12,6 +12,7 @@ import (
 
 	"github.com/Snowitty/e-fiber-admin/internal/config"
 	"github.com/Snowitty/e-fiber-admin/internal/ent"
+	"entgo.io/ent/dialect"
 	entsql "entgo.io/ent/dialect/sql"
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
@@ -24,7 +25,7 @@ func NewEntClient(cfg config.PostgresConfig) (*ent.Client, error) {
 	db.SetMaxOpenConns(cfg.MaxConns)
 	db.SetMaxIdleConns(cfg.MaxConns / 2)
 	db.SetConnMaxLifetime(30 * time.Minute)
-	drv := entsql.OpenDB("pgx", db)
+	drv := entsql.OpenDB(dialect.Postgres, db)
 	return ent.NewClient(ent.Driver(drv)), nil
 }
 
