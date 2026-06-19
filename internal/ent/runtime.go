@@ -9,11 +9,18 @@ import (
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/currency"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/locale"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/permission"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/product"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/productoption"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/productoptionvalue"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/producttranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/region"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/role"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/schema"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/store"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/taxrate"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/variant"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/variantoptionvalue"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/variantprice"
 )
 
 // The init function reads all schema descriptors with runtime code
@@ -156,6 +163,142 @@ func init() {
 	permissionDescDescription := permissionFields[2].Descriptor()
 	// permission.DefaultDescription holds the default value on creation for the description field.
 	permission.DefaultDescription = permissionDescDescription.Default.(string)
+	productMixin := schema.Product{}.Mixin()
+	productMixinFields0 := productMixin[0].Fields()
+	_ = productMixinFields0
+	productFields := schema.Product{}.Fields()
+	_ = productFields
+	// productDescVersion is the schema descriptor for version field.
+	productDescVersion := productMixinFields0[3].Descriptor()
+	// product.DefaultVersion holds the default value on creation for the version field.
+	product.DefaultVersion = productDescVersion.Default.(int)
+	// productDescCreatedAt is the schema descriptor for created_at field.
+	productDescCreatedAt := productMixinFields0[4].Descriptor()
+	// product.DefaultCreatedAt holds the default value on creation for the created_at field.
+	product.DefaultCreatedAt = productDescCreatedAt.Default.(func() time.Time)
+	// productDescUpdatedAt is the schema descriptor for updated_at field.
+	productDescUpdatedAt := productMixinFields0[5].Descriptor()
+	// product.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	product.DefaultUpdatedAt = productDescUpdatedAt.Default.(func() time.Time)
+	// product.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	product.UpdateDefaultUpdatedAt = productDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// productDescIsVirtual is the schema descriptor for is_virtual field.
+	productDescIsVirtual := productFields[5].Descriptor()
+	// product.DefaultIsVirtual holds the default value on creation for the is_virtual field.
+	product.DefaultIsVirtual = productDescIsVirtual.Default.(bool)
+	// productDescIsDownloadable is the schema descriptor for is_downloadable field.
+	productDescIsDownloadable := productFields[6].Descriptor()
+	// product.DefaultIsDownloadable holds the default value on creation for the is_downloadable field.
+	product.DefaultIsDownloadable = productDescIsDownloadable.Default.(bool)
+	productoptionMixin := schema.ProductOption{}.Mixin()
+	productoptionMixinFields0 := productoptionMixin[0].Fields()
+	_ = productoptionMixinFields0
+	productoptionFields := schema.ProductOption{}.Fields()
+	_ = productoptionFields
+	// productoptionDescVersion is the schema descriptor for version field.
+	productoptionDescVersion := productoptionMixinFields0[3].Descriptor()
+	// productoption.DefaultVersion holds the default value on creation for the version field.
+	productoption.DefaultVersion = productoptionDescVersion.Default.(int)
+	// productoptionDescCreatedAt is the schema descriptor for created_at field.
+	productoptionDescCreatedAt := productoptionMixinFields0[4].Descriptor()
+	// productoption.DefaultCreatedAt holds the default value on creation for the created_at field.
+	productoption.DefaultCreatedAt = productoptionDescCreatedAt.Default.(func() time.Time)
+	// productoptionDescUpdatedAt is the schema descriptor for updated_at field.
+	productoptionDescUpdatedAt := productoptionMixinFields0[5].Descriptor()
+	// productoption.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	productoption.DefaultUpdatedAt = productoptionDescUpdatedAt.Default.(func() time.Time)
+	// productoption.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	productoption.UpdateDefaultUpdatedAt = productoptionDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// productoptionDescName is the schema descriptor for name field.
+	productoptionDescName := productoptionFields[1].Descriptor()
+	// productoption.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	productoption.NameValidator = productoptionDescName.Validators[0].(func(string) error)
+	// productoptionDescPosition is the schema descriptor for position field.
+	productoptionDescPosition := productoptionFields[2].Descriptor()
+	// productoption.DefaultPosition holds the default value on creation for the position field.
+	productoption.DefaultPosition = productoptionDescPosition.Default.(int)
+	productoptionvalueMixin := schema.ProductOptionValue{}.Mixin()
+	productoptionvalueMixinFields0 := productoptionvalueMixin[0].Fields()
+	_ = productoptionvalueMixinFields0
+	productoptionvalueFields := schema.ProductOptionValue{}.Fields()
+	_ = productoptionvalueFields
+	// productoptionvalueDescVersion is the schema descriptor for version field.
+	productoptionvalueDescVersion := productoptionvalueMixinFields0[3].Descriptor()
+	// productoptionvalue.DefaultVersion holds the default value on creation for the version field.
+	productoptionvalue.DefaultVersion = productoptionvalueDescVersion.Default.(int)
+	// productoptionvalueDescCreatedAt is the schema descriptor for created_at field.
+	productoptionvalueDescCreatedAt := productoptionvalueMixinFields0[4].Descriptor()
+	// productoptionvalue.DefaultCreatedAt holds the default value on creation for the created_at field.
+	productoptionvalue.DefaultCreatedAt = productoptionvalueDescCreatedAt.Default.(func() time.Time)
+	// productoptionvalueDescUpdatedAt is the schema descriptor for updated_at field.
+	productoptionvalueDescUpdatedAt := productoptionvalueMixinFields0[5].Descriptor()
+	// productoptionvalue.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	productoptionvalue.DefaultUpdatedAt = productoptionvalueDescUpdatedAt.Default.(func() time.Time)
+	// productoptionvalue.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	productoptionvalue.UpdateDefaultUpdatedAt = productoptionvalueDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// productoptionvalueDescValue is the schema descriptor for value field.
+	productoptionvalueDescValue := productoptionvalueFields[1].Descriptor()
+	// productoptionvalue.ValueValidator is a validator for the "value" field. It is called by the builders before save.
+	productoptionvalue.ValueValidator = productoptionvalueDescValue.Validators[0].(func(string) error)
+	// productoptionvalueDescPosition is the schema descriptor for position field.
+	productoptionvalueDescPosition := productoptionvalueFields[2].Descriptor()
+	// productoptionvalue.DefaultPosition holds the default value on creation for the position field.
+	productoptionvalue.DefaultPosition = productoptionvalueDescPosition.Default.(int)
+	producttranslationMixin := schema.ProductTranslation{}.Mixin()
+	producttranslationMixinFields0 := producttranslationMixin[0].Fields()
+	_ = producttranslationMixinFields0
+	producttranslationFields := schema.ProductTranslation{}.Fields()
+	_ = producttranslationFields
+	// producttranslationDescVersion is the schema descriptor for version field.
+	producttranslationDescVersion := producttranslationMixinFields0[3].Descriptor()
+	// producttranslation.DefaultVersion holds the default value on creation for the version field.
+	producttranslation.DefaultVersion = producttranslationDescVersion.Default.(int)
+	// producttranslationDescCreatedAt is the schema descriptor for created_at field.
+	producttranslationDescCreatedAt := producttranslationMixinFields0[4].Descriptor()
+	// producttranslation.DefaultCreatedAt holds the default value on creation for the created_at field.
+	producttranslation.DefaultCreatedAt = producttranslationDescCreatedAt.Default.(func() time.Time)
+	// producttranslationDescUpdatedAt is the schema descriptor for updated_at field.
+	producttranslationDescUpdatedAt := producttranslationMixinFields0[5].Descriptor()
+	// producttranslation.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	producttranslation.DefaultUpdatedAt = producttranslationDescUpdatedAt.Default.(func() time.Time)
+	// producttranslation.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	producttranslation.UpdateDefaultUpdatedAt = producttranslationDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// producttranslationDescLocale is the schema descriptor for locale field.
+	producttranslationDescLocale := producttranslationFields[1].Descriptor()
+	// producttranslation.LocaleValidator is a validator for the "locale" field. It is called by the builders before save.
+	producttranslation.LocaleValidator = producttranslationDescLocale.Validators[0].(func(string) error)
+	// producttranslationDescTitle is the schema descriptor for title field.
+	producttranslationDescTitle := producttranslationFields[2].Descriptor()
+	// producttranslation.TitleValidator is a validator for the "title" field. It is called by the builders before save.
+	producttranslation.TitleValidator = producttranslationDescTitle.Validators[0].(func(string) error)
+	// producttranslationDescSubtitle is the schema descriptor for subtitle field.
+	producttranslationDescSubtitle := producttranslationFields[3].Descriptor()
+	// producttranslation.DefaultSubtitle holds the default value on creation for the subtitle field.
+	producttranslation.DefaultSubtitle = producttranslationDescSubtitle.Default.(string)
+	// producttranslationDescDescription is the schema descriptor for description field.
+	producttranslationDescDescription := producttranslationFields[4].Descriptor()
+	// producttranslation.DefaultDescription holds the default value on creation for the description field.
+	producttranslation.DefaultDescription = producttranslationDescDescription.Default.(string)
+	// producttranslationDescMaterial is the schema descriptor for material field.
+	producttranslationDescMaterial := producttranslationFields[5].Descriptor()
+	// producttranslation.DefaultMaterial holds the default value on creation for the material field.
+	producttranslation.DefaultMaterial = producttranslationDescMaterial.Default.(string)
+	// producttranslationDescOrigin is the schema descriptor for origin field.
+	producttranslationDescOrigin := producttranslationFields[6].Descriptor()
+	// producttranslation.DefaultOrigin holds the default value on creation for the origin field.
+	producttranslation.DefaultOrigin = producttranslationDescOrigin.Default.(string)
+	// producttranslationDescPacking is the schema descriptor for packing field.
+	producttranslationDescPacking := producttranslationFields[7].Descriptor()
+	// producttranslation.DefaultPacking holds the default value on creation for the packing field.
+	producttranslation.DefaultPacking = producttranslationDescPacking.Default.(string)
+	// producttranslationDescSeoTitle is the schema descriptor for seo_title field.
+	producttranslationDescSeoTitle := producttranslationFields[8].Descriptor()
+	// producttranslation.DefaultSeoTitle holds the default value on creation for the seo_title field.
+	producttranslation.DefaultSeoTitle = producttranslationDescSeoTitle.Default.(string)
+	// producttranslationDescSeoDesc is the schema descriptor for seo_desc field.
+	producttranslationDescSeoDesc := producttranslationFields[9].Descriptor()
+	// producttranslation.DefaultSeoDesc holds the default value on creation for the seo_desc field.
+	producttranslation.DefaultSeoDesc = producttranslationDescSeoDesc.Default.(string)
 	regionMixin := schema.Region{}.Mixin()
 	regionMixinFields0 := regionMixin[0].Fields()
 	_ = regionMixinFields0
@@ -292,4 +435,81 @@ func init() {
 	taxrateDescPriority := taxrateFields[4].Descriptor()
 	// taxrate.DefaultPriority holds the default value on creation for the priority field.
 	taxrate.DefaultPriority = taxrateDescPriority.Default.(int)
+	variantMixin := schema.Variant{}.Mixin()
+	variantMixinFields0 := variantMixin[0].Fields()
+	_ = variantMixinFields0
+	variantFields := schema.Variant{}.Fields()
+	_ = variantFields
+	// variantDescVersion is the schema descriptor for version field.
+	variantDescVersion := variantMixinFields0[3].Descriptor()
+	// variant.DefaultVersion holds the default value on creation for the version field.
+	variant.DefaultVersion = variantDescVersion.Default.(int)
+	// variantDescCreatedAt is the schema descriptor for created_at field.
+	variantDescCreatedAt := variantMixinFields0[4].Descriptor()
+	// variant.DefaultCreatedAt holds the default value on creation for the created_at field.
+	variant.DefaultCreatedAt = variantDescCreatedAt.Default.(func() time.Time)
+	// variantDescUpdatedAt is the schema descriptor for updated_at field.
+	variantDescUpdatedAt := variantMixinFields0[5].Descriptor()
+	// variant.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	variant.DefaultUpdatedAt = variantDescUpdatedAt.Default.(func() time.Time)
+	// variant.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	variant.UpdateDefaultUpdatedAt = variantDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// variantDescBarcode is the schema descriptor for barcode field.
+	variantDescBarcode := variantFields[2].Descriptor()
+	// variant.DefaultBarcode holds the default value on creation for the barcode field.
+	variant.DefaultBarcode = variantDescBarcode.Default.(string)
+	// variantDescAllowBackorder is the schema descriptor for allow_backorder field.
+	variantDescAllowBackorder := variantFields[4].Descriptor()
+	// variant.DefaultAllowBackorder holds the default value on creation for the allow_backorder field.
+	variant.DefaultAllowBackorder = variantDescAllowBackorder.Default.(bool)
+	// variantDescInventory is the schema descriptor for inventory field.
+	variantDescInventory := variantFields[5].Descriptor()
+	// variant.DefaultInventory holds the default value on creation for the inventory field.
+	variant.DefaultInventory = variantDescInventory.Default.(int)
+	// variantDescPosition is the schema descriptor for position field.
+	variantDescPosition := variantFields[6].Descriptor()
+	// variant.DefaultPosition holds the default value on creation for the position field.
+	variant.DefaultPosition = variantDescPosition.Default.(int)
+	variantoptionvalueMixin := schema.VariantOptionValue{}.Mixin()
+	variantoptionvalueMixinFields0 := variantoptionvalueMixin[0].Fields()
+	_ = variantoptionvalueMixinFields0
+	variantoptionvalueFields := schema.VariantOptionValue{}.Fields()
+	_ = variantoptionvalueFields
+	// variantoptionvalueDescVersion is the schema descriptor for version field.
+	variantoptionvalueDescVersion := variantoptionvalueMixinFields0[3].Descriptor()
+	// variantoptionvalue.DefaultVersion holds the default value on creation for the version field.
+	variantoptionvalue.DefaultVersion = variantoptionvalueDescVersion.Default.(int)
+	// variantoptionvalueDescCreatedAt is the schema descriptor for created_at field.
+	variantoptionvalueDescCreatedAt := variantoptionvalueMixinFields0[4].Descriptor()
+	// variantoptionvalue.DefaultCreatedAt holds the default value on creation for the created_at field.
+	variantoptionvalue.DefaultCreatedAt = variantoptionvalueDescCreatedAt.Default.(func() time.Time)
+	// variantoptionvalueDescUpdatedAt is the schema descriptor for updated_at field.
+	variantoptionvalueDescUpdatedAt := variantoptionvalueMixinFields0[5].Descriptor()
+	// variantoptionvalue.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	variantoptionvalue.DefaultUpdatedAt = variantoptionvalueDescUpdatedAt.Default.(func() time.Time)
+	// variantoptionvalue.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	variantoptionvalue.UpdateDefaultUpdatedAt = variantoptionvalueDescUpdatedAt.UpdateDefault.(func() time.Time)
+	variantpriceMixin := schema.VariantPrice{}.Mixin()
+	variantpriceMixinFields0 := variantpriceMixin[0].Fields()
+	_ = variantpriceMixinFields0
+	variantpriceFields := schema.VariantPrice{}.Fields()
+	_ = variantpriceFields
+	// variantpriceDescVersion is the schema descriptor for version field.
+	variantpriceDescVersion := variantpriceMixinFields0[3].Descriptor()
+	// variantprice.DefaultVersion holds the default value on creation for the version field.
+	variantprice.DefaultVersion = variantpriceDescVersion.Default.(int)
+	// variantpriceDescCreatedAt is the schema descriptor for created_at field.
+	variantpriceDescCreatedAt := variantpriceMixinFields0[4].Descriptor()
+	// variantprice.DefaultCreatedAt holds the default value on creation for the created_at field.
+	variantprice.DefaultCreatedAt = variantpriceDescCreatedAt.Default.(func() time.Time)
+	// variantpriceDescUpdatedAt is the schema descriptor for updated_at field.
+	variantpriceDescUpdatedAt := variantpriceMixinFields0[5].Descriptor()
+	// variantprice.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	variantprice.DefaultUpdatedAt = variantpriceDescUpdatedAt.Default.(func() time.Time)
+	// variantprice.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	variantprice.UpdateDefaultUpdatedAt = variantpriceDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// variantpriceDescCurrencyCode is the schema descriptor for currency_code field.
+	variantpriceDescCurrencyCode := variantpriceFields[1].Descriptor()
+	// variantprice.CurrencyCodeValidator is a validator for the "currency_code" field. It is called by the builders before save.
+	variantprice.CurrencyCodeValidator = variantpriceDescCurrencyCode.Validators[0].(func(string) error)
 }

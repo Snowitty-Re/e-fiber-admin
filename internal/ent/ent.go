@@ -16,10 +16,17 @@ import (
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/currency"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/locale"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/permission"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/product"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/productoption"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/productoptionvalue"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/producttranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/region"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/role"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/store"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/taxrate"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/variant"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/variantoptionvalue"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/variantprice"
 )
 
 // ent aliases to avoid import conflicts in user's code.
@@ -80,14 +87,21 @@ var (
 func checkColumn(t, c string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			adminuser.Table:  adminuser.ValidColumn,
-			currency.Table:   currency.ValidColumn,
-			locale.Table:     locale.ValidColumn,
-			permission.Table: permission.ValidColumn,
-			region.Table:     region.ValidColumn,
-			role.Table:       role.ValidColumn,
-			store.Table:      store.ValidColumn,
-			taxrate.Table:    taxrate.ValidColumn,
+			adminuser.Table:          adminuser.ValidColumn,
+			currency.Table:           currency.ValidColumn,
+			locale.Table:             locale.ValidColumn,
+			permission.Table:         permission.ValidColumn,
+			product.Table:            product.ValidColumn,
+			productoption.Table:      productoption.ValidColumn,
+			productoptionvalue.Table: productoptionvalue.ValidColumn,
+			producttranslation.Table: producttranslation.ValidColumn,
+			region.Table:             region.ValidColumn,
+			role.Table:               role.ValidColumn,
+			store.Table:              store.ValidColumn,
+			taxrate.Table:            taxrate.ValidColumn,
+			variant.Table:            variant.ValidColumn,
+			variantoptionvalue.Table: variantoptionvalue.ValidColumn,
+			variantprice.Table:       variantprice.ValidColumn,
 		})
 	})
 	return columnCheck(t, c)

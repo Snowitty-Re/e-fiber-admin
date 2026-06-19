@@ -19,10 +19,17 @@ import (
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/currency"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/locale"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/permission"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/product"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/productoption"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/productoptionvalue"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/producttranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/region"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/role"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/store"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/taxrate"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/variant"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/variantoptionvalue"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/variantprice"
 )
 
 // Client is the client that holds all ent builders.
@@ -38,6 +45,14 @@ type Client struct {
 	Locale *LocaleClient
 	// Permission is the client for interacting with the Permission builders.
 	Permission *PermissionClient
+	// Product is the client for interacting with the Product builders.
+	Product *ProductClient
+	// ProductOption is the client for interacting with the ProductOption builders.
+	ProductOption *ProductOptionClient
+	// ProductOptionValue is the client for interacting with the ProductOptionValue builders.
+	ProductOptionValue *ProductOptionValueClient
+	// ProductTranslation is the client for interacting with the ProductTranslation builders.
+	ProductTranslation *ProductTranslationClient
 	// Region is the client for interacting with the Region builders.
 	Region *RegionClient
 	// Role is the client for interacting with the Role builders.
@@ -46,6 +61,12 @@ type Client struct {
 	Store *StoreClient
 	// TaxRate is the client for interacting with the TaxRate builders.
 	TaxRate *TaxRateClient
+	// Variant is the client for interacting with the Variant builders.
+	Variant *VariantClient
+	// VariantOptionValue is the client for interacting with the VariantOptionValue builders.
+	VariantOptionValue *VariantOptionValueClient
+	// VariantPrice is the client for interacting with the VariantPrice builders.
+	VariantPrice *VariantPriceClient
 }
 
 // NewClient creates a new client configured with the given options.
@@ -61,10 +82,17 @@ func (c *Client) init() {
 	c.Currency = NewCurrencyClient(c.config)
 	c.Locale = NewLocaleClient(c.config)
 	c.Permission = NewPermissionClient(c.config)
+	c.Product = NewProductClient(c.config)
+	c.ProductOption = NewProductOptionClient(c.config)
+	c.ProductOptionValue = NewProductOptionValueClient(c.config)
+	c.ProductTranslation = NewProductTranslationClient(c.config)
 	c.Region = NewRegionClient(c.config)
 	c.Role = NewRoleClient(c.config)
 	c.Store = NewStoreClient(c.config)
 	c.TaxRate = NewTaxRateClient(c.config)
+	c.Variant = NewVariantClient(c.config)
+	c.VariantOptionValue = NewVariantOptionValueClient(c.config)
+	c.VariantPrice = NewVariantPriceClient(c.config)
 }
 
 type (
@@ -155,16 +183,23 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:        ctx,
-		config:     cfg,
-		AdminUser:  NewAdminUserClient(cfg),
-		Currency:   NewCurrencyClient(cfg),
-		Locale:     NewLocaleClient(cfg),
-		Permission: NewPermissionClient(cfg),
-		Region:     NewRegionClient(cfg),
-		Role:       NewRoleClient(cfg),
-		Store:      NewStoreClient(cfg),
-		TaxRate:    NewTaxRateClient(cfg),
+		ctx:                ctx,
+		config:             cfg,
+		AdminUser:          NewAdminUserClient(cfg),
+		Currency:           NewCurrencyClient(cfg),
+		Locale:             NewLocaleClient(cfg),
+		Permission:         NewPermissionClient(cfg),
+		Product:            NewProductClient(cfg),
+		ProductOption:      NewProductOptionClient(cfg),
+		ProductOptionValue: NewProductOptionValueClient(cfg),
+		ProductTranslation: NewProductTranslationClient(cfg),
+		Region:             NewRegionClient(cfg),
+		Role:               NewRoleClient(cfg),
+		Store:              NewStoreClient(cfg),
+		TaxRate:            NewTaxRateClient(cfg),
+		Variant:            NewVariantClient(cfg),
+		VariantOptionValue: NewVariantOptionValueClient(cfg),
+		VariantPrice:       NewVariantPriceClient(cfg),
 	}, nil
 }
 
@@ -182,16 +217,23 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:        ctx,
-		config:     cfg,
-		AdminUser:  NewAdminUserClient(cfg),
-		Currency:   NewCurrencyClient(cfg),
-		Locale:     NewLocaleClient(cfg),
-		Permission: NewPermissionClient(cfg),
-		Region:     NewRegionClient(cfg),
-		Role:       NewRoleClient(cfg),
-		Store:      NewStoreClient(cfg),
-		TaxRate:    NewTaxRateClient(cfg),
+		ctx:                ctx,
+		config:             cfg,
+		AdminUser:          NewAdminUserClient(cfg),
+		Currency:           NewCurrencyClient(cfg),
+		Locale:             NewLocaleClient(cfg),
+		Permission:         NewPermissionClient(cfg),
+		Product:            NewProductClient(cfg),
+		ProductOption:      NewProductOptionClient(cfg),
+		ProductOptionValue: NewProductOptionValueClient(cfg),
+		ProductTranslation: NewProductTranslationClient(cfg),
+		Region:             NewRegionClient(cfg),
+		Role:               NewRoleClient(cfg),
+		Store:              NewStoreClient(cfg),
+		TaxRate:            NewTaxRateClient(cfg),
+		Variant:            NewVariantClient(cfg),
+		VariantOptionValue: NewVariantOptionValueClient(cfg),
+		VariantPrice:       NewVariantPriceClient(cfg),
 	}, nil
 }
 
@@ -221,8 +263,9 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
-		c.AdminUser, c.Currency, c.Locale, c.Permission, c.Region, c.Role, c.Store,
-		c.TaxRate,
+		c.AdminUser, c.Currency, c.Locale, c.Permission, c.Product, c.ProductOption,
+		c.ProductOptionValue, c.ProductTranslation, c.Region, c.Role, c.Store,
+		c.TaxRate, c.Variant, c.VariantOptionValue, c.VariantPrice,
 	} {
 		n.Use(hooks...)
 	}
@@ -232,8 +275,9 @@ func (c *Client) Use(hooks ...Hook) {
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
-		c.AdminUser, c.Currency, c.Locale, c.Permission, c.Region, c.Role, c.Store,
-		c.TaxRate,
+		c.AdminUser, c.Currency, c.Locale, c.Permission, c.Product, c.ProductOption,
+		c.ProductOptionValue, c.ProductTranslation, c.Region, c.Role, c.Store,
+		c.TaxRate, c.Variant, c.VariantOptionValue, c.VariantPrice,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -250,6 +294,14 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Locale.mutate(ctx, m)
 	case *PermissionMutation:
 		return c.Permission.mutate(ctx, m)
+	case *ProductMutation:
+		return c.Product.mutate(ctx, m)
+	case *ProductOptionMutation:
+		return c.ProductOption.mutate(ctx, m)
+	case *ProductOptionValueMutation:
+		return c.ProductOptionValue.mutate(ctx, m)
+	case *ProductTranslationMutation:
+		return c.ProductTranslation.mutate(ctx, m)
 	case *RegionMutation:
 		return c.Region.mutate(ctx, m)
 	case *RoleMutation:
@@ -258,6 +310,12 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Store.mutate(ctx, m)
 	case *TaxRateMutation:
 		return c.TaxRate.mutate(ctx, m)
+	case *VariantMutation:
+		return c.Variant.mutate(ctx, m)
+	case *VariantOptionValueMutation:
+		return c.VariantOptionValue.mutate(ctx, m)
+	case *VariantPriceMutation:
+		return c.VariantPrice.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("ent: unknown mutation type %T", m)
 	}
@@ -824,6 +882,650 @@ func (c *PermissionClient) mutate(ctx context.Context, m *PermissionMutation) (V
 		return (&PermissionDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Permission mutation op: %q", m.Op())
+	}
+}
+
+// ProductClient is a client for the Product schema.
+type ProductClient struct {
+	config
+}
+
+// NewProductClient returns a client for the Product from the given config.
+func NewProductClient(c config) *ProductClient {
+	return &ProductClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `product.Hooks(f(g(h())))`.
+func (c *ProductClient) Use(hooks ...Hook) {
+	c.hooks.Product = append(c.hooks.Product, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `product.Intercept(f(g(h())))`.
+func (c *ProductClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Product = append(c.inters.Product, interceptors...)
+}
+
+// Create returns a builder for creating a Product entity.
+func (c *ProductClient) Create() *ProductCreate {
+	mutation := newProductMutation(c.config, OpCreate)
+	return &ProductCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Product entities.
+func (c *ProductClient) CreateBulk(builders ...*ProductCreate) *ProductCreateBulk {
+	return &ProductCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ProductClient) MapCreateBulk(slice any, setFunc func(*ProductCreate, int)) *ProductCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ProductCreateBulk{err: fmt.Errorf("calling to ProductClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ProductCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ProductCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Product.
+func (c *ProductClient) Update() *ProductUpdate {
+	mutation := newProductMutation(c.config, OpUpdate)
+	return &ProductUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ProductClient) UpdateOne(_m *Product) *ProductUpdateOne {
+	mutation := newProductMutation(c.config, OpUpdateOne, withProduct(_m))
+	return &ProductUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ProductClient) UpdateOneID(id int) *ProductUpdateOne {
+	mutation := newProductMutation(c.config, OpUpdateOne, withProductID(id))
+	return &ProductUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Product.
+func (c *ProductClient) Delete() *ProductDelete {
+	mutation := newProductMutation(c.config, OpDelete)
+	return &ProductDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ProductClient) DeleteOne(_m *Product) *ProductDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ProductClient) DeleteOneID(id int) *ProductDeleteOne {
+	builder := c.Delete().Where(product.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ProductDeleteOne{builder}
+}
+
+// Query returns a query builder for Product.
+func (c *ProductClient) Query() *ProductQuery {
+	return &ProductQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeProduct},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Product entity by its id.
+func (c *ProductClient) Get(ctx context.Context, id int) (*Product, error) {
+	return c.Query().Where(product.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ProductClient) GetX(ctx context.Context, id int) *Product {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryTranslations queries the translations edge of a Product.
+func (c *ProductClient) QueryTranslations(_m *Product) *ProductTranslationQuery {
+	query := (&ProductTranslationClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(product.Table, product.FieldID, id),
+			sqlgraph.To(producttranslation.Table, producttranslation.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, product.TranslationsTable, product.TranslationsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryVariants queries the variants edge of a Product.
+func (c *ProductClient) QueryVariants(_m *Product) *VariantQuery {
+	query := (&VariantClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(product.Table, product.FieldID, id),
+			sqlgraph.To(variant.Table, variant.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, product.VariantsTable, product.VariantsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryOptions queries the options edge of a Product.
+func (c *ProductClient) QueryOptions(_m *Product) *ProductOptionQuery {
+	query := (&ProductOptionClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(product.Table, product.FieldID, id),
+			sqlgraph.To(productoption.Table, productoption.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, product.OptionsTable, product.OptionsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *ProductClient) Hooks() []Hook {
+	return c.hooks.Product
+}
+
+// Interceptors returns the client interceptors.
+func (c *ProductClient) Interceptors() []Interceptor {
+	return c.inters.Product
+}
+
+func (c *ProductClient) mutate(ctx context.Context, m *ProductMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ProductCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ProductUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ProductUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ProductDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Product mutation op: %q", m.Op())
+	}
+}
+
+// ProductOptionClient is a client for the ProductOption schema.
+type ProductOptionClient struct {
+	config
+}
+
+// NewProductOptionClient returns a client for the ProductOption from the given config.
+func NewProductOptionClient(c config) *ProductOptionClient {
+	return &ProductOptionClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `productoption.Hooks(f(g(h())))`.
+func (c *ProductOptionClient) Use(hooks ...Hook) {
+	c.hooks.ProductOption = append(c.hooks.ProductOption, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `productoption.Intercept(f(g(h())))`.
+func (c *ProductOptionClient) Intercept(interceptors ...Interceptor) {
+	c.inters.ProductOption = append(c.inters.ProductOption, interceptors...)
+}
+
+// Create returns a builder for creating a ProductOption entity.
+func (c *ProductOptionClient) Create() *ProductOptionCreate {
+	mutation := newProductOptionMutation(c.config, OpCreate)
+	return &ProductOptionCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ProductOption entities.
+func (c *ProductOptionClient) CreateBulk(builders ...*ProductOptionCreate) *ProductOptionCreateBulk {
+	return &ProductOptionCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ProductOptionClient) MapCreateBulk(slice any, setFunc func(*ProductOptionCreate, int)) *ProductOptionCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ProductOptionCreateBulk{err: fmt.Errorf("calling to ProductOptionClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ProductOptionCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ProductOptionCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ProductOption.
+func (c *ProductOptionClient) Update() *ProductOptionUpdate {
+	mutation := newProductOptionMutation(c.config, OpUpdate)
+	return &ProductOptionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ProductOptionClient) UpdateOne(_m *ProductOption) *ProductOptionUpdateOne {
+	mutation := newProductOptionMutation(c.config, OpUpdateOne, withProductOption(_m))
+	return &ProductOptionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ProductOptionClient) UpdateOneID(id int) *ProductOptionUpdateOne {
+	mutation := newProductOptionMutation(c.config, OpUpdateOne, withProductOptionID(id))
+	return &ProductOptionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ProductOption.
+func (c *ProductOptionClient) Delete() *ProductOptionDelete {
+	mutation := newProductOptionMutation(c.config, OpDelete)
+	return &ProductOptionDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ProductOptionClient) DeleteOne(_m *ProductOption) *ProductOptionDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ProductOptionClient) DeleteOneID(id int) *ProductOptionDeleteOne {
+	builder := c.Delete().Where(productoption.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ProductOptionDeleteOne{builder}
+}
+
+// Query returns a query builder for ProductOption.
+func (c *ProductOptionClient) Query() *ProductOptionQuery {
+	return &ProductOptionQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeProductOption},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a ProductOption entity by its id.
+func (c *ProductOptionClient) Get(ctx context.Context, id int) (*ProductOption, error) {
+	return c.Query().Where(productoption.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ProductOptionClient) GetX(ctx context.Context, id int) *ProductOption {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryProduct queries the product edge of a ProductOption.
+func (c *ProductOptionClient) QueryProduct(_m *ProductOption) *ProductQuery {
+	query := (&ProductClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(productoption.Table, productoption.FieldID, id),
+			sqlgraph.To(product.Table, product.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, productoption.ProductTable, productoption.ProductColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryValues queries the values edge of a ProductOption.
+func (c *ProductOptionClient) QueryValues(_m *ProductOption) *ProductOptionValueQuery {
+	query := (&ProductOptionValueClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(productoption.Table, productoption.FieldID, id),
+			sqlgraph.To(productoptionvalue.Table, productoptionvalue.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, productoption.ValuesTable, productoption.ValuesColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *ProductOptionClient) Hooks() []Hook {
+	return c.hooks.ProductOption
+}
+
+// Interceptors returns the client interceptors.
+func (c *ProductOptionClient) Interceptors() []Interceptor {
+	return c.inters.ProductOption
+}
+
+func (c *ProductOptionClient) mutate(ctx context.Context, m *ProductOptionMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ProductOptionCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ProductOptionUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ProductOptionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ProductOptionDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown ProductOption mutation op: %q", m.Op())
+	}
+}
+
+// ProductOptionValueClient is a client for the ProductOptionValue schema.
+type ProductOptionValueClient struct {
+	config
+}
+
+// NewProductOptionValueClient returns a client for the ProductOptionValue from the given config.
+func NewProductOptionValueClient(c config) *ProductOptionValueClient {
+	return &ProductOptionValueClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `productoptionvalue.Hooks(f(g(h())))`.
+func (c *ProductOptionValueClient) Use(hooks ...Hook) {
+	c.hooks.ProductOptionValue = append(c.hooks.ProductOptionValue, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `productoptionvalue.Intercept(f(g(h())))`.
+func (c *ProductOptionValueClient) Intercept(interceptors ...Interceptor) {
+	c.inters.ProductOptionValue = append(c.inters.ProductOptionValue, interceptors...)
+}
+
+// Create returns a builder for creating a ProductOptionValue entity.
+func (c *ProductOptionValueClient) Create() *ProductOptionValueCreate {
+	mutation := newProductOptionValueMutation(c.config, OpCreate)
+	return &ProductOptionValueCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ProductOptionValue entities.
+func (c *ProductOptionValueClient) CreateBulk(builders ...*ProductOptionValueCreate) *ProductOptionValueCreateBulk {
+	return &ProductOptionValueCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ProductOptionValueClient) MapCreateBulk(slice any, setFunc func(*ProductOptionValueCreate, int)) *ProductOptionValueCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ProductOptionValueCreateBulk{err: fmt.Errorf("calling to ProductOptionValueClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ProductOptionValueCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ProductOptionValueCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ProductOptionValue.
+func (c *ProductOptionValueClient) Update() *ProductOptionValueUpdate {
+	mutation := newProductOptionValueMutation(c.config, OpUpdate)
+	return &ProductOptionValueUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ProductOptionValueClient) UpdateOne(_m *ProductOptionValue) *ProductOptionValueUpdateOne {
+	mutation := newProductOptionValueMutation(c.config, OpUpdateOne, withProductOptionValue(_m))
+	return &ProductOptionValueUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ProductOptionValueClient) UpdateOneID(id int) *ProductOptionValueUpdateOne {
+	mutation := newProductOptionValueMutation(c.config, OpUpdateOne, withProductOptionValueID(id))
+	return &ProductOptionValueUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ProductOptionValue.
+func (c *ProductOptionValueClient) Delete() *ProductOptionValueDelete {
+	mutation := newProductOptionValueMutation(c.config, OpDelete)
+	return &ProductOptionValueDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ProductOptionValueClient) DeleteOne(_m *ProductOptionValue) *ProductOptionValueDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ProductOptionValueClient) DeleteOneID(id int) *ProductOptionValueDeleteOne {
+	builder := c.Delete().Where(productoptionvalue.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ProductOptionValueDeleteOne{builder}
+}
+
+// Query returns a query builder for ProductOptionValue.
+func (c *ProductOptionValueClient) Query() *ProductOptionValueQuery {
+	return &ProductOptionValueQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeProductOptionValue},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a ProductOptionValue entity by its id.
+func (c *ProductOptionValueClient) Get(ctx context.Context, id int) (*ProductOptionValue, error) {
+	return c.Query().Where(productoptionvalue.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ProductOptionValueClient) GetX(ctx context.Context, id int) *ProductOptionValue {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryOption queries the option edge of a ProductOptionValue.
+func (c *ProductOptionValueClient) QueryOption(_m *ProductOptionValue) *ProductOptionQuery {
+	query := (&ProductOptionClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(productoptionvalue.Table, productoptionvalue.FieldID, id),
+			sqlgraph.To(productoption.Table, productoption.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, productoptionvalue.OptionTable, productoptionvalue.OptionColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *ProductOptionValueClient) Hooks() []Hook {
+	return c.hooks.ProductOptionValue
+}
+
+// Interceptors returns the client interceptors.
+func (c *ProductOptionValueClient) Interceptors() []Interceptor {
+	return c.inters.ProductOptionValue
+}
+
+func (c *ProductOptionValueClient) mutate(ctx context.Context, m *ProductOptionValueMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ProductOptionValueCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ProductOptionValueUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ProductOptionValueUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ProductOptionValueDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown ProductOptionValue mutation op: %q", m.Op())
+	}
+}
+
+// ProductTranslationClient is a client for the ProductTranslation schema.
+type ProductTranslationClient struct {
+	config
+}
+
+// NewProductTranslationClient returns a client for the ProductTranslation from the given config.
+func NewProductTranslationClient(c config) *ProductTranslationClient {
+	return &ProductTranslationClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `producttranslation.Hooks(f(g(h())))`.
+func (c *ProductTranslationClient) Use(hooks ...Hook) {
+	c.hooks.ProductTranslation = append(c.hooks.ProductTranslation, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `producttranslation.Intercept(f(g(h())))`.
+func (c *ProductTranslationClient) Intercept(interceptors ...Interceptor) {
+	c.inters.ProductTranslation = append(c.inters.ProductTranslation, interceptors...)
+}
+
+// Create returns a builder for creating a ProductTranslation entity.
+func (c *ProductTranslationClient) Create() *ProductTranslationCreate {
+	mutation := newProductTranslationMutation(c.config, OpCreate)
+	return &ProductTranslationCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ProductTranslation entities.
+func (c *ProductTranslationClient) CreateBulk(builders ...*ProductTranslationCreate) *ProductTranslationCreateBulk {
+	return &ProductTranslationCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ProductTranslationClient) MapCreateBulk(slice any, setFunc func(*ProductTranslationCreate, int)) *ProductTranslationCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ProductTranslationCreateBulk{err: fmt.Errorf("calling to ProductTranslationClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ProductTranslationCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ProductTranslationCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ProductTranslation.
+func (c *ProductTranslationClient) Update() *ProductTranslationUpdate {
+	mutation := newProductTranslationMutation(c.config, OpUpdate)
+	return &ProductTranslationUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ProductTranslationClient) UpdateOne(_m *ProductTranslation) *ProductTranslationUpdateOne {
+	mutation := newProductTranslationMutation(c.config, OpUpdateOne, withProductTranslation(_m))
+	return &ProductTranslationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ProductTranslationClient) UpdateOneID(id int) *ProductTranslationUpdateOne {
+	mutation := newProductTranslationMutation(c.config, OpUpdateOne, withProductTranslationID(id))
+	return &ProductTranslationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ProductTranslation.
+func (c *ProductTranslationClient) Delete() *ProductTranslationDelete {
+	mutation := newProductTranslationMutation(c.config, OpDelete)
+	return &ProductTranslationDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ProductTranslationClient) DeleteOne(_m *ProductTranslation) *ProductTranslationDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ProductTranslationClient) DeleteOneID(id int) *ProductTranslationDeleteOne {
+	builder := c.Delete().Where(producttranslation.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ProductTranslationDeleteOne{builder}
+}
+
+// Query returns a query builder for ProductTranslation.
+func (c *ProductTranslationClient) Query() *ProductTranslationQuery {
+	return &ProductTranslationQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeProductTranslation},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a ProductTranslation entity by its id.
+func (c *ProductTranslationClient) Get(ctx context.Context, id int) (*ProductTranslation, error) {
+	return c.Query().Where(producttranslation.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ProductTranslationClient) GetX(ctx context.Context, id int) *ProductTranslation {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryProduct queries the product edge of a ProductTranslation.
+func (c *ProductTranslationClient) QueryProduct(_m *ProductTranslation) *ProductQuery {
+	query := (&ProductClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(producttranslation.Table, producttranslation.FieldID, id),
+			sqlgraph.To(product.Table, product.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, producttranslation.ProductTable, producttranslation.ProductColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *ProductTranslationClient) Hooks() []Hook {
+	return c.hooks.ProductTranslation
+}
+
+// Interceptors returns the client interceptors.
+func (c *ProductTranslationClient) Interceptors() []Interceptor {
+	return c.inters.ProductTranslation
+}
+
+func (c *ProductTranslationClient) mutate(ctx context.Context, m *ProductTranslationMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ProductTranslationCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ProductTranslationUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ProductTranslationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ProductTranslationDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown ProductTranslation mutation op: %q", m.Op())
 	}
 }
 
@@ -1423,13 +2125,495 @@ func (c *TaxRateClient) mutate(ctx context.Context, m *TaxRateMutation) (Value, 
 	}
 }
 
+// VariantClient is a client for the Variant schema.
+type VariantClient struct {
+	config
+}
+
+// NewVariantClient returns a client for the Variant from the given config.
+func NewVariantClient(c config) *VariantClient {
+	return &VariantClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `variant.Hooks(f(g(h())))`.
+func (c *VariantClient) Use(hooks ...Hook) {
+	c.hooks.Variant = append(c.hooks.Variant, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `variant.Intercept(f(g(h())))`.
+func (c *VariantClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Variant = append(c.inters.Variant, interceptors...)
+}
+
+// Create returns a builder for creating a Variant entity.
+func (c *VariantClient) Create() *VariantCreate {
+	mutation := newVariantMutation(c.config, OpCreate)
+	return &VariantCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Variant entities.
+func (c *VariantClient) CreateBulk(builders ...*VariantCreate) *VariantCreateBulk {
+	return &VariantCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *VariantClient) MapCreateBulk(slice any, setFunc func(*VariantCreate, int)) *VariantCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &VariantCreateBulk{err: fmt.Errorf("calling to VariantClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*VariantCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &VariantCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Variant.
+func (c *VariantClient) Update() *VariantUpdate {
+	mutation := newVariantMutation(c.config, OpUpdate)
+	return &VariantUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *VariantClient) UpdateOne(_m *Variant) *VariantUpdateOne {
+	mutation := newVariantMutation(c.config, OpUpdateOne, withVariant(_m))
+	return &VariantUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *VariantClient) UpdateOneID(id int) *VariantUpdateOne {
+	mutation := newVariantMutation(c.config, OpUpdateOne, withVariantID(id))
+	return &VariantUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Variant.
+func (c *VariantClient) Delete() *VariantDelete {
+	mutation := newVariantMutation(c.config, OpDelete)
+	return &VariantDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *VariantClient) DeleteOne(_m *Variant) *VariantDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *VariantClient) DeleteOneID(id int) *VariantDeleteOne {
+	builder := c.Delete().Where(variant.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &VariantDeleteOne{builder}
+}
+
+// Query returns a query builder for Variant.
+func (c *VariantClient) Query() *VariantQuery {
+	return &VariantQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeVariant},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Variant entity by its id.
+func (c *VariantClient) Get(ctx context.Context, id int) (*Variant, error) {
+	return c.Query().Where(variant.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *VariantClient) GetX(ctx context.Context, id int) *Variant {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryProduct queries the product edge of a Variant.
+func (c *VariantClient) QueryProduct(_m *Variant) *ProductQuery {
+	query := (&ProductClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(variant.Table, variant.FieldID, id),
+			sqlgraph.To(product.Table, product.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, variant.ProductTable, variant.ProductColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryPrices queries the prices edge of a Variant.
+func (c *VariantClient) QueryPrices(_m *Variant) *VariantPriceQuery {
+	query := (&VariantPriceClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(variant.Table, variant.FieldID, id),
+			sqlgraph.To(variantprice.Table, variantprice.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, variant.PricesTable, variant.PricesColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryOptionValues queries the option_values edge of a Variant.
+func (c *VariantClient) QueryOptionValues(_m *Variant) *VariantOptionValueQuery {
+	query := (&VariantOptionValueClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(variant.Table, variant.FieldID, id),
+			sqlgraph.To(variantoptionvalue.Table, variantoptionvalue.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, variant.OptionValuesTable, variant.OptionValuesColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *VariantClient) Hooks() []Hook {
+	return c.hooks.Variant
+}
+
+// Interceptors returns the client interceptors.
+func (c *VariantClient) Interceptors() []Interceptor {
+	return c.inters.Variant
+}
+
+func (c *VariantClient) mutate(ctx context.Context, m *VariantMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&VariantCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&VariantUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&VariantUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&VariantDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Variant mutation op: %q", m.Op())
+	}
+}
+
+// VariantOptionValueClient is a client for the VariantOptionValue schema.
+type VariantOptionValueClient struct {
+	config
+}
+
+// NewVariantOptionValueClient returns a client for the VariantOptionValue from the given config.
+func NewVariantOptionValueClient(c config) *VariantOptionValueClient {
+	return &VariantOptionValueClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `variantoptionvalue.Hooks(f(g(h())))`.
+func (c *VariantOptionValueClient) Use(hooks ...Hook) {
+	c.hooks.VariantOptionValue = append(c.hooks.VariantOptionValue, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `variantoptionvalue.Intercept(f(g(h())))`.
+func (c *VariantOptionValueClient) Intercept(interceptors ...Interceptor) {
+	c.inters.VariantOptionValue = append(c.inters.VariantOptionValue, interceptors...)
+}
+
+// Create returns a builder for creating a VariantOptionValue entity.
+func (c *VariantOptionValueClient) Create() *VariantOptionValueCreate {
+	mutation := newVariantOptionValueMutation(c.config, OpCreate)
+	return &VariantOptionValueCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of VariantOptionValue entities.
+func (c *VariantOptionValueClient) CreateBulk(builders ...*VariantOptionValueCreate) *VariantOptionValueCreateBulk {
+	return &VariantOptionValueCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *VariantOptionValueClient) MapCreateBulk(slice any, setFunc func(*VariantOptionValueCreate, int)) *VariantOptionValueCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &VariantOptionValueCreateBulk{err: fmt.Errorf("calling to VariantOptionValueClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*VariantOptionValueCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &VariantOptionValueCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for VariantOptionValue.
+func (c *VariantOptionValueClient) Update() *VariantOptionValueUpdate {
+	mutation := newVariantOptionValueMutation(c.config, OpUpdate)
+	return &VariantOptionValueUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *VariantOptionValueClient) UpdateOne(_m *VariantOptionValue) *VariantOptionValueUpdateOne {
+	mutation := newVariantOptionValueMutation(c.config, OpUpdateOne, withVariantOptionValue(_m))
+	return &VariantOptionValueUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *VariantOptionValueClient) UpdateOneID(id int) *VariantOptionValueUpdateOne {
+	mutation := newVariantOptionValueMutation(c.config, OpUpdateOne, withVariantOptionValueID(id))
+	return &VariantOptionValueUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for VariantOptionValue.
+func (c *VariantOptionValueClient) Delete() *VariantOptionValueDelete {
+	mutation := newVariantOptionValueMutation(c.config, OpDelete)
+	return &VariantOptionValueDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *VariantOptionValueClient) DeleteOne(_m *VariantOptionValue) *VariantOptionValueDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *VariantOptionValueClient) DeleteOneID(id int) *VariantOptionValueDeleteOne {
+	builder := c.Delete().Where(variantoptionvalue.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &VariantOptionValueDeleteOne{builder}
+}
+
+// Query returns a query builder for VariantOptionValue.
+func (c *VariantOptionValueClient) Query() *VariantOptionValueQuery {
+	return &VariantOptionValueQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeVariantOptionValue},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a VariantOptionValue entity by its id.
+func (c *VariantOptionValueClient) Get(ctx context.Context, id int) (*VariantOptionValue, error) {
+	return c.Query().Where(variantoptionvalue.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *VariantOptionValueClient) GetX(ctx context.Context, id int) *VariantOptionValue {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryVariant queries the variant edge of a VariantOptionValue.
+func (c *VariantOptionValueClient) QueryVariant(_m *VariantOptionValue) *VariantQuery {
+	query := (&VariantClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(variantoptionvalue.Table, variantoptionvalue.FieldID, id),
+			sqlgraph.To(variant.Table, variant.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, variantoptionvalue.VariantTable, variantoptionvalue.VariantColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *VariantOptionValueClient) Hooks() []Hook {
+	return c.hooks.VariantOptionValue
+}
+
+// Interceptors returns the client interceptors.
+func (c *VariantOptionValueClient) Interceptors() []Interceptor {
+	return c.inters.VariantOptionValue
+}
+
+func (c *VariantOptionValueClient) mutate(ctx context.Context, m *VariantOptionValueMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&VariantOptionValueCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&VariantOptionValueUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&VariantOptionValueUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&VariantOptionValueDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown VariantOptionValue mutation op: %q", m.Op())
+	}
+}
+
+// VariantPriceClient is a client for the VariantPrice schema.
+type VariantPriceClient struct {
+	config
+}
+
+// NewVariantPriceClient returns a client for the VariantPrice from the given config.
+func NewVariantPriceClient(c config) *VariantPriceClient {
+	return &VariantPriceClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `variantprice.Hooks(f(g(h())))`.
+func (c *VariantPriceClient) Use(hooks ...Hook) {
+	c.hooks.VariantPrice = append(c.hooks.VariantPrice, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `variantprice.Intercept(f(g(h())))`.
+func (c *VariantPriceClient) Intercept(interceptors ...Interceptor) {
+	c.inters.VariantPrice = append(c.inters.VariantPrice, interceptors...)
+}
+
+// Create returns a builder for creating a VariantPrice entity.
+func (c *VariantPriceClient) Create() *VariantPriceCreate {
+	mutation := newVariantPriceMutation(c.config, OpCreate)
+	return &VariantPriceCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of VariantPrice entities.
+func (c *VariantPriceClient) CreateBulk(builders ...*VariantPriceCreate) *VariantPriceCreateBulk {
+	return &VariantPriceCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *VariantPriceClient) MapCreateBulk(slice any, setFunc func(*VariantPriceCreate, int)) *VariantPriceCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &VariantPriceCreateBulk{err: fmt.Errorf("calling to VariantPriceClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*VariantPriceCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &VariantPriceCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for VariantPrice.
+func (c *VariantPriceClient) Update() *VariantPriceUpdate {
+	mutation := newVariantPriceMutation(c.config, OpUpdate)
+	return &VariantPriceUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *VariantPriceClient) UpdateOne(_m *VariantPrice) *VariantPriceUpdateOne {
+	mutation := newVariantPriceMutation(c.config, OpUpdateOne, withVariantPrice(_m))
+	return &VariantPriceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *VariantPriceClient) UpdateOneID(id int) *VariantPriceUpdateOne {
+	mutation := newVariantPriceMutation(c.config, OpUpdateOne, withVariantPriceID(id))
+	return &VariantPriceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for VariantPrice.
+func (c *VariantPriceClient) Delete() *VariantPriceDelete {
+	mutation := newVariantPriceMutation(c.config, OpDelete)
+	return &VariantPriceDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *VariantPriceClient) DeleteOne(_m *VariantPrice) *VariantPriceDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *VariantPriceClient) DeleteOneID(id int) *VariantPriceDeleteOne {
+	builder := c.Delete().Where(variantprice.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &VariantPriceDeleteOne{builder}
+}
+
+// Query returns a query builder for VariantPrice.
+func (c *VariantPriceClient) Query() *VariantPriceQuery {
+	return &VariantPriceQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeVariantPrice},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a VariantPrice entity by its id.
+func (c *VariantPriceClient) Get(ctx context.Context, id int) (*VariantPrice, error) {
+	return c.Query().Where(variantprice.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *VariantPriceClient) GetX(ctx context.Context, id int) *VariantPrice {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryVariant queries the variant edge of a VariantPrice.
+func (c *VariantPriceClient) QueryVariant(_m *VariantPrice) *VariantQuery {
+	query := (&VariantClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(variantprice.Table, variantprice.FieldID, id),
+			sqlgraph.To(variant.Table, variant.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, variantprice.VariantTable, variantprice.VariantColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *VariantPriceClient) Hooks() []Hook {
+	return c.hooks.VariantPrice
+}
+
+// Interceptors returns the client interceptors.
+func (c *VariantPriceClient) Interceptors() []Interceptor {
+	return c.inters.VariantPrice
+}
+
+func (c *VariantPriceClient) mutate(ctx context.Context, m *VariantPriceMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&VariantPriceCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&VariantPriceUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&VariantPriceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&VariantPriceDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown VariantPrice mutation op: %q", m.Op())
+	}
+}
+
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		AdminUser, Currency, Locale, Permission, Region, Role, Store, TaxRate []ent.Hook
+		AdminUser, Currency, Locale, Permission, Product, ProductOption,
+		ProductOptionValue, ProductTranslation, Region, Role, Store, TaxRate, Variant,
+		VariantOptionValue, VariantPrice []ent.Hook
 	}
 	inters struct {
-		AdminUser, Currency, Locale, Permission, Region, Role, Store,
-		TaxRate []ent.Interceptor
+		AdminUser, Currency, Locale, Permission, Product, ProductOption,
+		ProductOptionValue, ProductTranslation, Region, Role, Store, TaxRate, Variant,
+		VariantOptionValue, VariantPrice []ent.Interceptor
 	}
 )

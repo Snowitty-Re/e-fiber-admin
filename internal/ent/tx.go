@@ -20,6 +20,14 @@ type Tx struct {
 	Locale *LocaleClient
 	// Permission is the client for interacting with the Permission builders.
 	Permission *PermissionClient
+	// Product is the client for interacting with the Product builders.
+	Product *ProductClient
+	// ProductOption is the client for interacting with the ProductOption builders.
+	ProductOption *ProductOptionClient
+	// ProductOptionValue is the client for interacting with the ProductOptionValue builders.
+	ProductOptionValue *ProductOptionValueClient
+	// ProductTranslation is the client for interacting with the ProductTranslation builders.
+	ProductTranslation *ProductTranslationClient
 	// Region is the client for interacting with the Region builders.
 	Region *RegionClient
 	// Role is the client for interacting with the Role builders.
@@ -28,6 +36,12 @@ type Tx struct {
 	Store *StoreClient
 	// TaxRate is the client for interacting with the TaxRate builders.
 	TaxRate *TaxRateClient
+	// Variant is the client for interacting with the Variant builders.
+	Variant *VariantClient
+	// VariantOptionValue is the client for interacting with the VariantOptionValue builders.
+	VariantOptionValue *VariantOptionValueClient
+	// VariantPrice is the client for interacting with the VariantPrice builders.
+	VariantPrice *VariantPriceClient
 
 	// lazily loaded.
 	client     *Client
@@ -163,10 +177,17 @@ func (tx *Tx) init() {
 	tx.Currency = NewCurrencyClient(tx.config)
 	tx.Locale = NewLocaleClient(tx.config)
 	tx.Permission = NewPermissionClient(tx.config)
+	tx.Product = NewProductClient(tx.config)
+	tx.ProductOption = NewProductOptionClient(tx.config)
+	tx.ProductOptionValue = NewProductOptionValueClient(tx.config)
+	tx.ProductTranslation = NewProductTranslationClient(tx.config)
 	tx.Region = NewRegionClient(tx.config)
 	tx.Role = NewRoleClient(tx.config)
 	tx.Store = NewStoreClient(tx.config)
 	tx.TaxRate = NewTaxRateClient(tx.config)
+	tx.Variant = NewVariantClient(tx.config)
+	tx.VariantOptionValue = NewVariantOptionValueClient(tx.config)
+	tx.VariantPrice = NewVariantPriceClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.

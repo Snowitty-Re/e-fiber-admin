@@ -121,6 +121,160 @@ var (
 			},
 		},
 	}
+	// ProductsColumns holds the columns for the "products" table.
+	ProductsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "updated_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "tenant_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "slug", Type: field.TypeString, Unique: true},
+		{Name: "product_type", Type: field.TypeEnum, Enums: []string{"simple", "variable", "virtual", "grouped"}, Default: "simple"},
+		{Name: "status", Type: field.TypeEnum, Enums: []string{"draft", "published", "archived"}, Default: "draft"},
+		{Name: "category_id", Type: field.TypeInt, Nullable: true},
+		{Name: "weight_g", Type: field.TypeInt, Nullable: true},
+		{Name: "is_virtual", Type: field.TypeBool, Default: false},
+		{Name: "is_downloadable", Type: field.TypeBool, Default: false},
+		{Name: "published_at", Type: field.TypeTime, Nullable: true},
+	}
+	// ProductsTable holds the schema information for the "products" table.
+	ProductsTable = &schema.Table{
+		Name:       "products",
+		Columns:    ProductsColumns,
+		PrimaryKey: []*schema.Column{ProductsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "product_status",
+				Unique:  false,
+				Columns: []*schema.Column{ProductsColumns[10]},
+			},
+			{
+				Name:    "product_product_type",
+				Unique:  false,
+				Columns: []*schema.Column{ProductsColumns[9]},
+			},
+			{
+				Name:    "product_category_id",
+				Unique:  false,
+				Columns: []*schema.Column{ProductsColumns[11]},
+			},
+		},
+	}
+	// ProductOptionsColumns holds the columns for the "product_options" table.
+	ProductOptionsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "updated_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "tenant_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "name", Type: field.TypeString},
+		{Name: "position", Type: field.TypeInt, Default: 0},
+		{Name: "product_id", Type: field.TypeInt},
+	}
+	// ProductOptionsTable holds the schema information for the "product_options" table.
+	ProductOptionsTable = &schema.Table{
+		Name:       "product_options",
+		Columns:    ProductOptionsColumns,
+		PrimaryKey: []*schema.Column{ProductOptionsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "product_options_products_options",
+				Columns:    []*schema.Column{ProductOptionsColumns[10]},
+				RefColumns: []*schema.Column{ProductsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "productoption_product_id",
+				Unique:  false,
+				Columns: []*schema.Column{ProductOptionsColumns[10]},
+			},
+		},
+	}
+	// ProductOptionValuesColumns holds the columns for the "product_option_values" table.
+	ProductOptionValuesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "updated_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "tenant_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "value", Type: field.TypeString},
+		{Name: "position", Type: field.TypeInt, Default: 0},
+		{Name: "option_id", Type: field.TypeInt},
+	}
+	// ProductOptionValuesTable holds the schema information for the "product_option_values" table.
+	ProductOptionValuesTable = &schema.Table{
+		Name:       "product_option_values",
+		Columns:    ProductOptionValuesColumns,
+		PrimaryKey: []*schema.Column{ProductOptionValuesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "product_option_values_product_options_values",
+				Columns:    []*schema.Column{ProductOptionValuesColumns[10]},
+				RefColumns: []*schema.Column{ProductOptionsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "productoptionvalue_option_id",
+				Unique:  false,
+				Columns: []*schema.Column{ProductOptionValuesColumns[10]},
+			},
+		},
+	}
+	// ProductTranslationsColumns holds the columns for the "product_translations" table.
+	ProductTranslationsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "updated_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "tenant_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "locale", Type: field.TypeString, Size: 8},
+		{Name: "title", Type: field.TypeString},
+		{Name: "subtitle", Type: field.TypeString, Nullable: true, Default: ""},
+		{Name: "description", Type: field.TypeString, Nullable: true, Size: 2147483647, Default: ""},
+		{Name: "material", Type: field.TypeString, Nullable: true, Size: 2147483647, Default: ""},
+		{Name: "origin", Type: field.TypeString, Nullable: true, Size: 2147483647, Default: ""},
+		{Name: "packing", Type: field.TypeString, Nullable: true, Size: 2147483647, Default: ""},
+		{Name: "seo_title", Type: field.TypeString, Nullable: true, Default: ""},
+		{Name: "seo_desc", Type: field.TypeString, Nullable: true, Size: 2147483647, Default: ""},
+		{Name: "product_id", Type: field.TypeInt},
+	}
+	// ProductTranslationsTable holds the schema information for the "product_translations" table.
+	ProductTranslationsTable = &schema.Table{
+		Name:       "product_translations",
+		Columns:    ProductTranslationsColumns,
+		PrimaryKey: []*schema.Column{ProductTranslationsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "product_translations_products_translations",
+				Columns:    []*schema.Column{ProductTranslationsColumns[17]},
+				RefColumns: []*schema.Column{ProductsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "producttranslation_product_id_locale",
+				Unique:  true,
+				Columns: []*schema.Column{ProductTranslationsColumns[17], ProductTranslationsColumns[8]},
+			},
+		},
+	}
 	// RegionsColumns holds the columns for the "regions" table.
 	RegionsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -246,6 +400,120 @@ var (
 			},
 		},
 	}
+	// VariantsColumns holds the columns for the "variants" table.
+	VariantsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "updated_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "tenant_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "sku", Type: field.TypeString, Unique: true},
+		{Name: "barcode", Type: field.TypeString, Nullable: true, Default: ""},
+		{Name: "weight_g", Type: field.TypeInt, Nullable: true},
+		{Name: "allow_backorder", Type: field.TypeBool, Default: false},
+		{Name: "inventory", Type: field.TypeInt, Default: 0},
+		{Name: "position", Type: field.TypeInt, Default: 0},
+		{Name: "product_id", Type: field.TypeInt},
+	}
+	// VariantsTable holds the schema information for the "variants" table.
+	VariantsTable = &schema.Table{
+		Name:       "variants",
+		Columns:    VariantsColumns,
+		PrimaryKey: []*schema.Column{VariantsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "variants_products_variants",
+				Columns:    []*schema.Column{VariantsColumns[14]},
+				RefColumns: []*schema.Column{ProductsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "variant_product_id",
+				Unique:  false,
+				Columns: []*schema.Column{VariantsColumns[14]},
+			},
+			{
+				Name:    "variant_sku",
+				Unique:  false,
+				Columns: []*schema.Column{VariantsColumns[8]},
+			},
+		},
+	}
+	// VariantOptionValuesColumns holds the columns for the "variant_option_values" table.
+	VariantOptionValuesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "updated_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "tenant_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "option_value_id", Type: field.TypeInt},
+		{Name: "variant_id", Type: field.TypeInt},
+	}
+	// VariantOptionValuesTable holds the schema information for the "variant_option_values" table.
+	VariantOptionValuesTable = &schema.Table{
+		Name:       "variant_option_values",
+		Columns:    VariantOptionValuesColumns,
+		PrimaryKey: []*schema.Column{VariantOptionValuesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "variant_option_values_variants_option_values",
+				Columns:    []*schema.Column{VariantOptionValuesColumns[9]},
+				RefColumns: []*schema.Column{VariantsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "variantoptionvalue_variant_id_option_value_id",
+				Unique:  true,
+				Columns: []*schema.Column{VariantOptionValuesColumns[9], VariantOptionValuesColumns[8]},
+			},
+		},
+	}
+	// VariantPricesColumns holds the columns for the "variant_prices" table.
+	VariantPricesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "updated_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "tenant_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "currency_code", Type: field.TypeString, Size: 3},
+		{Name: "amount", Type: field.TypeInt64},
+		{Name: "compare_at_amount", Type: field.TypeInt64, Nullable: true},
+		{Name: "variant_id", Type: field.TypeInt},
+	}
+	// VariantPricesTable holds the schema information for the "variant_prices" table.
+	VariantPricesTable = &schema.Table{
+		Name:       "variant_prices",
+		Columns:    VariantPricesColumns,
+		PrimaryKey: []*schema.Column{VariantPricesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "variant_prices_variants_prices",
+				Columns:    []*schema.Column{VariantPricesColumns[11]},
+				RefColumns: []*schema.Column{VariantsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "variantprice_variant_id_currency_code",
+				Unique:  true,
+				Columns: []*schema.Column{VariantPricesColumns[11], VariantPricesColumns[8]},
+			},
+		},
+	}
 	// RoleAdminsColumns holds the columns for the "role_admins" table.
 	RoleAdminsColumns = []*schema.Column{
 		{Name: "role_id", Type: field.TypeInt},
@@ -302,17 +570,30 @@ var (
 		CurrenciesTable,
 		LocalesTable,
 		PermissionsTable,
+		ProductsTable,
+		ProductOptionsTable,
+		ProductOptionValuesTable,
+		ProductTranslationsTable,
 		RegionsTable,
 		RolesTable,
 		StoresTable,
 		TaxRatesTable,
+		VariantsTable,
+		VariantOptionValuesTable,
+		VariantPricesTable,
 		RoleAdminsTable,
 		RolePermissionsTable,
 	}
 )
 
 func init() {
+	ProductOptionsTable.ForeignKeys[0].RefTable = ProductsTable
+	ProductOptionValuesTable.ForeignKeys[0].RefTable = ProductOptionsTable
+	ProductTranslationsTable.ForeignKeys[0].RefTable = ProductsTable
 	TaxRatesTable.ForeignKeys[0].RefTable = RegionsTable
+	VariantsTable.ForeignKeys[0].RefTable = ProductsTable
+	VariantOptionValuesTable.ForeignKeys[0].RefTable = VariantsTable
+	VariantPricesTable.ForeignKeys[0].RefTable = VariantsTable
 	RoleAdminsTable.ForeignKeys[0].RefTable = RolesTable
 	RoleAdminsTable.ForeignKeys[1].RefTable = AdminUsersTable
 	RolePermissionsTable.ForeignKeys[0].RefTable = RolesTable

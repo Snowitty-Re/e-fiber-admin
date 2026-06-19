@@ -57,6 +57,54 @@ func (f PermissionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, 
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PermissionMutation", m)
 }
 
+// The ProductFunc type is an adapter to allow the use of ordinary
+// function as Product mutator.
+type ProductFunc func(context.Context, *ent.ProductMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ProductFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ProductMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ProductMutation", m)
+}
+
+// The ProductOptionFunc type is an adapter to allow the use of ordinary
+// function as ProductOption mutator.
+type ProductOptionFunc func(context.Context, *ent.ProductOptionMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ProductOptionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ProductOptionMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ProductOptionMutation", m)
+}
+
+// The ProductOptionValueFunc type is an adapter to allow the use of ordinary
+// function as ProductOptionValue mutator.
+type ProductOptionValueFunc func(context.Context, *ent.ProductOptionValueMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ProductOptionValueFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ProductOptionValueMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ProductOptionValueMutation", m)
+}
+
+// The ProductTranslationFunc type is an adapter to allow the use of ordinary
+// function as ProductTranslation mutator.
+type ProductTranslationFunc func(context.Context, *ent.ProductTranslationMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ProductTranslationFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ProductTranslationMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ProductTranslationMutation", m)
+}
+
 // The RegionFunc type is an adapter to allow the use of ordinary
 // function as Region mutator.
 type RegionFunc func(context.Context, *ent.RegionMutation) (ent.Value, error)
@@ -103,6 +151,42 @@ func (f TaxRateFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, err
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.TaxRateMutation", m)
+}
+
+// The VariantFunc type is an adapter to allow the use of ordinary
+// function as Variant mutator.
+type VariantFunc func(context.Context, *ent.VariantMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f VariantFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.VariantMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.VariantMutation", m)
+}
+
+// The VariantOptionValueFunc type is an adapter to allow the use of ordinary
+// function as VariantOptionValue mutator.
+type VariantOptionValueFunc func(context.Context, *ent.VariantOptionValueMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f VariantOptionValueFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.VariantOptionValueMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.VariantOptionValueMutation", m)
+}
+
+// The VariantPriceFunc type is an adapter to allow the use of ordinary
+// function as VariantPrice mutator.
+type VariantPriceFunc func(context.Context, *ent.VariantPriceMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f VariantPriceFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.VariantPriceMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.VariantPriceMutation", m)
 }
 
 // Condition is a hook condition function.

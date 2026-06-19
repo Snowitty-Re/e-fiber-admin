@@ -18,6 +18,18 @@ type Locale func(*sql.Selector)
 // Permission is the predicate function for permission builders.
 type Permission func(*sql.Selector)
 
+// Product is the predicate function for product builders.
+type Product func(*sql.Selector)
+
+// ProductOption is the predicate function for productoption builders.
+type ProductOption func(*sql.Selector)
+
+// ProductOptionValue is the predicate function for productoptionvalue builders.
+type ProductOptionValue func(*sql.Selector)
+
+// ProductTranslation is the predicate function for producttranslation builders.
+type ProductTranslation func(*sql.Selector)
+
 // Region is the predicate function for region builders.
 type Region func(*sql.Selector)
 
@@ -29,3 +41,12 @@ type Store func(*sql.Selector)
 
 // TaxRate is the predicate function for taxrate builders.
 type TaxRate func(*sql.Selector)
+
+// Variant is the predicate function for variant builders.
+type Variant func(*sql.Selector)
+
+// VariantOptionValue is the predicate function for variantoptionvalue builders.
+type VariantOptionValue func(*sql.Selector)
+
+// VariantPrice is the predicate function for variantprice builders.
+type VariantPrice func(*sql.Selector)
