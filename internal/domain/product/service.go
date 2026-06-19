@@ -2,6 +2,7 @@ package product
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"time"
 
@@ -15,10 +16,11 @@ import (
 
 type Service struct {
 	entClient *ent.Client
+	db        *sql.DB
 }
 
-func NewService(entClient *ent.Client) *Service {
-	return &Service{entClient: entClient}
+func NewService(entClient *ent.Client, db *sql.DB) *Service {
+	return &Service{entClient: entClient, db: db}
 }
 
 type TranslationInput struct {
@@ -275,4 +277,61 @@ func (s *Service) ListTranslations(ctx context.Context, productID int) ([]*ent.P
 	return s.entClient.ProductTranslation.Query().
 		Where(producttranslation.ProductIDEQ(productID)).
 		All(ctx)
+}
+
+func (s *Service) Search(ctx context.Context, query, locale string, page, pageSize int) ([]*ent.Product, int, error) {
+	if page < 1 {
+		page = 1
+	}
+	if pageSize < 1 || pageSize > 100 {
+		pageSize = 20
+	}
+	offset := (page - 1) * pageSize
+
+	rows, err := s.db.QueryContext(ctx, `
+		SELECT DISTINCT p.id
+		FROM products p
+		JOIN product_translations pt ON pt.product_id = p.id
+		WHERE p.status = 'published'
+		  AND pt.locale = $1
+		  AND to_tsvector('simple', coalesce(pt.title, '') || ' ' || coalesce(pt.description, '')) @@ plainto_tsquery('simple', $2)
+		ORDER BY p.id DESC
+		LIMIT $3 OFFSET $4`,
+		locale, query, pageSize, offset)
+	if err != nil {
+		return nil, 0, fmt.Errorf("search products: %w", err)
+	}
+	defer rows.Close()
+
+	var ids []int
+	for rows.Next() {
+		var id int
+		if err := rows.Scan(&id); err != nil {
+			return nil, 0, err
+		}
+		ids = append(ids, id)
+	}
+
+	var total int
+	_ = s.db.QueryRowContext(ctx, `
+		SELECT count(DISTINCT p.id)
+		FROM products p
+		JOIN product_translations pt ON pt.product_id = p.id
+		WHERE p.status = 'published'
+		  AND pt.locale = $1
+		  AND to_tsvector('simple', coalesce(pt.title, '') || ' ' || coalesce(pt.description, '')) @@ plainto_tsquery('simple', $2)`,
+		locale, query).Scan(&total)
+
+	if len(ids) == 0 {
+		return []*ent.Product{}, 0, nil
+	}
+	items, err := s.entClient.Product.Query().
+		Where(product.IDIn(ids...)).
+		WithTranslations().
+		WithVariants(func(q *ent.VariantQuery) { q.WithPrices() }).
+		All(ctx)
+	if err != nil {
+		return nil, 0, err
+	}
+	return items, total, nil
 }

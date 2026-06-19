@@ -20,7 +20,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	client, err := database.NewEntClient(cfg.Postgres)
+	client, _, err := database.NewEntClient(cfg.Postgres)
 	if err != nil {
 		logger.Error("connect postgres failed", "err", err)
 		os.Exit(1)

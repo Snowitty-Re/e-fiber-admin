@@ -17,16 +17,16 @@ import (
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
-func NewEntClient(cfg config.PostgresConfig) (*ent.Client, error) {
+func NewEntClient(cfg config.PostgresConfig) (*ent.Client, *sql.DB, error) {
 	db, err := sql.Open("pgx", cfg.URL)
 	if err != nil {
-		return nil, fmt.Errorf("open pg: %w", err)
+		return nil, nil, fmt.Errorf("open pg: %w", err)
 	}
 	db.SetMaxOpenConns(cfg.MaxConns)
 	db.SetMaxIdleConns(cfg.MaxConns / 2)
 	db.SetConnMaxLifetime(30 * time.Minute)
 	drv := entsql.OpenDB(dialect.Postgres, db)
-	return ent.NewClient(ent.Driver(drv)), nil
+	return ent.NewClient(ent.Driver(drv)), db, nil
 }
 
 func NewRedisClient(cfg config.RedisConfig) (*redis.Client, error) {

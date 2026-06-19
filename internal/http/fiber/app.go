@@ -14,6 +14,7 @@ import (
 	"github.com/gofiber/fiber/v3/middleware/requestid"
 	"github.com/minio/minio-go/v7"
 	"github.com/redis/go-redis/v9"
+	"database/sql"
 
 	"github.com/Snowitty-Re/e-fiber-admin/internal/config"
 	authsvc "github.com/Snowitty-Re/e-fiber-admin/internal/domain/auth"
@@ -32,6 +33,7 @@ import (
 type Deps struct {
 	Config      *config.Config
 	EntClient   *ent.Client
+	DB          *sql.DB
 	RedisClient *redis.Client
 	MinIOClient *minio.Client
 }
@@ -75,7 +77,7 @@ func NewApp(deps Deps) *fiber.App {
 	regionH := handler.NewRegionHandler(regionSvc)
 	mediaSvc := media.NewService(deps.EntClient, deps.MinIOClient, deps.Config.MinIO)
 	mediaH := handler.NewMediaHandler(mediaSvc)
-	productSvc := product.NewService(deps.EntClient)
+	productSvc := product.NewService(deps.EntClient, deps.DB)
 	productH := handler.NewProductHandler(productSvc)
 	storefrontH := handler.NewStorefrontHandler(deps.EntClient, productSvc)
 	cmsSvc := cms.NewService(deps.EntClient)

@@ -42,15 +42,22 @@ func (h *StorefrontHandler) ListProducts(c fiber.Ctx) error {
 		pageSize = 20
 	}
 
-	items, total, err := h.productService.List(c.Context(), product.ProductFilter{
-		Status: "published", Page: page, PageSize: pageSize,
-		CategoryID: atoiOrZero(c.Query("category_id", "")),
-	})
+	query := c.Query("q", "")
+	var items []*ent.Product
+	var total int
+	if query != "" {
+		items, total, err = h.productService.Search(c.Context(), query, locale, page, pageSize)
+	} else {
+		items, total, err = h.productService.List(c.Context(), product.ProductFilter{
+			Status: "published", Page: page, PageSize: pageSize,
+			CategoryID: atoiOrZero(c.Query("category_id", "")),
+		})
+	}
 	if err != nil {
 		return err
 	}
 
-	var data []dto.StoreProductResponse
+	var data []dto.StoreProductResponse = []dto.StoreProductResponse{}
 	for _, p := range items {
 		data = append(data, toStoreProductResponse(p, locale, currency))
 	}

@@ -28,12 +28,13 @@ func main() {
 		slog.SetLogLoggerLevel(slog.LevelDebug)
 	}
 
-	entClient, err := database.NewEntClient(cfg.Postgres)
+	entClient, db, err := database.NewEntClient(cfg.Postgres)
 	if err != nil {
 		slog.Error("connect postgres failed", "err", err)
 		os.Exit(1)
 	}
 	defer entClient.Close()
+	defer db.Close()
 
 	redisClient, err := database.NewRedisClient(cfg.Redis)
 	if err != nil {
@@ -57,6 +58,7 @@ func main() {
 	app := fiberapp.NewApp(fiberapp.Deps{
 		Config:      cfg,
 		EntClient:   entClient,
+		DB:          db,
 		RedisClient: redisClient,
 		MinIOClient: minioClient,
 	})
