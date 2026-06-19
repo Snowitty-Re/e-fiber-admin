@@ -9,8 +9,8 @@ type PageTranslationRequest struct {
 }
 
 type CreatePageRequest struct {
-	Slug         string                  `json:"slug"`
-	Template     string                  `json:"template,omitempty"`
+	Slug         string                   `json:"slug"`
+	Template     string                   `json:"template,omitempty"`
 	Translations []PageTranslationRequest `json:"translations"`
 }
 
@@ -40,15 +40,15 @@ type BlogPostTranslationRequest struct {
 }
 
 type CreateBlogPostRequest struct {
-	Slug          string                        `json:"slug"`
-	Translations  []BlogPostTranslationRequest  `json:"translations"`
+	Slug         string                       `json:"slug"`
+	Translations []BlogPostTranslationRequest `json:"translations"`
 }
 
 type BlogPostResponse struct {
-	ID           int                             `json:"id"`
-	Slug         string                          `json:"slug"`
-	Status       string                          `json:"status"`
-	Translations []BlogPostTranslationResponse  `json:"translations"`
+	ID           int                           `json:"id"`
+	Slug         string                        `json:"slug"`
+	Status       string                        `json:"status"`
+	Translations []BlogPostTranslationResponse `json:"translations"`
 }
 
 type BlogPostTranslationResponse struct {

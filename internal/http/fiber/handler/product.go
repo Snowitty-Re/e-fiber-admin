@@ -87,7 +87,7 @@ func (h *ProductHandler) List(c fiber.Ctx) error {
 	items, total, err := h.productService.List(c.Context(), product.ProductFilter{
 		Status: c.Query("status", ""), ProductType: c.Query("product_type", ""),
 		CategoryID: atoiOrZero(c.Query("category_id", "")),
-		Page: page, PageSize: pageSize,
+		Page:       page, PageSize: pageSize,
 	})
 	if err != nil {
 		return err

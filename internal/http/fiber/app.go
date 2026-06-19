@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 
+	"database/sql"
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/middleware/cors"
 	"github.com/gofiber/fiber/v3/middleware/limiter"
@@ -14,7 +15,6 @@ import (
 	"github.com/gofiber/fiber/v3/middleware/requestid"
 	"github.com/minio/minio-go/v7"
 	"github.com/redis/go-redis/v9"
-	"database/sql"
 
 	"github.com/Snowitty-Re/e-fiber-admin/internal/config"
 	authsvc "github.com/Snowitty-Re/e-fiber-admin/internal/domain/auth"

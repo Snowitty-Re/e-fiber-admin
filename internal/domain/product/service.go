@@ -24,42 +24,42 @@ func NewService(entClient *ent.Client, db *sql.DB) *Service {
 }
 
 type TranslationInput struct {
-	Locale     string
-	Title      string
-	Subtitle   string
+	Locale      string
+	Title       string
+	Subtitle    string
 	Description string
-	Material   string
-	Origin     string
-	Packing    string
-	SeoTitle   string
-	SeoDesc    string
+	Material    string
+	Origin      string
+	Packing     string
+	SeoTitle    string
+	SeoDesc     string
 }
 
 type VariantPriceInput struct {
-	CurrencyCode     string
-	Amount           int64
-	CompareAtAmount  int64
+	CurrencyCode    string
+	Amount          int64
+	CompareAtAmount int64
 }
 
 type VariantInput struct {
-	SKU           string
-	Barcode       string
-	WeightG       int
+	SKU            string
+	Barcode        string
+	WeightG        int
 	AllowBackorder bool
-	Inventory     int
-	Position      int
-	Prices        []VariantPriceInput
+	Inventory      int
+	Position       int
+	Prices         []VariantPriceInput
 }
 
 type ProductInput struct {
-	Slug          string
-	ProductType   string
-	CategoryID    int
-	WeightG       int
-	IsVirtual     bool
+	Slug           string
+	ProductType    string
+	CategoryID     int
+	WeightG        int
+	IsVirtual      bool
 	IsDownloadable bool
-	Translations  []TranslationInput
-	Variants      []VariantInput
+	Translations   []TranslationInput
+	Variants       []VariantInput
 }
 
 func (s *Service) Create(ctx context.Context, in ProductInput) (*ent.Product, error) {

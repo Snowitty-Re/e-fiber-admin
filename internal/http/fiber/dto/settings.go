@@ -1,15 +1,15 @@
 package dto
 
 type StoreResponse struct {
-	ID               int            `json:"id"`
-	Name             string         `json:"name"`
-	Slug             string         `json:"slug"`
-	SiteType         string         `json:"site_type"`
-	DefaultLocale    string         `json:"default_locale"`
-	DefaultCurrency  string         `json:"default_currency"`
-	FeatureFlags     map[string]bool `json:"feature_flags"`
-	Timezone         string         `json:"timezone"`
-	Status           string         `json:"status"`
+	ID              int             `json:"id"`
+	Name            string          `json:"name"`
+	Slug            string          `json:"slug"`
+	SiteType        string          `json:"site_type"`
+	DefaultLocale   string          `json:"default_locale"`
+	DefaultCurrency string          `json:"default_currency"`
+	FeatureFlags    map[string]bool `json:"feature_flags"`
+	Timezone        string          `json:"timezone"`
+	Status          string          `json:"status"`
 }
 
 type UpdateStoreRequest struct {

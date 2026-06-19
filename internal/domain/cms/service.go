@@ -138,9 +138,9 @@ type BlogPostTranslationInput struct {
 }
 
 type BlogPostInput struct {
-	Slug         string
+	Slug          string
 	AuthorAdminID int
-	Translations []BlogPostTranslationInput
+	Translations  []BlogPostTranslationInput
 }
 
 func (s *Service) CreateBlogPost(ctx context.Context, in BlogPostInput) (*ent.BlogPost, error) {

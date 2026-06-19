@@ -20,20 +20,20 @@ import (
 )
 
 type Service struct {
-	entClient  *ent.Client
+	entClient   *ent.Client
 	minioClient *minio.Client
-	bucket     string
-	useSSL     bool
-	endpoint   string
+	bucket      string
+	useSSL      bool
+	endpoint    string
 }
 
 func NewService(entClient *ent.Client, minioClient *minio.Client, cfg config.MinIOConfig) *Service {
 	return &Service{
-		entClient:  entClient,
+		entClient:   entClient,
 		minioClient: minioClient,
-		bucket:     cfg.Bucket,
-		useSSL:     cfg.UseSSL,
-		endpoint:   cfg.Endpoint,
+		bucket:      cfg.Bucket,
+		useSSL:      cfg.UseSSL,
+		endpoint:    cfg.Endpoint,
 	}
 }
 

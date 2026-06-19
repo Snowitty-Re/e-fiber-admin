@@ -10,15 +10,15 @@ import (
 )
 
 type Deps struct {
-	HealthH      *handler.HealthHandler
-	AuthH        *handler.AuthHandler
-	RegionH      *handler.RegionHandler
-	MediaH       *handler.MediaHandler
-	ProductH     *handler.ProductHandler
-	CMSH         *handler.CMSHandler
-	SettingsH    *handler.SettingsHandler
-	StorefrontH  *handler.StorefrontHandler
-	JWTAuthFunc  fiber.Handler
+	HealthH     *handler.HealthHandler
+	AuthH       *handler.AuthHandler
+	RegionH     *handler.RegionHandler
+	MediaH      *handler.MediaHandler
+	ProductH    *handler.ProductHandler
+	CMSH        *handler.CMSHandler
+	SettingsH   *handler.SettingsHandler
+	StorefrontH *handler.StorefrontHandler
+	JWTAuthFunc fiber.Handler
 }
 
 func Register(app *fiber.App, deps Deps) {

@@ -69,14 +69,14 @@ type VariantResponse struct {
 }
 
 type ProductResponse struct {
-	ID             int                    `json:"id"`
-	Slug           string                 `json:"slug"`
-	ProductType    string                 `json:"product_type"`
-	Status         string                 `json:"status"`
-	CategoryID     int                    `json:"category_id,omitempty"`
-	WeightG        int                    `json:"weight_g,omitempty"`
-	IsVirtual      bool                   `json:"is_virtual"`
-	IsDownloadable bool                   `json:"is_downloadable"`
-	Translations   []TranslationResponse  `json:"translations"`
-	Variants       []VariantResponse      `json:"variants"`
+	ID             int                   `json:"id"`
+	Slug           string                `json:"slug"`
+	ProductType    string                `json:"product_type"`
+	Status         string                `json:"status"`
+	CategoryID     int                   `json:"category_id,omitempty"`
+	WeightG        int                   `json:"weight_g,omitempty"`
+	IsVirtual      bool                  `json:"is_virtual"`
+	IsDownloadable bool                  `json:"is_downloadable"`
+	Translations   []TranslationResponse `json:"translations"`
+	Variants       []VariantResponse     `json:"variants"`
 }

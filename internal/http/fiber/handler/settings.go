@@ -67,7 +67,7 @@ func (h *SettingsHandler) UpdateFeatureFlags(c fiber.Ctx) error {
 func toStoreResponse(st *ent.Store) dto.StoreResponse {
 	return dto.StoreResponse{
 		ID: st.ID, Name: st.Name, Slug: st.Slug,
-		SiteType: string(st.SiteType),
+		SiteType:      string(st.SiteType),
 		DefaultLocale: st.DefaultLocale, DefaultCurrency: st.DefaultCurrency,
 		FeatureFlags: st.FeatureFlags, Timezone: st.Timezone,
 		Status: string(st.Status),
