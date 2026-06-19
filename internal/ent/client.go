@@ -22,6 +22,8 @@ import (
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/collectiontranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/currency"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/locale"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/media"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/mediatranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/permission"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/product"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/productmedia"
@@ -58,6 +60,10 @@ type Client struct {
 	Currency *CurrencyClient
 	// Locale is the client for interacting with the Locale builders.
 	Locale *LocaleClient
+	// Media is the client for interacting with the Media builders.
+	Media *MediaClient
+	// MediaTranslation is the client for interacting with the MediaTranslation builders.
+	MediaTranslation *MediaTranslationClient
 	// Permission is the client for interacting with the Permission builders.
 	Permission *PermissionClient
 	// Product is the client for interacting with the Product builders.
@@ -106,6 +112,8 @@ func (c *Client) init() {
 	c.CollectionTranslation = NewCollectionTranslationClient(c.config)
 	c.Currency = NewCurrencyClient(c.config)
 	c.Locale = NewLocaleClient(c.config)
+	c.Media = NewMediaClient(c.config)
+	c.MediaTranslation = NewMediaTranslationClient(c.config)
 	c.Permission = NewPermissionClient(c.config)
 	c.Product = NewProductClient(c.config)
 	c.ProductMedia = NewProductMediaClient(c.config)
@@ -220,6 +228,8 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		CollectionTranslation: NewCollectionTranslationClient(cfg),
 		Currency:              NewCurrencyClient(cfg),
 		Locale:                NewLocaleClient(cfg),
+		Media:                 NewMediaClient(cfg),
+		MediaTranslation:      NewMediaTranslationClient(cfg),
 		Permission:            NewPermissionClient(cfg),
 		Product:               NewProductClient(cfg),
 		ProductMedia:          NewProductMediaClient(cfg),
@@ -261,6 +271,8 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		CollectionTranslation: NewCollectionTranslationClient(cfg),
 		Currency:              NewCurrencyClient(cfg),
 		Locale:                NewLocaleClient(cfg),
+		Media:                 NewMediaClient(cfg),
+		MediaTranslation:      NewMediaTranslationClient(cfg),
 		Permission:            NewPermissionClient(cfg),
 		Product:               NewProductClient(cfg),
 		ProductMedia:          NewProductMediaClient(cfg),
@@ -306,10 +318,10 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.AdminUser, c.Category, c.CategoryTranslation, c.Collection,
-		c.CollectionTranslation, c.Currency, c.Locale, c.Permission, c.Product,
-		c.ProductMedia, c.ProductOption, c.ProductOptionValue, c.ProductTranslation,
-		c.Region, c.Role, c.Store, c.Tag, c.TagTranslation, c.TaxRate, c.Variant,
-		c.VariantOptionValue, c.VariantPrice,
+		c.CollectionTranslation, c.Currency, c.Locale, c.Media, c.MediaTranslation,
+		c.Permission, c.Product, c.ProductMedia, c.ProductOption, c.ProductOptionValue,
+		c.ProductTranslation, c.Region, c.Role, c.Store, c.Tag, c.TagTranslation,
+		c.TaxRate, c.Variant, c.VariantOptionValue, c.VariantPrice,
 	} {
 		n.Use(hooks...)
 	}
@@ -320,10 +332,10 @@ func (c *Client) Use(hooks ...Hook) {
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.AdminUser, c.Category, c.CategoryTranslation, c.Collection,
-		c.CollectionTranslation, c.Currency, c.Locale, c.Permission, c.Product,
-		c.ProductMedia, c.ProductOption, c.ProductOptionValue, c.ProductTranslation,
-		c.Region, c.Role, c.Store, c.Tag, c.TagTranslation, c.TaxRate, c.Variant,
-		c.VariantOptionValue, c.VariantPrice,
+		c.CollectionTranslation, c.Currency, c.Locale, c.Media, c.MediaTranslation,
+		c.Permission, c.Product, c.ProductMedia, c.ProductOption, c.ProductOptionValue,
+		c.ProductTranslation, c.Region, c.Role, c.Store, c.Tag, c.TagTranslation,
+		c.TaxRate, c.Variant, c.VariantOptionValue, c.VariantPrice,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -346,6 +358,10 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Currency.mutate(ctx, m)
 	case *LocaleMutation:
 		return c.Locale.mutate(ctx, m)
+	case *MediaMutation:
+		return c.Media.mutate(ctx, m)
+	case *MediaTranslationMutation:
+		return c.MediaTranslation.mutate(ctx, m)
 	case *PermissionMutation:
 		return c.Permission.mutate(ctx, m)
 	case *ProductMutation:
@@ -1405,6 +1421,304 @@ func (c *LocaleClient) mutate(ctx context.Context, m *LocaleMutation) (Value, er
 		return (&LocaleDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Locale mutation op: %q", m.Op())
+	}
+}
+
+// MediaClient is a client for the Media schema.
+type MediaClient struct {
+	config
+}
+
+// NewMediaClient returns a client for the Media from the given config.
+func NewMediaClient(c config) *MediaClient {
+	return &MediaClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `media.Hooks(f(g(h())))`.
+func (c *MediaClient) Use(hooks ...Hook) {
+	c.hooks.Media = append(c.hooks.Media, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `media.Intercept(f(g(h())))`.
+func (c *MediaClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Media = append(c.inters.Media, interceptors...)
+}
+
+// Create returns a builder for creating a Media entity.
+func (c *MediaClient) Create() *MediaCreate {
+	mutation := newMediaMutation(c.config, OpCreate)
+	return &MediaCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Media entities.
+func (c *MediaClient) CreateBulk(builders ...*MediaCreate) *MediaCreateBulk {
+	return &MediaCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *MediaClient) MapCreateBulk(slice any, setFunc func(*MediaCreate, int)) *MediaCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &MediaCreateBulk{err: fmt.Errorf("calling to MediaClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*MediaCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &MediaCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Media.
+func (c *MediaClient) Update() *MediaUpdate {
+	mutation := newMediaMutation(c.config, OpUpdate)
+	return &MediaUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *MediaClient) UpdateOne(_m *Media) *MediaUpdateOne {
+	mutation := newMediaMutation(c.config, OpUpdateOne, withMedia(_m))
+	return &MediaUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *MediaClient) UpdateOneID(id int) *MediaUpdateOne {
+	mutation := newMediaMutation(c.config, OpUpdateOne, withMediaID(id))
+	return &MediaUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Media.
+func (c *MediaClient) Delete() *MediaDelete {
+	mutation := newMediaMutation(c.config, OpDelete)
+	return &MediaDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *MediaClient) DeleteOne(_m *Media) *MediaDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *MediaClient) DeleteOneID(id int) *MediaDeleteOne {
+	builder := c.Delete().Where(media.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &MediaDeleteOne{builder}
+}
+
+// Query returns a query builder for Media.
+func (c *MediaClient) Query() *MediaQuery {
+	return &MediaQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeMedia},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Media entity by its id.
+func (c *MediaClient) Get(ctx context.Context, id int) (*Media, error) {
+	return c.Query().Where(media.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *MediaClient) GetX(ctx context.Context, id int) *Media {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryTranslations queries the translations edge of a Media.
+func (c *MediaClient) QueryTranslations(_m *Media) *MediaTranslationQuery {
+	query := (&MediaTranslationClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(media.Table, media.FieldID, id),
+			sqlgraph.To(mediatranslation.Table, mediatranslation.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, media.TranslationsTable, media.TranslationsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *MediaClient) Hooks() []Hook {
+	return c.hooks.Media
+}
+
+// Interceptors returns the client interceptors.
+func (c *MediaClient) Interceptors() []Interceptor {
+	return c.inters.Media
+}
+
+func (c *MediaClient) mutate(ctx context.Context, m *MediaMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&MediaCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&MediaUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&MediaUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&MediaDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Media mutation op: %q", m.Op())
+	}
+}
+
+// MediaTranslationClient is a client for the MediaTranslation schema.
+type MediaTranslationClient struct {
+	config
+}
+
+// NewMediaTranslationClient returns a client for the MediaTranslation from the given config.
+func NewMediaTranslationClient(c config) *MediaTranslationClient {
+	return &MediaTranslationClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `mediatranslation.Hooks(f(g(h())))`.
+func (c *MediaTranslationClient) Use(hooks ...Hook) {
+	c.hooks.MediaTranslation = append(c.hooks.MediaTranslation, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `mediatranslation.Intercept(f(g(h())))`.
+func (c *MediaTranslationClient) Intercept(interceptors ...Interceptor) {
+	c.inters.MediaTranslation = append(c.inters.MediaTranslation, interceptors...)
+}
+
+// Create returns a builder for creating a MediaTranslation entity.
+func (c *MediaTranslationClient) Create() *MediaTranslationCreate {
+	mutation := newMediaTranslationMutation(c.config, OpCreate)
+	return &MediaTranslationCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of MediaTranslation entities.
+func (c *MediaTranslationClient) CreateBulk(builders ...*MediaTranslationCreate) *MediaTranslationCreateBulk {
+	return &MediaTranslationCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *MediaTranslationClient) MapCreateBulk(slice any, setFunc func(*MediaTranslationCreate, int)) *MediaTranslationCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &MediaTranslationCreateBulk{err: fmt.Errorf("calling to MediaTranslationClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*MediaTranslationCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &MediaTranslationCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for MediaTranslation.
+func (c *MediaTranslationClient) Update() *MediaTranslationUpdate {
+	mutation := newMediaTranslationMutation(c.config, OpUpdate)
+	return &MediaTranslationUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *MediaTranslationClient) UpdateOne(_m *MediaTranslation) *MediaTranslationUpdateOne {
+	mutation := newMediaTranslationMutation(c.config, OpUpdateOne, withMediaTranslation(_m))
+	return &MediaTranslationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *MediaTranslationClient) UpdateOneID(id int) *MediaTranslationUpdateOne {
+	mutation := newMediaTranslationMutation(c.config, OpUpdateOne, withMediaTranslationID(id))
+	return &MediaTranslationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for MediaTranslation.
+func (c *MediaTranslationClient) Delete() *MediaTranslationDelete {
+	mutation := newMediaTranslationMutation(c.config, OpDelete)
+	return &MediaTranslationDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *MediaTranslationClient) DeleteOne(_m *MediaTranslation) *MediaTranslationDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *MediaTranslationClient) DeleteOneID(id int) *MediaTranslationDeleteOne {
+	builder := c.Delete().Where(mediatranslation.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &MediaTranslationDeleteOne{builder}
+}
+
+// Query returns a query builder for MediaTranslation.
+func (c *MediaTranslationClient) Query() *MediaTranslationQuery {
+	return &MediaTranslationQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeMediaTranslation},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a MediaTranslation entity by its id.
+func (c *MediaTranslationClient) Get(ctx context.Context, id int) (*MediaTranslation, error) {
+	return c.Query().Where(mediatranslation.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *MediaTranslationClient) GetX(ctx context.Context, id int) *MediaTranslation {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryMedia queries the media edge of a MediaTranslation.
+func (c *MediaTranslationClient) QueryMedia(_m *MediaTranslation) *MediaQuery {
+	query := (&MediaClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(mediatranslation.Table, mediatranslation.FieldID, id),
+			sqlgraph.To(media.Table, media.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, mediatranslation.MediaTable, mediatranslation.MediaColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *MediaTranslationClient) Hooks() []Hook {
+	return c.hooks.MediaTranslation
+}
+
+// Interceptors returns the client interceptors.
+func (c *MediaTranslationClient) Interceptors() []Interceptor {
+	return c.inters.MediaTranslation
+}
+
+func (c *MediaTranslationClient) mutate(ctx context.Context, m *MediaTranslationMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&MediaTranslationCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&MediaTranslationUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&MediaTranslationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&MediaTranslationDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown MediaTranslation mutation op: %q", m.Op())
 	}
 }
 
@@ -3727,15 +4041,16 @@ func (c *VariantPriceClient) mutate(ctx context.Context, m *VariantPriceMutation
 type (
 	hooks struct {
 		AdminUser, Category, CategoryTranslation, Collection, CollectionTranslation,
-		Currency, Locale, Permission, Product, ProductMedia, ProductOption,
-		ProductOptionValue, ProductTranslation, Region, Role, Store, Tag,
-		TagTranslation, TaxRate, Variant, VariantOptionValue, VariantPrice []ent.Hook
+		Currency, Locale, Media, MediaTranslation, Permission, Product, ProductMedia,
+		ProductOption, ProductOptionValue, ProductTranslation, Region, Role, Store,
+		Tag, TagTranslation, TaxRate, Variant, VariantOptionValue,
+		VariantPrice []ent.Hook
 	}
 	inters struct {
 		AdminUser, Category, CategoryTranslation, Collection, CollectionTranslation,
-		Currency, Locale, Permission, Product, ProductMedia, ProductOption,
-		ProductOptionValue, ProductTranslation, Region, Role, Store, Tag,
-		TagTranslation, TaxRate, Variant, VariantOptionValue,
+		Currency, Locale, Media, MediaTranslation, Permission, Product, ProductMedia,
+		ProductOption, ProductOptionValue, ProductTranslation, Region, Role, Store,
+		Tag, TagTranslation, TaxRate, Variant, VariantOptionValue,
 		VariantPrice []ent.Interceptor
 	}
 )

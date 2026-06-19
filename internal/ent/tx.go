@@ -26,6 +26,10 @@ type Tx struct {
 	Currency *CurrencyClient
 	// Locale is the client for interacting with the Locale builders.
 	Locale *LocaleClient
+	// Media is the client for interacting with the Media builders.
+	Media *MediaClient
+	// MediaTranslation is the client for interacting with the MediaTranslation builders.
+	MediaTranslation *MediaTranslationClient
 	// Permission is the client for interacting with the Permission builders.
 	Permission *PermissionClient
 	// Product is the client for interacting with the Product builders.
@@ -194,6 +198,8 @@ func (tx *Tx) init() {
 	tx.CollectionTranslation = NewCollectionTranslationClient(tx.config)
 	tx.Currency = NewCurrencyClient(tx.config)
 	tx.Locale = NewLocaleClient(tx.config)
+	tx.Media = NewMediaClient(tx.config)
+	tx.MediaTranslation = NewMediaTranslationClient(tx.config)
 	tx.Permission = NewPermissionClient(tx.config)
 	tx.Product = NewProductClient(tx.config)
 	tx.ProductMedia = NewProductMediaClient(tx.config)

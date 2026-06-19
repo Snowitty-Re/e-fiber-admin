@@ -219,6 +219,72 @@ var (
 			},
 		},
 	}
+	// MediaColumns holds the columns for the "media" table.
+	MediaColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "updated_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "tenant_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "key", Type: field.TypeString},
+		{Name: "url", Type: field.TypeString},
+		{Name: "mime_type", Type: field.TypeString},
+		{Name: "size_bytes", Type: field.TypeInt64},
+		{Name: "width", Type: field.TypeInt, Nullable: true},
+		{Name: "height", Type: field.TypeInt, Nullable: true},
+		{Name: "kind", Type: field.TypeEnum, Enums: []string{"image", "document", "video"}, Default: "image"},
+	}
+	// MediaTable holds the schema information for the "media" table.
+	MediaTable = &schema.Table{
+		Name:       "media",
+		Columns:    MediaColumns,
+		PrimaryKey: []*schema.Column{MediaColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "media_kind",
+				Unique:  false,
+				Columns: []*schema.Column{MediaColumns[14]},
+			},
+		},
+	}
+	// MediaTranslationsColumns holds the columns for the "media_translations" table.
+	MediaTranslationsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "updated_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "tenant_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "locale", Type: field.TypeString, Size: 8},
+		{Name: "alt", Type: field.TypeString, Nullable: true, Default: ""},
+		{Name: "media_id", Type: field.TypeInt},
+	}
+	// MediaTranslationsTable holds the schema information for the "media_translations" table.
+	MediaTranslationsTable = &schema.Table{
+		Name:       "media_translations",
+		Columns:    MediaTranslationsColumns,
+		PrimaryKey: []*schema.Column{MediaTranslationsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "media_translations_media_translations",
+				Columns:    []*schema.Column{MediaTranslationsColumns[10]},
+				RefColumns: []*schema.Column{MediaColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "mediatranslation_media_id_locale",
+				Unique:  true,
+				Columns: []*schema.Column{MediaTranslationsColumns[10], MediaTranslationsColumns[8]},
+			},
+		},
+	}
 	// PermissionsColumns holds the columns for the "permissions" table.
 	PermissionsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -800,6 +866,8 @@ var (
 		CollectionTranslationsTable,
 		CurrenciesTable,
 		LocalesTable,
+		MediaTable,
+		MediaTranslationsTable,
 		PermissionsTable,
 		ProductsTable,
 		ProductMediaTable,
@@ -823,6 +891,7 @@ var (
 func init() {
 	CategoryTranslationsTable.ForeignKeys[0].RefTable = CategoriesTable
 	CollectionTranslationsTable.ForeignKeys[0].RefTable = CollectionsTable
+	MediaTranslationsTable.ForeignKeys[0].RefTable = MediaTable
 	ProductsTable.ForeignKeys[0].RefTable = CollectionsTable
 	ProductsTable.ForeignKeys[1].RefTable = TagsTable
 	ProductOptionsTable.ForeignKeys[0].RefTable = ProductsTable

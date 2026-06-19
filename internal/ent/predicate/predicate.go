@@ -27,6 +27,12 @@ type Currency func(*sql.Selector)
 // Locale is the predicate function for locale builders.
 type Locale func(*sql.Selector)
 
+// Media is the predicate function for media builders.
+type Media func(*sql.Selector)
+
+// MediaTranslation is the predicate function for mediatranslation builders.
+type MediaTranslation func(*sql.Selector)
+
 // Permission is the predicate function for permission builders.
 type Permission func(*sql.Selector)
 

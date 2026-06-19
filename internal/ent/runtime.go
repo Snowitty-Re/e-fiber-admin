@@ -12,6 +12,8 @@ import (
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/collectiontranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/currency"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/locale"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/media"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/mediatranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/permission"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/product"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/productmedia"
@@ -243,6 +245,64 @@ func init() {
 	localeDescIsActive := localeFields[2].Descriptor()
 	// locale.DefaultIsActive holds the default value on creation for the is_active field.
 	locale.DefaultIsActive = localeDescIsActive.Default.(bool)
+	mediaMixin := schema.Media{}.Mixin()
+	mediaMixinFields0 := mediaMixin[0].Fields()
+	_ = mediaMixinFields0
+	mediaFields := schema.Media{}.Fields()
+	_ = mediaFields
+	// mediaDescVersion is the schema descriptor for version field.
+	mediaDescVersion := mediaMixinFields0[3].Descriptor()
+	// media.DefaultVersion holds the default value on creation for the version field.
+	media.DefaultVersion = mediaDescVersion.Default.(int)
+	// mediaDescCreatedAt is the schema descriptor for created_at field.
+	mediaDescCreatedAt := mediaMixinFields0[4].Descriptor()
+	// media.DefaultCreatedAt holds the default value on creation for the created_at field.
+	media.DefaultCreatedAt = mediaDescCreatedAt.Default.(func() time.Time)
+	// mediaDescUpdatedAt is the schema descriptor for updated_at field.
+	mediaDescUpdatedAt := mediaMixinFields0[5].Descriptor()
+	// media.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	media.DefaultUpdatedAt = mediaDescUpdatedAt.Default.(func() time.Time)
+	// media.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	media.UpdateDefaultUpdatedAt = mediaDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// mediaDescKey is the schema descriptor for key field.
+	mediaDescKey := mediaFields[0].Descriptor()
+	// media.KeyValidator is a validator for the "key" field. It is called by the builders before save.
+	media.KeyValidator = mediaDescKey.Validators[0].(func(string) error)
+	// mediaDescURL is the schema descriptor for url field.
+	mediaDescURL := mediaFields[1].Descriptor()
+	// media.URLValidator is a validator for the "url" field. It is called by the builders before save.
+	media.URLValidator = mediaDescURL.Validators[0].(func(string) error)
+	// mediaDescMimeType is the schema descriptor for mime_type field.
+	mediaDescMimeType := mediaFields[2].Descriptor()
+	// media.MimeTypeValidator is a validator for the "mime_type" field. It is called by the builders before save.
+	media.MimeTypeValidator = mediaDescMimeType.Validators[0].(func(string) error)
+	mediatranslationMixin := schema.MediaTranslation{}.Mixin()
+	mediatranslationMixinFields0 := mediatranslationMixin[0].Fields()
+	_ = mediatranslationMixinFields0
+	mediatranslationFields := schema.MediaTranslation{}.Fields()
+	_ = mediatranslationFields
+	// mediatranslationDescVersion is the schema descriptor for version field.
+	mediatranslationDescVersion := mediatranslationMixinFields0[3].Descriptor()
+	// mediatranslation.DefaultVersion holds the default value on creation for the version field.
+	mediatranslation.DefaultVersion = mediatranslationDescVersion.Default.(int)
+	// mediatranslationDescCreatedAt is the schema descriptor for created_at field.
+	mediatranslationDescCreatedAt := mediatranslationMixinFields0[4].Descriptor()
+	// mediatranslation.DefaultCreatedAt holds the default value on creation for the created_at field.
+	mediatranslation.DefaultCreatedAt = mediatranslationDescCreatedAt.Default.(func() time.Time)
+	// mediatranslationDescUpdatedAt is the schema descriptor for updated_at field.
+	mediatranslationDescUpdatedAt := mediatranslationMixinFields0[5].Descriptor()
+	// mediatranslation.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	mediatranslation.DefaultUpdatedAt = mediatranslationDescUpdatedAt.Default.(func() time.Time)
+	// mediatranslation.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	mediatranslation.UpdateDefaultUpdatedAt = mediatranslationDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// mediatranslationDescLocale is the schema descriptor for locale field.
+	mediatranslationDescLocale := mediatranslationFields[1].Descriptor()
+	// mediatranslation.LocaleValidator is a validator for the "locale" field. It is called by the builders before save.
+	mediatranslation.LocaleValidator = mediatranslationDescLocale.Validators[0].(func(string) error)
+	// mediatranslationDescAlt is the schema descriptor for alt field.
+	mediatranslationDescAlt := mediatranslationFields[2].Descriptor()
+	// mediatranslation.DefaultAlt holds the default value on creation for the alt field.
+	mediatranslation.DefaultAlt = mediatranslationDescAlt.Default.(string)
 	permissionMixin := schema.Permission{}.Mixin()
 	permissionMixinFields0 := permissionMixin[0].Fields()
 	_ = permissionMixinFields0

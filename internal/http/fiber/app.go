@@ -12,10 +12,12 @@ import (
 	"github.com/gofiber/fiber/v3/middleware/logger"
 	"github.com/gofiber/fiber/v3/middleware/recover"
 	"github.com/gofiber/fiber/v3/middleware/requestid"
+	"github.com/minio/minio-go/v7"
 	"github.com/redis/go-redis/v9"
 
 	"github.com/Snowitty-Re/e-fiber-admin/internal/config"
 	authsvc "github.com/Snowitty-Re/e-fiber-admin/internal/domain/auth"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/domain/media"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/domain/region"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/http/fiber/handler"
@@ -28,6 +30,7 @@ type Deps struct {
 	Config      *config.Config
 	EntClient   *ent.Client
 	RedisClient *redis.Client
+	MinIOClient *minio.Client
 }
 
 func NewApp(deps Deps) *fiber.App {
@@ -67,11 +70,14 @@ func NewApp(deps Deps) *fiber.App {
 	authH := handler.NewAuthHandler(authService)
 	regionSvc := region.NewService(deps.EntClient)
 	regionH := handler.NewRegionHandler(regionSvc)
+	mediaSvc := media.NewService(deps.EntClient, deps.MinIOClient, deps.Config.MinIO)
+	mediaH := handler.NewMediaHandler(mediaSvc)
 
 	router.Register(app, router.Deps{
 		HealthH:     healthH,
 		AuthH:       authH,
 		RegionH:     regionH,
+		MediaH:      mediaH,
 		JWTAuthFunc: pkgmw.JWTAuth(authService),
 	})
 

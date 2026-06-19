@@ -13,6 +13,7 @@ type Deps struct {
 	HealthH     *handler.HealthHandler
 	AuthH       *handler.AuthHandler
 	RegionH     *handler.RegionHandler
+	MediaH      *handler.MediaHandler
 	JWTAuthFunc fiber.Handler
 }
 
@@ -66,4 +67,10 @@ func Register(app *fiber.App, deps Deps) {
 	products.Get("/", middleware.RBAC("product:read"), func(c fiber.Ctx) error {
 		return c.JSON(fiber.Map{"data": []any{}, "pagination": fiber.Map{"page": 1, "page_size": 20, "total": 0, "has_more": false}})
 	})
+
+	mediaGroup := adminProtected.Group("/media")
+	mediaGroup.Get("/", middleware.RBAC("media:read"), deps.MediaH.List)
+	mediaGroup.Post("/", middleware.RBAC("media:write"), deps.MediaH.Upload)
+	mediaGroup.Get("/:id", middleware.RBAC("media:read"), deps.MediaH.Get)
+	mediaGroup.Delete("/:id", middleware.RBAC("media:delete"), deps.MediaH.Delete)
 }
