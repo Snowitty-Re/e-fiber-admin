@@ -75,6 +75,7 @@ func NewApp(deps Deps) *fiber.App {
 	mediaH := handler.NewMediaHandler(mediaSvc)
 	productSvc := product.NewService(deps.EntClient)
 	productH := handler.NewProductHandler(productSvc)
+	storefrontH := handler.NewStorefrontHandler(deps.EntClient, productSvc)
 
 	router.Register(app, router.Deps{
 		HealthH:     healthH,
@@ -82,6 +83,7 @@ func NewApp(deps Deps) *fiber.App {
 		RegionH:     regionH,
 		MediaH:      mediaH,
 		ProductH:    productH,
+		StorefrontH: storefrontH,
 		JWTAuthFunc: pkgmw.JWTAuth(authService),
 	})
 

@@ -104,6 +104,10 @@ var roleDefs = []roleDef{
 }
 
 func Seed(ctx context.Context, client *ent.Client, cfg config.SeedConfig) error {
+	if err := seedStore(ctx, client); err != nil {
+		return fmt.Errorf("seed store: %w", err)
+	}
+	slog.Info("store ensured")
 	perms, err := seedPermissions(ctx, client)
 	if err != nil {
 		return fmt.Errorf("seed permissions: %w", err)
@@ -220,4 +224,28 @@ func filterPerms(perms map[string]*ent.Permission, filter func(string, string) b
 
 func permKey(resource, action string) string {
 	return resource + ":" + action
+}
+
+func seedStore(ctx context.Context, client *ent.Client) error {
+	exists, err := client.Store.Query().Count(ctx)
+	if err != nil {
+		return err
+	}
+	if exists > 0 {
+		return nil
+	}
+	_, err = client.Store.Create().
+		SetName("e-fiber Store").
+		SetSlug("default").
+		SetSiteType("store").
+		SetDefaultLocale("en").
+		SetDefaultCurrency("USD").
+		SetFeatureFlags(map[string]bool{
+			"enable_cart": true, "enable_checkout": true,
+			"enable_inquiry": true, "enable_blog": true,
+		}).
+		SetTimezone("UTC").
+		SetStatus("active").
+		Save(ctx)
+	return err
 }

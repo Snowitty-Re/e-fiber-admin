@@ -10,12 +10,13 @@ import (
 )
 
 type Deps struct {
-	HealthH     *handler.HealthHandler
-	AuthH       *handler.AuthHandler
-	RegionH     *handler.RegionHandler
-	MediaH      *handler.MediaHandler
-	ProductH    *handler.ProductHandler
-	JWTAuthFunc fiber.Handler
+	HealthH      *handler.HealthHandler
+	AuthH        *handler.AuthHandler
+	RegionH      *handler.RegionHandler
+	MediaH       *handler.MediaHandler
+	ProductH     *handler.ProductHandler
+	StorefrontH  *handler.StorefrontHandler
+	JWTAuthFunc  fiber.Handler
 }
 
 func Register(app *fiber.App, deps Deps) {
@@ -77,4 +78,9 @@ func Register(app *fiber.App, deps Deps) {
 	mediaGroup.Post("/", middleware.RBAC("media:write"), deps.MediaH.Upload)
 	mediaGroup.Get("/:id", middleware.RBAC("media:read"), deps.MediaH.Get)
 	mediaGroup.Delete("/:id", middleware.RBAC("media:delete"), deps.MediaH.Delete)
+
+	store := api.Group("/store")
+	storeProducts := store.Group("/products")
+	storeProducts.Get("/", deps.StorefrontH.ListProducts)
+	storeProducts.Get("/:slug", deps.StorefrontH.GetProduct)
 }

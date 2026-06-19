@@ -209,6 +209,7 @@ func (s *Service) List(ctx context.Context, f ProductFilter) ([]*ent.Product, in
 	}
 	items, err := q.
 		WithTranslations().
+		WithVariants(func(q *ent.VariantQuery) { q.WithPrices() }).
 		Order(ent.Desc(product.FieldID)).
 		Limit(f.PageSize).
 		Offset((f.Page - 1) * f.PageSize).
