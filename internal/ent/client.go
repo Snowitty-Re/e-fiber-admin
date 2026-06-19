@@ -16,9 +16,13 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/adminuser"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/currency"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/locale"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/permission"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/region"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/role"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/store"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/taxrate"
 )
 
 // Client is the client that holds all ent builders.
@@ -28,12 +32,20 @@ type Client struct {
 	Schema *migrate.Schema
 	// AdminUser is the client for interacting with the AdminUser builders.
 	AdminUser *AdminUserClient
+	// Currency is the client for interacting with the Currency builders.
+	Currency *CurrencyClient
+	// Locale is the client for interacting with the Locale builders.
+	Locale *LocaleClient
 	// Permission is the client for interacting with the Permission builders.
 	Permission *PermissionClient
+	// Region is the client for interacting with the Region builders.
+	Region *RegionClient
 	// Role is the client for interacting with the Role builders.
 	Role *RoleClient
 	// Store is the client for interacting with the Store builders.
 	Store *StoreClient
+	// TaxRate is the client for interacting with the TaxRate builders.
+	TaxRate *TaxRateClient
 }
 
 // NewClient creates a new client configured with the given options.
@@ -46,9 +58,13 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.AdminUser = NewAdminUserClient(c.config)
+	c.Currency = NewCurrencyClient(c.config)
+	c.Locale = NewLocaleClient(c.config)
 	c.Permission = NewPermissionClient(c.config)
+	c.Region = NewRegionClient(c.config)
 	c.Role = NewRoleClient(c.config)
 	c.Store = NewStoreClient(c.config)
+	c.TaxRate = NewTaxRateClient(c.config)
 }
 
 type (
@@ -142,9 +158,13 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		ctx:        ctx,
 		config:     cfg,
 		AdminUser:  NewAdminUserClient(cfg),
+		Currency:   NewCurrencyClient(cfg),
+		Locale:     NewLocaleClient(cfg),
 		Permission: NewPermissionClient(cfg),
+		Region:     NewRegionClient(cfg),
 		Role:       NewRoleClient(cfg),
 		Store:      NewStoreClient(cfg),
+		TaxRate:    NewTaxRateClient(cfg),
 	}, nil
 }
 
@@ -165,9 +185,13 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		ctx:        ctx,
 		config:     cfg,
 		AdminUser:  NewAdminUserClient(cfg),
+		Currency:   NewCurrencyClient(cfg),
+		Locale:     NewLocaleClient(cfg),
 		Permission: NewPermissionClient(cfg),
+		Region:     NewRegionClient(cfg),
 		Role:       NewRoleClient(cfg),
 		Store:      NewStoreClient(cfg),
+		TaxRate:    NewTaxRateClient(cfg),
 	}, nil
 }
 
@@ -196,19 +220,23 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
-	c.AdminUser.Use(hooks...)
-	c.Permission.Use(hooks...)
-	c.Role.Use(hooks...)
-	c.Store.Use(hooks...)
+	for _, n := range []interface{ Use(...Hook) }{
+		c.AdminUser, c.Currency, c.Locale, c.Permission, c.Region, c.Role, c.Store,
+		c.TaxRate,
+	} {
+		n.Use(hooks...)
+	}
 }
 
 // Intercept adds the query interceptors to all the entity clients.
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
-	c.AdminUser.Intercept(interceptors...)
-	c.Permission.Intercept(interceptors...)
-	c.Role.Intercept(interceptors...)
-	c.Store.Intercept(interceptors...)
+	for _, n := range []interface{ Intercept(...Interceptor) }{
+		c.AdminUser, c.Currency, c.Locale, c.Permission, c.Region, c.Role, c.Store,
+		c.TaxRate,
+	} {
+		n.Intercept(interceptors...)
+	}
 }
 
 // Mutate implements the ent.Mutator interface.
@@ -216,12 +244,20 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
 	case *AdminUserMutation:
 		return c.AdminUser.mutate(ctx, m)
+	case *CurrencyMutation:
+		return c.Currency.mutate(ctx, m)
+	case *LocaleMutation:
+		return c.Locale.mutate(ctx, m)
 	case *PermissionMutation:
 		return c.Permission.mutate(ctx, m)
+	case *RegionMutation:
+		return c.Region.mutate(ctx, m)
 	case *RoleMutation:
 		return c.Role.mutate(ctx, m)
 	case *StoreMutation:
 		return c.Store.mutate(ctx, m)
+	case *TaxRateMutation:
+		return c.TaxRate.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("ent: unknown mutation type %T", m)
 	}
@@ -376,6 +412,272 @@ func (c *AdminUserClient) mutate(ctx context.Context, m *AdminUserMutation) (Val
 	}
 }
 
+// CurrencyClient is a client for the Currency schema.
+type CurrencyClient struct {
+	config
+}
+
+// NewCurrencyClient returns a client for the Currency from the given config.
+func NewCurrencyClient(c config) *CurrencyClient {
+	return &CurrencyClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `currency.Hooks(f(g(h())))`.
+func (c *CurrencyClient) Use(hooks ...Hook) {
+	c.hooks.Currency = append(c.hooks.Currency, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `currency.Intercept(f(g(h())))`.
+func (c *CurrencyClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Currency = append(c.inters.Currency, interceptors...)
+}
+
+// Create returns a builder for creating a Currency entity.
+func (c *CurrencyClient) Create() *CurrencyCreate {
+	mutation := newCurrencyMutation(c.config, OpCreate)
+	return &CurrencyCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Currency entities.
+func (c *CurrencyClient) CreateBulk(builders ...*CurrencyCreate) *CurrencyCreateBulk {
+	return &CurrencyCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *CurrencyClient) MapCreateBulk(slice any, setFunc func(*CurrencyCreate, int)) *CurrencyCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &CurrencyCreateBulk{err: fmt.Errorf("calling to CurrencyClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*CurrencyCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &CurrencyCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Currency.
+func (c *CurrencyClient) Update() *CurrencyUpdate {
+	mutation := newCurrencyMutation(c.config, OpUpdate)
+	return &CurrencyUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CurrencyClient) UpdateOne(_m *Currency) *CurrencyUpdateOne {
+	mutation := newCurrencyMutation(c.config, OpUpdateOne, withCurrency(_m))
+	return &CurrencyUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CurrencyClient) UpdateOneID(id int) *CurrencyUpdateOne {
+	mutation := newCurrencyMutation(c.config, OpUpdateOne, withCurrencyID(id))
+	return &CurrencyUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Currency.
+func (c *CurrencyClient) Delete() *CurrencyDelete {
+	mutation := newCurrencyMutation(c.config, OpDelete)
+	return &CurrencyDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CurrencyClient) DeleteOne(_m *Currency) *CurrencyDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *CurrencyClient) DeleteOneID(id int) *CurrencyDeleteOne {
+	builder := c.Delete().Where(currency.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CurrencyDeleteOne{builder}
+}
+
+// Query returns a query builder for Currency.
+func (c *CurrencyClient) Query() *CurrencyQuery {
+	return &CurrencyQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeCurrency},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Currency entity by its id.
+func (c *CurrencyClient) Get(ctx context.Context, id int) (*Currency, error) {
+	return c.Query().Where(currency.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CurrencyClient) GetX(ctx context.Context, id int) *Currency {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *CurrencyClient) Hooks() []Hook {
+	return c.hooks.Currency
+}
+
+// Interceptors returns the client interceptors.
+func (c *CurrencyClient) Interceptors() []Interceptor {
+	return c.inters.Currency
+}
+
+func (c *CurrencyClient) mutate(ctx context.Context, m *CurrencyMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CurrencyCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CurrencyUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CurrencyUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CurrencyDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Currency mutation op: %q", m.Op())
+	}
+}
+
+// LocaleClient is a client for the Locale schema.
+type LocaleClient struct {
+	config
+}
+
+// NewLocaleClient returns a client for the Locale from the given config.
+func NewLocaleClient(c config) *LocaleClient {
+	return &LocaleClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `locale.Hooks(f(g(h())))`.
+func (c *LocaleClient) Use(hooks ...Hook) {
+	c.hooks.Locale = append(c.hooks.Locale, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `locale.Intercept(f(g(h())))`.
+func (c *LocaleClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Locale = append(c.inters.Locale, interceptors...)
+}
+
+// Create returns a builder for creating a Locale entity.
+func (c *LocaleClient) Create() *LocaleCreate {
+	mutation := newLocaleMutation(c.config, OpCreate)
+	return &LocaleCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Locale entities.
+func (c *LocaleClient) CreateBulk(builders ...*LocaleCreate) *LocaleCreateBulk {
+	return &LocaleCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *LocaleClient) MapCreateBulk(slice any, setFunc func(*LocaleCreate, int)) *LocaleCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &LocaleCreateBulk{err: fmt.Errorf("calling to LocaleClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*LocaleCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &LocaleCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Locale.
+func (c *LocaleClient) Update() *LocaleUpdate {
+	mutation := newLocaleMutation(c.config, OpUpdate)
+	return &LocaleUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *LocaleClient) UpdateOne(_m *Locale) *LocaleUpdateOne {
+	mutation := newLocaleMutation(c.config, OpUpdateOne, withLocale(_m))
+	return &LocaleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *LocaleClient) UpdateOneID(id int) *LocaleUpdateOne {
+	mutation := newLocaleMutation(c.config, OpUpdateOne, withLocaleID(id))
+	return &LocaleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Locale.
+func (c *LocaleClient) Delete() *LocaleDelete {
+	mutation := newLocaleMutation(c.config, OpDelete)
+	return &LocaleDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *LocaleClient) DeleteOne(_m *Locale) *LocaleDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *LocaleClient) DeleteOneID(id int) *LocaleDeleteOne {
+	builder := c.Delete().Where(locale.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &LocaleDeleteOne{builder}
+}
+
+// Query returns a query builder for Locale.
+func (c *LocaleClient) Query() *LocaleQuery {
+	return &LocaleQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeLocale},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Locale entity by its id.
+func (c *LocaleClient) Get(ctx context.Context, id int) (*Locale, error) {
+	return c.Query().Where(locale.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *LocaleClient) GetX(ctx context.Context, id int) *Locale {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *LocaleClient) Hooks() []Hook {
+	return c.hooks.Locale
+}
+
+// Interceptors returns the client interceptors.
+func (c *LocaleClient) Interceptors() []Interceptor {
+	return c.inters.Locale
+}
+
+func (c *LocaleClient) mutate(ctx context.Context, m *LocaleMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&LocaleCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&LocaleUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&LocaleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&LocaleDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Locale mutation op: %q", m.Op())
+	}
+}
+
 // PermissionClient is a client for the Permission schema.
 type PermissionClient struct {
 	config
@@ -522,6 +824,155 @@ func (c *PermissionClient) mutate(ctx context.Context, m *PermissionMutation) (V
 		return (&PermissionDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Permission mutation op: %q", m.Op())
+	}
+}
+
+// RegionClient is a client for the Region schema.
+type RegionClient struct {
+	config
+}
+
+// NewRegionClient returns a client for the Region from the given config.
+func NewRegionClient(c config) *RegionClient {
+	return &RegionClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `region.Hooks(f(g(h())))`.
+func (c *RegionClient) Use(hooks ...Hook) {
+	c.hooks.Region = append(c.hooks.Region, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `region.Intercept(f(g(h())))`.
+func (c *RegionClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Region = append(c.inters.Region, interceptors...)
+}
+
+// Create returns a builder for creating a Region entity.
+func (c *RegionClient) Create() *RegionCreate {
+	mutation := newRegionMutation(c.config, OpCreate)
+	return &RegionCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Region entities.
+func (c *RegionClient) CreateBulk(builders ...*RegionCreate) *RegionCreateBulk {
+	return &RegionCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *RegionClient) MapCreateBulk(slice any, setFunc func(*RegionCreate, int)) *RegionCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &RegionCreateBulk{err: fmt.Errorf("calling to RegionClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*RegionCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &RegionCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Region.
+func (c *RegionClient) Update() *RegionUpdate {
+	mutation := newRegionMutation(c.config, OpUpdate)
+	return &RegionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *RegionClient) UpdateOne(_m *Region) *RegionUpdateOne {
+	mutation := newRegionMutation(c.config, OpUpdateOne, withRegion(_m))
+	return &RegionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *RegionClient) UpdateOneID(id int) *RegionUpdateOne {
+	mutation := newRegionMutation(c.config, OpUpdateOne, withRegionID(id))
+	return &RegionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Region.
+func (c *RegionClient) Delete() *RegionDelete {
+	mutation := newRegionMutation(c.config, OpDelete)
+	return &RegionDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *RegionClient) DeleteOne(_m *Region) *RegionDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *RegionClient) DeleteOneID(id int) *RegionDeleteOne {
+	builder := c.Delete().Where(region.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &RegionDeleteOne{builder}
+}
+
+// Query returns a query builder for Region.
+func (c *RegionClient) Query() *RegionQuery {
+	return &RegionQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeRegion},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Region entity by its id.
+func (c *RegionClient) Get(ctx context.Context, id int) (*Region, error) {
+	return c.Query().Where(region.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *RegionClient) GetX(ctx context.Context, id int) *Region {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryTaxRates queries the tax_rates edge of a Region.
+func (c *RegionClient) QueryTaxRates(_m *Region) *TaxRateQuery {
+	query := (&TaxRateClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(region.Table, region.FieldID, id),
+			sqlgraph.To(taxrate.Table, taxrate.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, region.TaxRatesTable, region.TaxRatesColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *RegionClient) Hooks() []Hook {
+	return c.hooks.Region
+}
+
+// Interceptors returns the client interceptors.
+func (c *RegionClient) Interceptors() []Interceptor {
+	return c.inters.Region
+}
+
+func (c *RegionClient) mutate(ctx context.Context, m *RegionMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&RegionCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&RegionUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&RegionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&RegionDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Region mutation op: %q", m.Op())
 	}
 }
 
@@ -823,12 +1274,162 @@ func (c *StoreClient) mutate(ctx context.Context, m *StoreMutation) (Value, erro
 	}
 }
 
+// TaxRateClient is a client for the TaxRate schema.
+type TaxRateClient struct {
+	config
+}
+
+// NewTaxRateClient returns a client for the TaxRate from the given config.
+func NewTaxRateClient(c config) *TaxRateClient {
+	return &TaxRateClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `taxrate.Hooks(f(g(h())))`.
+func (c *TaxRateClient) Use(hooks ...Hook) {
+	c.hooks.TaxRate = append(c.hooks.TaxRate, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `taxrate.Intercept(f(g(h())))`.
+func (c *TaxRateClient) Intercept(interceptors ...Interceptor) {
+	c.inters.TaxRate = append(c.inters.TaxRate, interceptors...)
+}
+
+// Create returns a builder for creating a TaxRate entity.
+func (c *TaxRateClient) Create() *TaxRateCreate {
+	mutation := newTaxRateMutation(c.config, OpCreate)
+	return &TaxRateCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of TaxRate entities.
+func (c *TaxRateClient) CreateBulk(builders ...*TaxRateCreate) *TaxRateCreateBulk {
+	return &TaxRateCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *TaxRateClient) MapCreateBulk(slice any, setFunc func(*TaxRateCreate, int)) *TaxRateCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &TaxRateCreateBulk{err: fmt.Errorf("calling to TaxRateClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*TaxRateCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &TaxRateCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for TaxRate.
+func (c *TaxRateClient) Update() *TaxRateUpdate {
+	mutation := newTaxRateMutation(c.config, OpUpdate)
+	return &TaxRateUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *TaxRateClient) UpdateOne(_m *TaxRate) *TaxRateUpdateOne {
+	mutation := newTaxRateMutation(c.config, OpUpdateOne, withTaxRate(_m))
+	return &TaxRateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *TaxRateClient) UpdateOneID(id int) *TaxRateUpdateOne {
+	mutation := newTaxRateMutation(c.config, OpUpdateOne, withTaxRateID(id))
+	return &TaxRateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for TaxRate.
+func (c *TaxRateClient) Delete() *TaxRateDelete {
+	mutation := newTaxRateMutation(c.config, OpDelete)
+	return &TaxRateDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *TaxRateClient) DeleteOne(_m *TaxRate) *TaxRateDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *TaxRateClient) DeleteOneID(id int) *TaxRateDeleteOne {
+	builder := c.Delete().Where(taxrate.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &TaxRateDeleteOne{builder}
+}
+
+// Query returns a query builder for TaxRate.
+func (c *TaxRateClient) Query() *TaxRateQuery {
+	return &TaxRateQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeTaxRate},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a TaxRate entity by its id.
+func (c *TaxRateClient) Get(ctx context.Context, id int) (*TaxRate, error) {
+	return c.Query().Where(taxrate.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *TaxRateClient) GetX(ctx context.Context, id int) *TaxRate {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryRegion queries the region edge of a TaxRate.
+func (c *TaxRateClient) QueryRegion(_m *TaxRate) *RegionQuery {
+	query := (&RegionClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(taxrate.Table, taxrate.FieldID, id),
+			sqlgraph.To(region.Table, region.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, taxrate.RegionTable, taxrate.RegionColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *TaxRateClient) Hooks() []Hook {
+	return c.hooks.TaxRate
+}
+
+// Interceptors returns the client interceptors.
+func (c *TaxRateClient) Interceptors() []Interceptor {
+	return c.inters.TaxRate
+}
+
+func (c *TaxRateClient) mutate(ctx context.Context, m *TaxRateMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&TaxRateCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&TaxRateUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&TaxRateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&TaxRateDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown TaxRate mutation op: %q", m.Op())
+	}
+}
+
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		AdminUser, Permission, Role, Store []ent.Hook
+		AdminUser, Currency, Locale, Permission, Region, Role, Store, TaxRate []ent.Hook
 	}
 	inters struct {
-		AdminUser, Permission, Role, Store []ent.Interceptor
+		AdminUser, Currency, Locale, Permission, Region, Role, Store,
+		TaxRate []ent.Interceptor
 	}
 )

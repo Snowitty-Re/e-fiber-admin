@@ -38,6 +38,62 @@ var (
 			},
 		},
 	}
+	// CurrenciesColumns holds the columns for the "currencies" table.
+	CurrenciesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "updated_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "tenant_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "code", Type: field.TypeString, Unique: true, Size: 3},
+		{Name: "name", Type: field.TypeString},
+		{Name: "symbol", Type: field.TypeString, Default: ""},
+		{Name: "precision", Type: field.TypeInt, Default: 2},
+		{Name: "is_active", Type: field.TypeBool, Default: true},
+	}
+	// CurrenciesTable holds the schema information for the "currencies" table.
+	CurrenciesTable = &schema.Table{
+		Name:       "currencies",
+		Columns:    CurrenciesColumns,
+		PrimaryKey: []*schema.Column{CurrenciesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "currency_is_active",
+				Unique:  false,
+				Columns: []*schema.Column{CurrenciesColumns[12]},
+			},
+		},
+	}
+	// LocalesColumns holds the columns for the "locales" table.
+	LocalesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "updated_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "tenant_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "code", Type: field.TypeString, Unique: true, Size: 8},
+		{Name: "name", Type: field.TypeString},
+		{Name: "is_active", Type: field.TypeBool, Default: true},
+	}
+	// LocalesTable holds the schema information for the "locales" table.
+	LocalesTable = &schema.Table{
+		Name:       "locales",
+		Columns:    LocalesColumns,
+		PrimaryKey: []*schema.Column{LocalesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "locale_is_active",
+				Unique:  false,
+				Columns: []*schema.Column{LocalesColumns[10]},
+			},
+		},
+	}
 	// PermissionsColumns holds the columns for the "permissions" table.
 	PermissionsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -62,6 +118,36 @@ var (
 				Name:    "permission_resource_action",
 				Unique:  true,
 				Columns: []*schema.Column{PermissionsColumns[8], PermissionsColumns[9]},
+			},
+		},
+	}
+	// RegionsColumns holds the columns for the "regions" table.
+	RegionsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "updated_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "tenant_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "name", Type: field.TypeString},
+		{Name: "locale", Type: field.TypeString, Size: 8},
+		{Name: "currency_code", Type: field.TypeString, Size: 3},
+		{Name: "tax_inclusive", Type: field.TypeBool, Default: false},
+		{Name: "countries", Type: field.TypeJSON, Nullable: true},
+		{Name: "status", Type: field.TypeEnum, Enums: []string{"active", "inactive"}, Default: "active"},
+	}
+	// RegionsTable holds the schema information for the "regions" table.
+	RegionsTable = &schema.Table{
+		Name:       "regions",
+		Columns:    RegionsColumns,
+		PrimaryKey: []*schema.Column{RegionsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "region_status",
+				Unique:  false,
+				Columns: []*schema.Column{RegionsColumns[13]},
 			},
 		},
 	}
@@ -118,6 +204,48 @@ var (
 		Columns:    StoresColumns,
 		PrimaryKey: []*schema.Column{StoresColumns[0]},
 	}
+	// TaxRatesColumns holds the columns for the "tax_rates" table.
+	TaxRatesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "updated_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "tenant_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "country_code", Type: field.TypeString, Nullable: true, Size: 2},
+		{Name: "rate", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "numeric(5,4)"}},
+		{Name: "name", Type: field.TypeString},
+		{Name: "priority", Type: field.TypeInt, Default: 0},
+		{Name: "region_id", Type: field.TypeInt},
+	}
+	// TaxRatesTable holds the schema information for the "tax_rates" table.
+	TaxRatesTable = &schema.Table{
+		Name:       "tax_rates",
+		Columns:    TaxRatesColumns,
+		PrimaryKey: []*schema.Column{TaxRatesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "tax_rates_regions_tax_rates",
+				Columns:    []*schema.Column{TaxRatesColumns[12]},
+				RefColumns: []*schema.Column{RegionsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "taxrate_region_id",
+				Unique:  false,
+				Columns: []*schema.Column{TaxRatesColumns[12]},
+			},
+			{
+				Name:    "taxrate_country_code",
+				Unique:  false,
+				Columns: []*schema.Column{TaxRatesColumns[8]},
+			},
+		},
+	}
 	// RoleAdminsColumns holds the columns for the "role_admins" table.
 	RoleAdminsColumns = []*schema.Column{
 		{Name: "role_id", Type: field.TypeInt},
@@ -171,15 +299,20 @@ var (
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		AdminUsersTable,
+		CurrenciesTable,
+		LocalesTable,
 		PermissionsTable,
+		RegionsTable,
 		RolesTable,
 		StoresTable,
+		TaxRatesTable,
 		RoleAdminsTable,
 		RolePermissionsTable,
 	}
 )
 
 func init() {
+	TaxRatesTable.ForeignKeys[0].RefTable = RegionsTable
 	RoleAdminsTable.ForeignKeys[0].RefTable = RolesTable
 	RoleAdminsTable.ForeignKeys[1].RefTable = AdminUsersTable
 	RolePermissionsTable.ForeignKeys[0].RefTable = RolesTable

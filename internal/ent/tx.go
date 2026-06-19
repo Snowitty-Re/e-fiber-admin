@@ -14,12 +14,20 @@ type Tx struct {
 	config
 	// AdminUser is the client for interacting with the AdminUser builders.
 	AdminUser *AdminUserClient
+	// Currency is the client for interacting with the Currency builders.
+	Currency *CurrencyClient
+	// Locale is the client for interacting with the Locale builders.
+	Locale *LocaleClient
 	// Permission is the client for interacting with the Permission builders.
 	Permission *PermissionClient
+	// Region is the client for interacting with the Region builders.
+	Region *RegionClient
 	// Role is the client for interacting with the Role builders.
 	Role *RoleClient
 	// Store is the client for interacting with the Store builders.
 	Store *StoreClient
+	// TaxRate is the client for interacting with the TaxRate builders.
+	TaxRate *TaxRateClient
 
 	// lazily loaded.
 	client     *Client
@@ -152,9 +160,13 @@ func (tx *Tx) Client() *Client {
 
 func (tx *Tx) init() {
 	tx.AdminUser = NewAdminUserClient(tx.config)
+	tx.Currency = NewCurrencyClient(tx.config)
+	tx.Locale = NewLocaleClient(tx.config)
 	tx.Permission = NewPermissionClient(tx.config)
+	tx.Region = NewRegionClient(tx.config)
 	tx.Role = NewRoleClient(tx.config)
 	tx.Store = NewStoreClient(tx.config)
+	tx.TaxRate = NewTaxRateClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.

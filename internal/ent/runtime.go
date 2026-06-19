@@ -6,10 +6,14 @@ import (
 	"time"
 
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/adminuser"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/currency"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/locale"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/permission"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/region"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/role"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/schema"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/store"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/taxrate"
 )
 
 // The init function reads all schema descriptors with runtime code
@@ -51,6 +55,76 @@ func init() {
 	adminuserDescLastName := adminuserFields[3].Descriptor()
 	// adminuser.DefaultLastName holds the default value on creation for the last_name field.
 	adminuser.DefaultLastName = adminuserDescLastName.Default.(string)
+	currencyMixin := schema.Currency{}.Mixin()
+	currencyMixinFields0 := currencyMixin[0].Fields()
+	_ = currencyMixinFields0
+	currencyFields := schema.Currency{}.Fields()
+	_ = currencyFields
+	// currencyDescVersion is the schema descriptor for version field.
+	currencyDescVersion := currencyMixinFields0[3].Descriptor()
+	// currency.DefaultVersion holds the default value on creation for the version field.
+	currency.DefaultVersion = currencyDescVersion.Default.(int)
+	// currencyDescCreatedAt is the schema descriptor for created_at field.
+	currencyDescCreatedAt := currencyMixinFields0[4].Descriptor()
+	// currency.DefaultCreatedAt holds the default value on creation for the created_at field.
+	currency.DefaultCreatedAt = currencyDescCreatedAt.Default.(func() time.Time)
+	// currencyDescUpdatedAt is the schema descriptor for updated_at field.
+	currencyDescUpdatedAt := currencyMixinFields0[5].Descriptor()
+	// currency.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	currency.DefaultUpdatedAt = currencyDescUpdatedAt.Default.(func() time.Time)
+	// currency.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	currency.UpdateDefaultUpdatedAt = currencyDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// currencyDescCode is the schema descriptor for code field.
+	currencyDescCode := currencyFields[0].Descriptor()
+	// currency.CodeValidator is a validator for the "code" field. It is called by the builders before save.
+	currency.CodeValidator = currencyDescCode.Validators[0].(func(string) error)
+	// currencyDescName is the schema descriptor for name field.
+	currencyDescName := currencyFields[1].Descriptor()
+	// currency.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	currency.NameValidator = currencyDescName.Validators[0].(func(string) error)
+	// currencyDescSymbol is the schema descriptor for symbol field.
+	currencyDescSymbol := currencyFields[2].Descriptor()
+	// currency.DefaultSymbol holds the default value on creation for the symbol field.
+	currency.DefaultSymbol = currencyDescSymbol.Default.(string)
+	// currencyDescPrecision is the schema descriptor for precision field.
+	currencyDescPrecision := currencyFields[3].Descriptor()
+	// currency.DefaultPrecision holds the default value on creation for the precision field.
+	currency.DefaultPrecision = currencyDescPrecision.Default.(int)
+	// currencyDescIsActive is the schema descriptor for is_active field.
+	currencyDescIsActive := currencyFields[4].Descriptor()
+	// currency.DefaultIsActive holds the default value on creation for the is_active field.
+	currency.DefaultIsActive = currencyDescIsActive.Default.(bool)
+	localeMixin := schema.Locale{}.Mixin()
+	localeMixinFields0 := localeMixin[0].Fields()
+	_ = localeMixinFields0
+	localeFields := schema.Locale{}.Fields()
+	_ = localeFields
+	// localeDescVersion is the schema descriptor for version field.
+	localeDescVersion := localeMixinFields0[3].Descriptor()
+	// locale.DefaultVersion holds the default value on creation for the version field.
+	locale.DefaultVersion = localeDescVersion.Default.(int)
+	// localeDescCreatedAt is the schema descriptor for created_at field.
+	localeDescCreatedAt := localeMixinFields0[4].Descriptor()
+	// locale.DefaultCreatedAt holds the default value on creation for the created_at field.
+	locale.DefaultCreatedAt = localeDescCreatedAt.Default.(func() time.Time)
+	// localeDescUpdatedAt is the schema descriptor for updated_at field.
+	localeDescUpdatedAt := localeMixinFields0[5].Descriptor()
+	// locale.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	locale.DefaultUpdatedAt = localeDescUpdatedAt.Default.(func() time.Time)
+	// locale.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	locale.UpdateDefaultUpdatedAt = localeDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// localeDescCode is the schema descriptor for code field.
+	localeDescCode := localeFields[0].Descriptor()
+	// locale.CodeValidator is a validator for the "code" field. It is called by the builders before save.
+	locale.CodeValidator = localeDescCode.Validators[0].(func(string) error)
+	// localeDescName is the schema descriptor for name field.
+	localeDescName := localeFields[1].Descriptor()
+	// locale.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	locale.NameValidator = localeDescName.Validators[0].(func(string) error)
+	// localeDescIsActive is the schema descriptor for is_active field.
+	localeDescIsActive := localeFields[2].Descriptor()
+	// locale.DefaultIsActive holds the default value on creation for the is_active field.
+	locale.DefaultIsActive = localeDescIsActive.Default.(bool)
 	permissionMixin := schema.Permission{}.Mixin()
 	permissionMixinFields0 := permissionMixin[0].Fields()
 	_ = permissionMixinFields0
@@ -82,6 +156,41 @@ func init() {
 	permissionDescDescription := permissionFields[2].Descriptor()
 	// permission.DefaultDescription holds the default value on creation for the description field.
 	permission.DefaultDescription = permissionDescDescription.Default.(string)
+	regionMixin := schema.Region{}.Mixin()
+	regionMixinFields0 := regionMixin[0].Fields()
+	_ = regionMixinFields0
+	regionFields := schema.Region{}.Fields()
+	_ = regionFields
+	// regionDescVersion is the schema descriptor for version field.
+	regionDescVersion := regionMixinFields0[3].Descriptor()
+	// region.DefaultVersion holds the default value on creation for the version field.
+	region.DefaultVersion = regionDescVersion.Default.(int)
+	// regionDescCreatedAt is the schema descriptor for created_at field.
+	regionDescCreatedAt := regionMixinFields0[4].Descriptor()
+	// region.DefaultCreatedAt holds the default value on creation for the created_at field.
+	region.DefaultCreatedAt = regionDescCreatedAt.Default.(func() time.Time)
+	// regionDescUpdatedAt is the schema descriptor for updated_at field.
+	regionDescUpdatedAt := regionMixinFields0[5].Descriptor()
+	// region.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	region.DefaultUpdatedAt = regionDescUpdatedAt.Default.(func() time.Time)
+	// region.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	region.UpdateDefaultUpdatedAt = regionDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// regionDescName is the schema descriptor for name field.
+	regionDescName := regionFields[0].Descriptor()
+	// region.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	region.NameValidator = regionDescName.Validators[0].(func(string) error)
+	// regionDescLocale is the schema descriptor for locale field.
+	regionDescLocale := regionFields[1].Descriptor()
+	// region.LocaleValidator is a validator for the "locale" field. It is called by the builders before save.
+	region.LocaleValidator = regionDescLocale.Validators[0].(func(string) error)
+	// regionDescCurrencyCode is the schema descriptor for currency_code field.
+	regionDescCurrencyCode := regionFields[2].Descriptor()
+	// region.CurrencyCodeValidator is a validator for the "currency_code" field. It is called by the builders before save.
+	region.CurrencyCodeValidator = regionDescCurrencyCode.Validators[0].(func(string) error)
+	// regionDescTaxInclusive is the schema descriptor for tax_inclusive field.
+	regionDescTaxInclusive := regionFields[3].Descriptor()
+	// region.DefaultTaxInclusive holds the default value on creation for the tax_inclusive field.
+	region.DefaultTaxInclusive = regionDescTaxInclusive.Default.(bool)
 	roleMixin := schema.Role{}.Mixin()
 	roleMixinFields0 := roleMixin[0].Fields()
 	_ = roleMixinFields0
@@ -152,4 +261,35 @@ func init() {
 	storeDescTimezone := storeFields[6].Descriptor()
 	// store.DefaultTimezone holds the default value on creation for the timezone field.
 	store.DefaultTimezone = storeDescTimezone.Default.(string)
+	taxrateMixin := schema.TaxRate{}.Mixin()
+	taxrateMixinFields0 := taxrateMixin[0].Fields()
+	_ = taxrateMixinFields0
+	taxrateFields := schema.TaxRate{}.Fields()
+	_ = taxrateFields
+	// taxrateDescVersion is the schema descriptor for version field.
+	taxrateDescVersion := taxrateMixinFields0[3].Descriptor()
+	// taxrate.DefaultVersion holds the default value on creation for the version field.
+	taxrate.DefaultVersion = taxrateDescVersion.Default.(int)
+	// taxrateDescCreatedAt is the schema descriptor for created_at field.
+	taxrateDescCreatedAt := taxrateMixinFields0[4].Descriptor()
+	// taxrate.DefaultCreatedAt holds the default value on creation for the created_at field.
+	taxrate.DefaultCreatedAt = taxrateDescCreatedAt.Default.(func() time.Time)
+	// taxrateDescUpdatedAt is the schema descriptor for updated_at field.
+	taxrateDescUpdatedAt := taxrateMixinFields0[5].Descriptor()
+	// taxrate.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	taxrate.DefaultUpdatedAt = taxrateDescUpdatedAt.Default.(func() time.Time)
+	// taxrate.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	taxrate.UpdateDefaultUpdatedAt = taxrateDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// taxrateDescCountryCode is the schema descriptor for country_code field.
+	taxrateDescCountryCode := taxrateFields[1].Descriptor()
+	// taxrate.CountryCodeValidator is a validator for the "country_code" field. It is called by the builders before save.
+	taxrate.CountryCodeValidator = taxrateDescCountryCode.Validators[0].(func(string) error)
+	// taxrateDescName is the schema descriptor for name field.
+	taxrateDescName := taxrateFields[3].Descriptor()
+	// taxrate.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	taxrate.NameValidator = taxrateDescName.Validators[0].(func(string) error)
+	// taxrateDescPriority is the schema descriptor for priority field.
+	taxrateDescPriority := taxrateFields[4].Descriptor()
+	// taxrate.DefaultPriority holds the default value on creation for the priority field.
+	taxrate.DefaultPriority = taxrateDescPriority.Default.(int)
 }

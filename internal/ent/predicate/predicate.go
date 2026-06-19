@@ -9,11 +9,23 @@ import (
 // AdminUser is the predicate function for adminuser builders.
 type AdminUser func(*sql.Selector)
 
+// Currency is the predicate function for currency builders.
+type Currency func(*sql.Selector)
+
+// Locale is the predicate function for locale builders.
+type Locale func(*sql.Selector)
+
 // Permission is the predicate function for permission builders.
 type Permission func(*sql.Selector)
+
+// Region is the predicate function for region builders.
+type Region func(*sql.Selector)
 
 // Role is the predicate function for role builders.
 type Role func(*sql.Selector)
 
 // Store is the predicate function for store builders.
 type Store func(*sql.Selector)
+
+// TaxRate is the predicate function for taxrate builders.
+type TaxRate func(*sql.Selector)

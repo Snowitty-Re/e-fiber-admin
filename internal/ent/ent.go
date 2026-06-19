@@ -13,9 +13,13 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/adminuser"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/currency"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/locale"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/permission"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/region"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/role"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/store"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/taxrate"
 )
 
 // ent aliases to avoid import conflicts in user's code.
@@ -77,9 +81,13 @@ func checkColumn(t, c string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
 			adminuser.Table:  adminuser.ValidColumn,
+			currency.Table:   currency.ValidColumn,
+			locale.Table:     locale.ValidColumn,
 			permission.Table: permission.ValidColumn,
+			region.Table:     region.ValidColumn,
 			role.Table:       role.ValidColumn,
 			store.Table:      store.ValidColumn,
+			taxrate.Table:    taxrate.ValidColumn,
 		})
 	})
 	return columnCheck(t, c)
