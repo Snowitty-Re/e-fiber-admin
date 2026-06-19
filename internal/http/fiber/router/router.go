@@ -15,6 +15,7 @@ type Deps struct {
 	RegionH      *handler.RegionHandler
 	MediaH       *handler.MediaHandler
 	ProductH     *handler.ProductHandler
+	CMSH         *handler.CMSHandler
 	StorefrontH  *handler.StorefrontHandler
 	JWTAuthFunc  fiber.Handler
 }
@@ -73,6 +74,19 @@ func Register(app *fiber.App, deps Deps) {
 	products.Post("/:id/archive", middleware.RBAC("product:archive"), deps.ProductH.Archive)
 	products.Delete("/:id", middleware.RBAC("product:delete"), deps.ProductH.Delete)
 
+	pages := adminProtected.Group("/pages")
+	pages.Get("/", middleware.RBAC("cms:read"), deps.CMSH.ListPages)
+	pages.Post("/", middleware.RBAC("cms:write"), deps.CMSH.CreatePage)
+	pages.Get("/:id", middleware.RBAC("cms:read"), deps.CMSH.GetPage)
+	pages.Post("/:id/publish", middleware.RBAC("cms:publish"), deps.CMSH.PublishPage)
+	pages.Delete("/:id", middleware.RBAC("cms:delete"), deps.CMSH.DeletePage)
+
+	blog := adminProtected.Group("/blog-posts")
+	blog.Get("/", middleware.RBAC("cms:read"), deps.CMSH.ListBlogPosts)
+	blog.Post("/", middleware.RBAC("cms:write"), deps.CMSH.CreateBlogPost)
+	blog.Post("/:id/publish", middleware.RBAC("cms:publish"), deps.CMSH.PublishBlogPost)
+	blog.Delete("/:id", middleware.RBAC("cms:delete"), deps.CMSH.DeleteBlogPost)
+
 	mediaGroup := adminProtected.Group("/media")
 	mediaGroup.Get("/", middleware.RBAC("media:read"), deps.MediaH.List)
 	mediaGroup.Post("/", middleware.RBAC("media:write"), deps.MediaH.Upload)
@@ -83,4 +97,10 @@ func Register(app *fiber.App, deps Deps) {
 	storeProducts := store.Group("/products")
 	storeProducts.Get("/", deps.StorefrontH.ListProducts)
 	storeProducts.Get("/:slug", deps.StorefrontH.GetProduct)
+
+	storePages := store.Group("/pages")
+	storePages.Get("/:slug", deps.CMSH.StoreGetPage)
+
+	storeBlog := store.Group("/blog-posts")
+	storeBlog.Get("/", deps.CMSH.StoreListBlogPosts)
 }

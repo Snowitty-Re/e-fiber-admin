@@ -14,6 +14,10 @@ type Tx struct {
 	config
 	// AdminUser is the client for interacting with the AdminUser builders.
 	AdminUser *AdminUserClient
+	// BlogPost is the client for interacting with the BlogPost builders.
+	BlogPost *BlogPostClient
+	// BlogPostTranslation is the client for interacting with the BlogPostTranslation builders.
+	BlogPostTranslation *BlogPostTranslationClient
 	// Category is the client for interacting with the Category builders.
 	Category *CategoryClient
 	// CategoryTranslation is the client for interacting with the CategoryTranslation builders.
@@ -30,6 +34,16 @@ type Tx struct {
 	Media *MediaClient
 	// MediaTranslation is the client for interacting with the MediaTranslation builders.
 	MediaTranslation *MediaTranslationClient
+	// Menu is the client for interacting with the Menu builders.
+	Menu *MenuClient
+	// MenuItem is the client for interacting with the MenuItem builders.
+	MenuItem *MenuItemClient
+	// MenuItemTranslation is the client for interacting with the MenuItemTranslation builders.
+	MenuItemTranslation *MenuItemTranslationClient
+	// Page is the client for interacting with the Page builders.
+	Page *PageClient
+	// PageTranslation is the client for interacting with the PageTranslation builders.
+	PageTranslation *PageTranslationClient
 	// Permission is the client for interacting with the Permission builders.
 	Permission *PermissionClient
 	// Product is the client for interacting with the Product builders.
@@ -192,6 +206,8 @@ func (tx *Tx) Client() *Client {
 
 func (tx *Tx) init() {
 	tx.AdminUser = NewAdminUserClient(tx.config)
+	tx.BlogPost = NewBlogPostClient(tx.config)
+	tx.BlogPostTranslation = NewBlogPostTranslationClient(tx.config)
 	tx.Category = NewCategoryClient(tx.config)
 	tx.CategoryTranslation = NewCategoryTranslationClient(tx.config)
 	tx.Collection = NewCollectionClient(tx.config)
@@ -200,6 +216,11 @@ func (tx *Tx) init() {
 	tx.Locale = NewLocaleClient(tx.config)
 	tx.Media = NewMediaClient(tx.config)
 	tx.MediaTranslation = NewMediaTranslationClient(tx.config)
+	tx.Menu = NewMenuClient(tx.config)
+	tx.MenuItem = NewMenuItemClient(tx.config)
+	tx.MenuItemTranslation = NewMenuItemTranslationClient(tx.config)
+	tx.Page = NewPageClient(tx.config)
+	tx.PageTranslation = NewPageTranslationClient(tx.config)
 	tx.Permission = NewPermissionClient(tx.config)
 	tx.Product = NewProductClient(tx.config)
 	tx.ProductMedia = NewProductMediaClient(tx.config)

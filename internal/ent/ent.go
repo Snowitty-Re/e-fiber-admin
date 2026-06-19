@@ -13,6 +13,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/adminuser"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/blogpost"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/blogposttranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/category"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/categorytranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/collection"
@@ -21,6 +23,11 @@ import (
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/locale"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/media"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/mediatranslation"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/menu"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/menuitem"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/menuitemtranslation"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/page"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/pagetranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/permission"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/product"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/productmedia"
@@ -97,6 +104,8 @@ func checkColumn(t, c string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
 			adminuser.Table:             adminuser.ValidColumn,
+			blogpost.Table:              blogpost.ValidColumn,
+			blogposttranslation.Table:   blogposttranslation.ValidColumn,
 			category.Table:              category.ValidColumn,
 			categorytranslation.Table:   categorytranslation.ValidColumn,
 			collection.Table:            collection.ValidColumn,
@@ -105,6 +114,11 @@ func checkColumn(t, c string) error {
 			locale.Table:                locale.ValidColumn,
 			media.Table:                 media.ValidColumn,
 			mediatranslation.Table:      mediatranslation.ValidColumn,
+			menu.Table:                  menu.ValidColumn,
+			menuitem.Table:              menuitem.ValidColumn,
+			menuitemtranslation.Table:   menuitemtranslation.ValidColumn,
+			page.Table:                  page.ValidColumn,
+			pagetranslation.Table:       pagetranslation.ValidColumn,
 			permission.Table:            permission.ValidColumn,
 			product.Table:               product.ValidColumn,
 			productmedia.Table:          productmedia.ValidColumn,

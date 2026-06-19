@@ -21,6 +21,30 @@ func (f AdminUserFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, e
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AdminUserMutation", m)
 }
 
+// The BlogPostFunc type is an adapter to allow the use of ordinary
+// function as BlogPost mutator.
+type BlogPostFunc func(context.Context, *ent.BlogPostMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f BlogPostFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.BlogPostMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.BlogPostMutation", m)
+}
+
+// The BlogPostTranslationFunc type is an adapter to allow the use of ordinary
+// function as BlogPostTranslation mutator.
+type BlogPostTranslationFunc func(context.Context, *ent.BlogPostTranslationMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f BlogPostTranslationFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.BlogPostTranslationMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.BlogPostTranslationMutation", m)
+}
+
 // The CategoryFunc type is an adapter to allow the use of ordinary
 // function as Category mutator.
 type CategoryFunc func(context.Context, *ent.CategoryMutation) (ent.Value, error)
@@ -115,6 +139,66 @@ func (f MediaTranslationFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.V
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.MediaTranslationMutation", m)
+}
+
+// The MenuFunc type is an adapter to allow the use of ordinary
+// function as Menu mutator.
+type MenuFunc func(context.Context, *ent.MenuMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f MenuFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.MenuMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.MenuMutation", m)
+}
+
+// The MenuItemFunc type is an adapter to allow the use of ordinary
+// function as MenuItem mutator.
+type MenuItemFunc func(context.Context, *ent.MenuItemMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f MenuItemFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.MenuItemMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.MenuItemMutation", m)
+}
+
+// The MenuItemTranslationFunc type is an adapter to allow the use of ordinary
+// function as MenuItemTranslation mutator.
+type MenuItemTranslationFunc func(context.Context, *ent.MenuItemTranslationMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f MenuItemTranslationFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.MenuItemTranslationMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.MenuItemTranslationMutation", m)
+}
+
+// The PageFunc type is an adapter to allow the use of ordinary
+// function as Page mutator.
+type PageFunc func(context.Context, *ent.PageMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f PageFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.PageMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PageMutation", m)
+}
+
+// The PageTranslationFunc type is an adapter to allow the use of ordinary
+// function as PageTranslation mutator.
+type PageTranslationFunc func(context.Context, *ent.PageTranslationMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f PageTranslationFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.PageTranslationMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PageTranslationMutation", m)
 }
 
 // The PermissionFunc type is an adapter to allow the use of ordinary

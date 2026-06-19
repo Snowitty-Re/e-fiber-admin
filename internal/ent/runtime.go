@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/adminuser"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/blogpost"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/blogposttranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/category"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/categorytranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/collection"
@@ -14,6 +16,11 @@ import (
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/locale"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/media"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/mediatranslation"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/menu"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/menuitem"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/menuitemtranslation"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/page"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/pagetranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/permission"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/product"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/productmedia"
@@ -71,6 +78,68 @@ func init() {
 	adminuserDescLastName := adminuserFields[3].Descriptor()
 	// adminuser.DefaultLastName holds the default value on creation for the last_name field.
 	adminuser.DefaultLastName = adminuserDescLastName.Default.(string)
+	blogpostMixin := schema.BlogPost{}.Mixin()
+	blogpostMixinFields0 := blogpostMixin[0].Fields()
+	_ = blogpostMixinFields0
+	blogpostFields := schema.BlogPost{}.Fields()
+	_ = blogpostFields
+	// blogpostDescVersion is the schema descriptor for version field.
+	blogpostDescVersion := blogpostMixinFields0[3].Descriptor()
+	// blogpost.DefaultVersion holds the default value on creation for the version field.
+	blogpost.DefaultVersion = blogpostDescVersion.Default.(int)
+	// blogpostDescCreatedAt is the schema descriptor for created_at field.
+	blogpostDescCreatedAt := blogpostMixinFields0[4].Descriptor()
+	// blogpost.DefaultCreatedAt holds the default value on creation for the created_at field.
+	blogpost.DefaultCreatedAt = blogpostDescCreatedAt.Default.(func() time.Time)
+	// blogpostDescUpdatedAt is the schema descriptor for updated_at field.
+	blogpostDescUpdatedAt := blogpostMixinFields0[5].Descriptor()
+	// blogpost.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	blogpost.DefaultUpdatedAt = blogpostDescUpdatedAt.Default.(func() time.Time)
+	// blogpost.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	blogpost.UpdateDefaultUpdatedAt = blogpostDescUpdatedAt.UpdateDefault.(func() time.Time)
+	blogposttranslationMixin := schema.BlogPostTranslation{}.Mixin()
+	blogposttranslationMixinFields0 := blogposttranslationMixin[0].Fields()
+	_ = blogposttranslationMixinFields0
+	blogposttranslationFields := schema.BlogPostTranslation{}.Fields()
+	_ = blogposttranslationFields
+	// blogposttranslationDescVersion is the schema descriptor for version field.
+	blogposttranslationDescVersion := blogposttranslationMixinFields0[3].Descriptor()
+	// blogposttranslation.DefaultVersion holds the default value on creation for the version field.
+	blogposttranslation.DefaultVersion = blogposttranslationDescVersion.Default.(int)
+	// blogposttranslationDescCreatedAt is the schema descriptor for created_at field.
+	blogposttranslationDescCreatedAt := blogposttranslationMixinFields0[4].Descriptor()
+	// blogposttranslation.DefaultCreatedAt holds the default value on creation for the created_at field.
+	blogposttranslation.DefaultCreatedAt = blogposttranslationDescCreatedAt.Default.(func() time.Time)
+	// blogposttranslationDescUpdatedAt is the schema descriptor for updated_at field.
+	blogposttranslationDescUpdatedAt := blogposttranslationMixinFields0[5].Descriptor()
+	// blogposttranslation.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	blogposttranslation.DefaultUpdatedAt = blogposttranslationDescUpdatedAt.Default.(func() time.Time)
+	// blogposttranslation.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	blogposttranslation.UpdateDefaultUpdatedAt = blogposttranslationDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// blogposttranslationDescLocale is the schema descriptor for locale field.
+	blogposttranslationDescLocale := blogposttranslationFields[1].Descriptor()
+	// blogposttranslation.LocaleValidator is a validator for the "locale" field. It is called by the builders before save.
+	blogposttranslation.LocaleValidator = blogposttranslationDescLocale.Validators[0].(func(string) error)
+	// blogposttranslationDescTitle is the schema descriptor for title field.
+	blogposttranslationDescTitle := blogposttranslationFields[2].Descriptor()
+	// blogposttranslation.TitleValidator is a validator for the "title" field. It is called by the builders before save.
+	blogposttranslation.TitleValidator = blogposttranslationDescTitle.Validators[0].(func(string) error)
+	// blogposttranslationDescExcerpt is the schema descriptor for excerpt field.
+	blogposttranslationDescExcerpt := blogposttranslationFields[3].Descriptor()
+	// blogposttranslation.DefaultExcerpt holds the default value on creation for the excerpt field.
+	blogposttranslation.DefaultExcerpt = blogposttranslationDescExcerpt.Default.(string)
+	// blogposttranslationDescContent is the schema descriptor for content field.
+	blogposttranslationDescContent := blogposttranslationFields[4].Descriptor()
+	// blogposttranslation.DefaultContent holds the default value on creation for the content field.
+	blogposttranslation.DefaultContent = blogposttranslationDescContent.Default.(string)
+	// blogposttranslationDescSeoTitle is the schema descriptor for seo_title field.
+	blogposttranslationDescSeoTitle := blogposttranslationFields[5].Descriptor()
+	// blogposttranslation.DefaultSeoTitle holds the default value on creation for the seo_title field.
+	blogposttranslation.DefaultSeoTitle = blogposttranslationDescSeoTitle.Default.(string)
+	// blogposttranslationDescSeoDesc is the schema descriptor for seo_desc field.
+	blogposttranslationDescSeoDesc := blogposttranslationFields[6].Descriptor()
+	// blogposttranslation.DefaultSeoDesc holds the default value on creation for the seo_desc field.
+	blogposttranslation.DefaultSeoDesc = blogposttranslationDescSeoDesc.Default.(string)
 	categoryMixin := schema.Category{}.Mixin()
 	categoryMixinFields0 := categoryMixin[0].Fields()
 	_ = categoryMixinFields0
@@ -303,6 +372,141 @@ func init() {
 	mediatranslationDescAlt := mediatranslationFields[2].Descriptor()
 	// mediatranslation.DefaultAlt holds the default value on creation for the alt field.
 	mediatranslation.DefaultAlt = mediatranslationDescAlt.Default.(string)
+	menuMixin := schema.Menu{}.Mixin()
+	menuMixinFields0 := menuMixin[0].Fields()
+	_ = menuMixinFields0
+	menuFields := schema.Menu{}.Fields()
+	_ = menuFields
+	// menuDescVersion is the schema descriptor for version field.
+	menuDescVersion := menuMixinFields0[3].Descriptor()
+	// menu.DefaultVersion holds the default value on creation for the version field.
+	menu.DefaultVersion = menuDescVersion.Default.(int)
+	// menuDescCreatedAt is the schema descriptor for created_at field.
+	menuDescCreatedAt := menuMixinFields0[4].Descriptor()
+	// menu.DefaultCreatedAt holds the default value on creation for the created_at field.
+	menu.DefaultCreatedAt = menuDescCreatedAt.Default.(func() time.Time)
+	// menuDescUpdatedAt is the schema descriptor for updated_at field.
+	menuDescUpdatedAt := menuMixinFields0[5].Descriptor()
+	// menu.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	menu.DefaultUpdatedAt = menuDescUpdatedAt.Default.(func() time.Time)
+	// menu.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	menu.UpdateDefaultUpdatedAt = menuDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// menuDescLocation is the schema descriptor for location field.
+	menuDescLocation := menuFields[1].Descriptor()
+	// menu.DefaultLocation holds the default value on creation for the location field.
+	menu.DefaultLocation = menuDescLocation.Default.(string)
+	menuitemMixin := schema.MenuItem{}.Mixin()
+	menuitemMixinFields0 := menuitemMixin[0].Fields()
+	_ = menuitemMixinFields0
+	menuitemFields := schema.MenuItem{}.Fields()
+	_ = menuitemFields
+	// menuitemDescVersion is the schema descriptor for version field.
+	menuitemDescVersion := menuitemMixinFields0[3].Descriptor()
+	// menuitem.DefaultVersion holds the default value on creation for the version field.
+	menuitem.DefaultVersion = menuitemDescVersion.Default.(int)
+	// menuitemDescCreatedAt is the schema descriptor for created_at field.
+	menuitemDescCreatedAt := menuitemMixinFields0[4].Descriptor()
+	// menuitem.DefaultCreatedAt holds the default value on creation for the created_at field.
+	menuitem.DefaultCreatedAt = menuitemDescCreatedAt.Default.(func() time.Time)
+	// menuitemDescUpdatedAt is the schema descriptor for updated_at field.
+	menuitemDescUpdatedAt := menuitemMixinFields0[5].Descriptor()
+	// menuitem.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	menuitem.DefaultUpdatedAt = menuitemDescUpdatedAt.Default.(func() time.Time)
+	// menuitem.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	menuitem.UpdateDefaultUpdatedAt = menuitemDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// menuitemDescURL is the schema descriptor for url field.
+	menuitemDescURL := menuitemFields[4].Descriptor()
+	// menuitem.DefaultURL holds the default value on creation for the url field.
+	menuitem.DefaultURL = menuitemDescURL.Default.(string)
+	// menuitemDescPosition is the schema descriptor for position field.
+	menuitemDescPosition := menuitemFields[5].Descriptor()
+	// menuitem.DefaultPosition holds the default value on creation for the position field.
+	menuitem.DefaultPosition = menuitemDescPosition.Default.(int)
+	menuitemtranslationMixin := schema.MenuItemTranslation{}.Mixin()
+	menuitemtranslationMixinFields0 := menuitemtranslationMixin[0].Fields()
+	_ = menuitemtranslationMixinFields0
+	menuitemtranslationFields := schema.MenuItemTranslation{}.Fields()
+	_ = menuitemtranslationFields
+	// menuitemtranslationDescVersion is the schema descriptor for version field.
+	menuitemtranslationDescVersion := menuitemtranslationMixinFields0[3].Descriptor()
+	// menuitemtranslation.DefaultVersion holds the default value on creation for the version field.
+	menuitemtranslation.DefaultVersion = menuitemtranslationDescVersion.Default.(int)
+	// menuitemtranslationDescCreatedAt is the schema descriptor for created_at field.
+	menuitemtranslationDescCreatedAt := menuitemtranslationMixinFields0[4].Descriptor()
+	// menuitemtranslation.DefaultCreatedAt holds the default value on creation for the created_at field.
+	menuitemtranslation.DefaultCreatedAt = menuitemtranslationDescCreatedAt.Default.(func() time.Time)
+	// menuitemtranslationDescUpdatedAt is the schema descriptor for updated_at field.
+	menuitemtranslationDescUpdatedAt := menuitemtranslationMixinFields0[5].Descriptor()
+	// menuitemtranslation.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	menuitemtranslation.DefaultUpdatedAt = menuitemtranslationDescUpdatedAt.Default.(func() time.Time)
+	// menuitemtranslation.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	menuitemtranslation.UpdateDefaultUpdatedAt = menuitemtranslationDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// menuitemtranslationDescLocale is the schema descriptor for locale field.
+	menuitemtranslationDescLocale := menuitemtranslationFields[1].Descriptor()
+	// menuitemtranslation.LocaleValidator is a validator for the "locale" field. It is called by the builders before save.
+	menuitemtranslation.LocaleValidator = menuitemtranslationDescLocale.Validators[0].(func(string) error)
+	// menuitemtranslationDescTitle is the schema descriptor for title field.
+	menuitemtranslationDescTitle := menuitemtranslationFields[2].Descriptor()
+	// menuitemtranslation.TitleValidator is a validator for the "title" field. It is called by the builders before save.
+	menuitemtranslation.TitleValidator = menuitemtranslationDescTitle.Validators[0].(func(string) error)
+	pageMixin := schema.Page{}.Mixin()
+	pageMixinFields0 := pageMixin[0].Fields()
+	_ = pageMixinFields0
+	pageFields := schema.Page{}.Fields()
+	_ = pageFields
+	// pageDescVersion is the schema descriptor for version field.
+	pageDescVersion := pageMixinFields0[3].Descriptor()
+	// page.DefaultVersion holds the default value on creation for the version field.
+	page.DefaultVersion = pageDescVersion.Default.(int)
+	// pageDescCreatedAt is the schema descriptor for created_at field.
+	pageDescCreatedAt := pageMixinFields0[4].Descriptor()
+	// page.DefaultCreatedAt holds the default value on creation for the created_at field.
+	page.DefaultCreatedAt = pageDescCreatedAt.Default.(func() time.Time)
+	// pageDescUpdatedAt is the schema descriptor for updated_at field.
+	pageDescUpdatedAt := pageMixinFields0[5].Descriptor()
+	// page.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	page.DefaultUpdatedAt = pageDescUpdatedAt.Default.(func() time.Time)
+	// page.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	page.UpdateDefaultUpdatedAt = pageDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// pageDescTemplate is the schema descriptor for template field.
+	pageDescTemplate := pageFields[2].Descriptor()
+	// page.DefaultTemplate holds the default value on creation for the template field.
+	page.DefaultTemplate = pageDescTemplate.Default.(string)
+	pagetranslationMixin := schema.PageTranslation{}.Mixin()
+	pagetranslationMixinFields0 := pagetranslationMixin[0].Fields()
+	_ = pagetranslationMixinFields0
+	pagetranslationFields := schema.PageTranslation{}.Fields()
+	_ = pagetranslationFields
+	// pagetranslationDescVersion is the schema descriptor for version field.
+	pagetranslationDescVersion := pagetranslationMixinFields0[3].Descriptor()
+	// pagetranslation.DefaultVersion holds the default value on creation for the version field.
+	pagetranslation.DefaultVersion = pagetranslationDescVersion.Default.(int)
+	// pagetranslationDescCreatedAt is the schema descriptor for created_at field.
+	pagetranslationDescCreatedAt := pagetranslationMixinFields0[4].Descriptor()
+	// pagetranslation.DefaultCreatedAt holds the default value on creation for the created_at field.
+	pagetranslation.DefaultCreatedAt = pagetranslationDescCreatedAt.Default.(func() time.Time)
+	// pagetranslationDescUpdatedAt is the schema descriptor for updated_at field.
+	pagetranslationDescUpdatedAt := pagetranslationMixinFields0[5].Descriptor()
+	// pagetranslation.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	pagetranslation.DefaultUpdatedAt = pagetranslationDescUpdatedAt.Default.(func() time.Time)
+	// pagetranslation.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	pagetranslation.UpdateDefaultUpdatedAt = pagetranslationDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// pagetranslationDescLocale is the schema descriptor for locale field.
+	pagetranslationDescLocale := pagetranslationFields[1].Descriptor()
+	// pagetranslation.LocaleValidator is a validator for the "locale" field. It is called by the builders before save.
+	pagetranslation.LocaleValidator = pagetranslationDescLocale.Validators[0].(func(string) error)
+	// pagetranslationDescTitle is the schema descriptor for title field.
+	pagetranslationDescTitle := pagetranslationFields[2].Descriptor()
+	// pagetranslation.TitleValidator is a validator for the "title" field. It is called by the builders before save.
+	pagetranslation.TitleValidator = pagetranslationDescTitle.Validators[0].(func(string) error)
+	// pagetranslationDescSeoTitle is the schema descriptor for seo_title field.
+	pagetranslationDescSeoTitle := pagetranslationFields[4].Descriptor()
+	// pagetranslation.DefaultSeoTitle holds the default value on creation for the seo_title field.
+	pagetranslation.DefaultSeoTitle = pagetranslationDescSeoTitle.Default.(string)
+	// pagetranslationDescSeoDesc is the schema descriptor for seo_desc field.
+	pagetranslationDescSeoDesc := pagetranslationFields[5].Descriptor()
+	// pagetranslation.DefaultSeoDesc holds the default value on creation for the seo_desc field.
+	pagetranslation.DefaultSeoDesc = pagetranslationDescSeoDesc.Default.(string)
 	permissionMixin := schema.Permission{}.Mixin()
 	permissionMixinFields0 := permissionMixin[0].Fields()
 	_ = permissionMixinFields0

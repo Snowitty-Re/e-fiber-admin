@@ -16,6 +16,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/adminuser"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/blogpost"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/blogposttranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/category"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/categorytranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/collection"
@@ -24,6 +26,11 @@ import (
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/locale"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/media"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/mediatranslation"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/menu"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/menuitem"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/menuitemtranslation"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/page"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/pagetranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/permission"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/product"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/productmedia"
@@ -48,6 +55,10 @@ type Client struct {
 	Schema *migrate.Schema
 	// AdminUser is the client for interacting with the AdminUser builders.
 	AdminUser *AdminUserClient
+	// BlogPost is the client for interacting with the BlogPost builders.
+	BlogPost *BlogPostClient
+	// BlogPostTranslation is the client for interacting with the BlogPostTranslation builders.
+	BlogPostTranslation *BlogPostTranslationClient
 	// Category is the client for interacting with the Category builders.
 	Category *CategoryClient
 	// CategoryTranslation is the client for interacting with the CategoryTranslation builders.
@@ -64,6 +75,16 @@ type Client struct {
 	Media *MediaClient
 	// MediaTranslation is the client for interacting with the MediaTranslation builders.
 	MediaTranslation *MediaTranslationClient
+	// Menu is the client for interacting with the Menu builders.
+	Menu *MenuClient
+	// MenuItem is the client for interacting with the MenuItem builders.
+	MenuItem *MenuItemClient
+	// MenuItemTranslation is the client for interacting with the MenuItemTranslation builders.
+	MenuItemTranslation *MenuItemTranslationClient
+	// Page is the client for interacting with the Page builders.
+	Page *PageClient
+	// PageTranslation is the client for interacting with the PageTranslation builders.
+	PageTranslation *PageTranslationClient
 	// Permission is the client for interacting with the Permission builders.
 	Permission *PermissionClient
 	// Product is the client for interacting with the Product builders.
@@ -106,6 +127,8 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.AdminUser = NewAdminUserClient(c.config)
+	c.BlogPost = NewBlogPostClient(c.config)
+	c.BlogPostTranslation = NewBlogPostTranslationClient(c.config)
 	c.Category = NewCategoryClient(c.config)
 	c.CategoryTranslation = NewCategoryTranslationClient(c.config)
 	c.Collection = NewCollectionClient(c.config)
@@ -114,6 +137,11 @@ func (c *Client) init() {
 	c.Locale = NewLocaleClient(c.config)
 	c.Media = NewMediaClient(c.config)
 	c.MediaTranslation = NewMediaTranslationClient(c.config)
+	c.Menu = NewMenuClient(c.config)
+	c.MenuItem = NewMenuItemClient(c.config)
+	c.MenuItemTranslation = NewMenuItemTranslationClient(c.config)
+	c.Page = NewPageClient(c.config)
+	c.PageTranslation = NewPageTranslationClient(c.config)
 	c.Permission = NewPermissionClient(c.config)
 	c.Product = NewProductClient(c.config)
 	c.ProductMedia = NewProductMediaClient(c.config)
@@ -222,6 +250,8 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		ctx:                   ctx,
 		config:                cfg,
 		AdminUser:             NewAdminUserClient(cfg),
+		BlogPost:              NewBlogPostClient(cfg),
+		BlogPostTranslation:   NewBlogPostTranslationClient(cfg),
 		Category:              NewCategoryClient(cfg),
 		CategoryTranslation:   NewCategoryTranslationClient(cfg),
 		Collection:            NewCollectionClient(cfg),
@@ -230,6 +260,11 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Locale:                NewLocaleClient(cfg),
 		Media:                 NewMediaClient(cfg),
 		MediaTranslation:      NewMediaTranslationClient(cfg),
+		Menu:                  NewMenuClient(cfg),
+		MenuItem:              NewMenuItemClient(cfg),
+		MenuItemTranslation:   NewMenuItemTranslationClient(cfg),
+		Page:                  NewPageClient(cfg),
+		PageTranslation:       NewPageTranslationClient(cfg),
 		Permission:            NewPermissionClient(cfg),
 		Product:               NewProductClient(cfg),
 		ProductMedia:          NewProductMediaClient(cfg),
@@ -265,6 +300,8 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		ctx:                   ctx,
 		config:                cfg,
 		AdminUser:             NewAdminUserClient(cfg),
+		BlogPost:              NewBlogPostClient(cfg),
+		BlogPostTranslation:   NewBlogPostTranslationClient(cfg),
 		Category:              NewCategoryClient(cfg),
 		CategoryTranslation:   NewCategoryTranslationClient(cfg),
 		Collection:            NewCollectionClient(cfg),
@@ -273,6 +310,11 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Locale:                NewLocaleClient(cfg),
 		Media:                 NewMediaClient(cfg),
 		MediaTranslation:      NewMediaTranslationClient(cfg),
+		Menu:                  NewMenuClient(cfg),
+		MenuItem:              NewMenuItemClient(cfg),
+		MenuItemTranslation:   NewMenuItemTranslationClient(cfg),
+		Page:                  NewPageClient(cfg),
+		PageTranslation:       NewPageTranslationClient(cfg),
 		Permission:            NewPermissionClient(cfg),
 		Product:               NewProductClient(cfg),
 		ProductMedia:          NewProductMediaClient(cfg),
@@ -317,11 +359,13 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
-		c.AdminUser, c.Category, c.CategoryTranslation, c.Collection,
-		c.CollectionTranslation, c.Currency, c.Locale, c.Media, c.MediaTranslation,
-		c.Permission, c.Product, c.ProductMedia, c.ProductOption, c.ProductOptionValue,
-		c.ProductTranslation, c.Region, c.Role, c.Store, c.Tag, c.TagTranslation,
-		c.TaxRate, c.Variant, c.VariantOptionValue, c.VariantPrice,
+		c.AdminUser, c.BlogPost, c.BlogPostTranslation, c.Category,
+		c.CategoryTranslation, c.Collection, c.CollectionTranslation, c.Currency,
+		c.Locale, c.Media, c.MediaTranslation, c.Menu, c.MenuItem,
+		c.MenuItemTranslation, c.Page, c.PageTranslation, c.Permission, c.Product,
+		c.ProductMedia, c.ProductOption, c.ProductOptionValue, c.ProductTranslation,
+		c.Region, c.Role, c.Store, c.Tag, c.TagTranslation, c.TaxRate, c.Variant,
+		c.VariantOptionValue, c.VariantPrice,
 	} {
 		n.Use(hooks...)
 	}
@@ -331,11 +375,13 @@ func (c *Client) Use(hooks ...Hook) {
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
-		c.AdminUser, c.Category, c.CategoryTranslation, c.Collection,
-		c.CollectionTranslation, c.Currency, c.Locale, c.Media, c.MediaTranslation,
-		c.Permission, c.Product, c.ProductMedia, c.ProductOption, c.ProductOptionValue,
-		c.ProductTranslation, c.Region, c.Role, c.Store, c.Tag, c.TagTranslation,
-		c.TaxRate, c.Variant, c.VariantOptionValue, c.VariantPrice,
+		c.AdminUser, c.BlogPost, c.BlogPostTranslation, c.Category,
+		c.CategoryTranslation, c.Collection, c.CollectionTranslation, c.Currency,
+		c.Locale, c.Media, c.MediaTranslation, c.Menu, c.MenuItem,
+		c.MenuItemTranslation, c.Page, c.PageTranslation, c.Permission, c.Product,
+		c.ProductMedia, c.ProductOption, c.ProductOptionValue, c.ProductTranslation,
+		c.Region, c.Role, c.Store, c.Tag, c.TagTranslation, c.TaxRate, c.Variant,
+		c.VariantOptionValue, c.VariantPrice,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -346,6 +392,10 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
 	case *AdminUserMutation:
 		return c.AdminUser.mutate(ctx, m)
+	case *BlogPostMutation:
+		return c.BlogPost.mutate(ctx, m)
+	case *BlogPostTranslationMutation:
+		return c.BlogPostTranslation.mutate(ctx, m)
 	case *CategoryMutation:
 		return c.Category.mutate(ctx, m)
 	case *CategoryTranslationMutation:
@@ -362,6 +412,16 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Media.mutate(ctx, m)
 	case *MediaTranslationMutation:
 		return c.MediaTranslation.mutate(ctx, m)
+	case *MenuMutation:
+		return c.Menu.mutate(ctx, m)
+	case *MenuItemMutation:
+		return c.MenuItem.mutate(ctx, m)
+	case *MenuItemTranslationMutation:
+		return c.MenuItemTranslation.mutate(ctx, m)
+	case *PageMutation:
+		return c.Page.mutate(ctx, m)
+	case *PageTranslationMutation:
+		return c.PageTranslation.mutate(ctx, m)
 	case *PermissionMutation:
 		return c.Permission.mutate(ctx, m)
 	case *ProductMutation:
@@ -543,6 +603,304 @@ func (c *AdminUserClient) mutate(ctx context.Context, m *AdminUserMutation) (Val
 		return (&AdminUserDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown AdminUser mutation op: %q", m.Op())
+	}
+}
+
+// BlogPostClient is a client for the BlogPost schema.
+type BlogPostClient struct {
+	config
+}
+
+// NewBlogPostClient returns a client for the BlogPost from the given config.
+func NewBlogPostClient(c config) *BlogPostClient {
+	return &BlogPostClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `blogpost.Hooks(f(g(h())))`.
+func (c *BlogPostClient) Use(hooks ...Hook) {
+	c.hooks.BlogPost = append(c.hooks.BlogPost, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `blogpost.Intercept(f(g(h())))`.
+func (c *BlogPostClient) Intercept(interceptors ...Interceptor) {
+	c.inters.BlogPost = append(c.inters.BlogPost, interceptors...)
+}
+
+// Create returns a builder for creating a BlogPost entity.
+func (c *BlogPostClient) Create() *BlogPostCreate {
+	mutation := newBlogPostMutation(c.config, OpCreate)
+	return &BlogPostCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of BlogPost entities.
+func (c *BlogPostClient) CreateBulk(builders ...*BlogPostCreate) *BlogPostCreateBulk {
+	return &BlogPostCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *BlogPostClient) MapCreateBulk(slice any, setFunc func(*BlogPostCreate, int)) *BlogPostCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &BlogPostCreateBulk{err: fmt.Errorf("calling to BlogPostClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*BlogPostCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &BlogPostCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for BlogPost.
+func (c *BlogPostClient) Update() *BlogPostUpdate {
+	mutation := newBlogPostMutation(c.config, OpUpdate)
+	return &BlogPostUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *BlogPostClient) UpdateOne(_m *BlogPost) *BlogPostUpdateOne {
+	mutation := newBlogPostMutation(c.config, OpUpdateOne, withBlogPost(_m))
+	return &BlogPostUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *BlogPostClient) UpdateOneID(id int) *BlogPostUpdateOne {
+	mutation := newBlogPostMutation(c.config, OpUpdateOne, withBlogPostID(id))
+	return &BlogPostUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for BlogPost.
+func (c *BlogPostClient) Delete() *BlogPostDelete {
+	mutation := newBlogPostMutation(c.config, OpDelete)
+	return &BlogPostDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *BlogPostClient) DeleteOne(_m *BlogPost) *BlogPostDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *BlogPostClient) DeleteOneID(id int) *BlogPostDeleteOne {
+	builder := c.Delete().Where(blogpost.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &BlogPostDeleteOne{builder}
+}
+
+// Query returns a query builder for BlogPost.
+func (c *BlogPostClient) Query() *BlogPostQuery {
+	return &BlogPostQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeBlogPost},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a BlogPost entity by its id.
+func (c *BlogPostClient) Get(ctx context.Context, id int) (*BlogPost, error) {
+	return c.Query().Where(blogpost.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *BlogPostClient) GetX(ctx context.Context, id int) *BlogPost {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryTranslations queries the translations edge of a BlogPost.
+func (c *BlogPostClient) QueryTranslations(_m *BlogPost) *BlogPostTranslationQuery {
+	query := (&BlogPostTranslationClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(blogpost.Table, blogpost.FieldID, id),
+			sqlgraph.To(blogposttranslation.Table, blogposttranslation.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, blogpost.TranslationsTable, blogpost.TranslationsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *BlogPostClient) Hooks() []Hook {
+	return c.hooks.BlogPost
+}
+
+// Interceptors returns the client interceptors.
+func (c *BlogPostClient) Interceptors() []Interceptor {
+	return c.inters.BlogPost
+}
+
+func (c *BlogPostClient) mutate(ctx context.Context, m *BlogPostMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&BlogPostCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&BlogPostUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&BlogPostUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&BlogPostDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown BlogPost mutation op: %q", m.Op())
+	}
+}
+
+// BlogPostTranslationClient is a client for the BlogPostTranslation schema.
+type BlogPostTranslationClient struct {
+	config
+}
+
+// NewBlogPostTranslationClient returns a client for the BlogPostTranslation from the given config.
+func NewBlogPostTranslationClient(c config) *BlogPostTranslationClient {
+	return &BlogPostTranslationClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `blogposttranslation.Hooks(f(g(h())))`.
+func (c *BlogPostTranslationClient) Use(hooks ...Hook) {
+	c.hooks.BlogPostTranslation = append(c.hooks.BlogPostTranslation, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `blogposttranslation.Intercept(f(g(h())))`.
+func (c *BlogPostTranslationClient) Intercept(interceptors ...Interceptor) {
+	c.inters.BlogPostTranslation = append(c.inters.BlogPostTranslation, interceptors...)
+}
+
+// Create returns a builder for creating a BlogPostTranslation entity.
+func (c *BlogPostTranslationClient) Create() *BlogPostTranslationCreate {
+	mutation := newBlogPostTranslationMutation(c.config, OpCreate)
+	return &BlogPostTranslationCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of BlogPostTranslation entities.
+func (c *BlogPostTranslationClient) CreateBulk(builders ...*BlogPostTranslationCreate) *BlogPostTranslationCreateBulk {
+	return &BlogPostTranslationCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *BlogPostTranslationClient) MapCreateBulk(slice any, setFunc func(*BlogPostTranslationCreate, int)) *BlogPostTranslationCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &BlogPostTranslationCreateBulk{err: fmt.Errorf("calling to BlogPostTranslationClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*BlogPostTranslationCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &BlogPostTranslationCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for BlogPostTranslation.
+func (c *BlogPostTranslationClient) Update() *BlogPostTranslationUpdate {
+	mutation := newBlogPostTranslationMutation(c.config, OpUpdate)
+	return &BlogPostTranslationUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *BlogPostTranslationClient) UpdateOne(_m *BlogPostTranslation) *BlogPostTranslationUpdateOne {
+	mutation := newBlogPostTranslationMutation(c.config, OpUpdateOne, withBlogPostTranslation(_m))
+	return &BlogPostTranslationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *BlogPostTranslationClient) UpdateOneID(id int) *BlogPostTranslationUpdateOne {
+	mutation := newBlogPostTranslationMutation(c.config, OpUpdateOne, withBlogPostTranslationID(id))
+	return &BlogPostTranslationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for BlogPostTranslation.
+func (c *BlogPostTranslationClient) Delete() *BlogPostTranslationDelete {
+	mutation := newBlogPostTranslationMutation(c.config, OpDelete)
+	return &BlogPostTranslationDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *BlogPostTranslationClient) DeleteOne(_m *BlogPostTranslation) *BlogPostTranslationDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *BlogPostTranslationClient) DeleteOneID(id int) *BlogPostTranslationDeleteOne {
+	builder := c.Delete().Where(blogposttranslation.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &BlogPostTranslationDeleteOne{builder}
+}
+
+// Query returns a query builder for BlogPostTranslation.
+func (c *BlogPostTranslationClient) Query() *BlogPostTranslationQuery {
+	return &BlogPostTranslationQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeBlogPostTranslation},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a BlogPostTranslation entity by its id.
+func (c *BlogPostTranslationClient) Get(ctx context.Context, id int) (*BlogPostTranslation, error) {
+	return c.Query().Where(blogposttranslation.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *BlogPostTranslationClient) GetX(ctx context.Context, id int) *BlogPostTranslation {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryBlogPost queries the blog_post edge of a BlogPostTranslation.
+func (c *BlogPostTranslationClient) QueryBlogPost(_m *BlogPostTranslation) *BlogPostQuery {
+	query := (&BlogPostClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(blogposttranslation.Table, blogposttranslation.FieldID, id),
+			sqlgraph.To(blogpost.Table, blogpost.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, blogposttranslation.BlogPostTable, blogposttranslation.BlogPostColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *BlogPostTranslationClient) Hooks() []Hook {
+	return c.hooks.BlogPostTranslation
+}
+
+// Interceptors returns the client interceptors.
+func (c *BlogPostTranslationClient) Interceptors() []Interceptor {
+	return c.inters.BlogPostTranslation
+}
+
+func (c *BlogPostTranslationClient) mutate(ctx context.Context, m *BlogPostTranslationMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&BlogPostTranslationCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&BlogPostTranslationUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&BlogPostTranslationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&BlogPostTranslationDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown BlogPostTranslation mutation op: %q", m.Op())
 	}
 }
 
@@ -1719,6 +2077,767 @@ func (c *MediaTranslationClient) mutate(ctx context.Context, m *MediaTranslation
 		return (&MediaTranslationDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown MediaTranslation mutation op: %q", m.Op())
+	}
+}
+
+// MenuClient is a client for the Menu schema.
+type MenuClient struct {
+	config
+}
+
+// NewMenuClient returns a client for the Menu from the given config.
+func NewMenuClient(c config) *MenuClient {
+	return &MenuClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `menu.Hooks(f(g(h())))`.
+func (c *MenuClient) Use(hooks ...Hook) {
+	c.hooks.Menu = append(c.hooks.Menu, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `menu.Intercept(f(g(h())))`.
+func (c *MenuClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Menu = append(c.inters.Menu, interceptors...)
+}
+
+// Create returns a builder for creating a Menu entity.
+func (c *MenuClient) Create() *MenuCreate {
+	mutation := newMenuMutation(c.config, OpCreate)
+	return &MenuCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Menu entities.
+func (c *MenuClient) CreateBulk(builders ...*MenuCreate) *MenuCreateBulk {
+	return &MenuCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *MenuClient) MapCreateBulk(slice any, setFunc func(*MenuCreate, int)) *MenuCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &MenuCreateBulk{err: fmt.Errorf("calling to MenuClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*MenuCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &MenuCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Menu.
+func (c *MenuClient) Update() *MenuUpdate {
+	mutation := newMenuMutation(c.config, OpUpdate)
+	return &MenuUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *MenuClient) UpdateOne(_m *Menu) *MenuUpdateOne {
+	mutation := newMenuMutation(c.config, OpUpdateOne, withMenu(_m))
+	return &MenuUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *MenuClient) UpdateOneID(id int) *MenuUpdateOne {
+	mutation := newMenuMutation(c.config, OpUpdateOne, withMenuID(id))
+	return &MenuUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Menu.
+func (c *MenuClient) Delete() *MenuDelete {
+	mutation := newMenuMutation(c.config, OpDelete)
+	return &MenuDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *MenuClient) DeleteOne(_m *Menu) *MenuDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *MenuClient) DeleteOneID(id int) *MenuDeleteOne {
+	builder := c.Delete().Where(menu.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &MenuDeleteOne{builder}
+}
+
+// Query returns a query builder for Menu.
+func (c *MenuClient) Query() *MenuQuery {
+	return &MenuQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeMenu},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Menu entity by its id.
+func (c *MenuClient) Get(ctx context.Context, id int) (*Menu, error) {
+	return c.Query().Where(menu.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *MenuClient) GetX(ctx context.Context, id int) *Menu {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryItems queries the items edge of a Menu.
+func (c *MenuClient) QueryItems(_m *Menu) *MenuItemQuery {
+	query := (&MenuItemClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(menu.Table, menu.FieldID, id),
+			sqlgraph.To(menuitem.Table, menuitem.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, menu.ItemsTable, menu.ItemsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *MenuClient) Hooks() []Hook {
+	return c.hooks.Menu
+}
+
+// Interceptors returns the client interceptors.
+func (c *MenuClient) Interceptors() []Interceptor {
+	return c.inters.Menu
+}
+
+func (c *MenuClient) mutate(ctx context.Context, m *MenuMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&MenuCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&MenuUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&MenuUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&MenuDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Menu mutation op: %q", m.Op())
+	}
+}
+
+// MenuItemClient is a client for the MenuItem schema.
+type MenuItemClient struct {
+	config
+}
+
+// NewMenuItemClient returns a client for the MenuItem from the given config.
+func NewMenuItemClient(c config) *MenuItemClient {
+	return &MenuItemClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `menuitem.Hooks(f(g(h())))`.
+func (c *MenuItemClient) Use(hooks ...Hook) {
+	c.hooks.MenuItem = append(c.hooks.MenuItem, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `menuitem.Intercept(f(g(h())))`.
+func (c *MenuItemClient) Intercept(interceptors ...Interceptor) {
+	c.inters.MenuItem = append(c.inters.MenuItem, interceptors...)
+}
+
+// Create returns a builder for creating a MenuItem entity.
+func (c *MenuItemClient) Create() *MenuItemCreate {
+	mutation := newMenuItemMutation(c.config, OpCreate)
+	return &MenuItemCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of MenuItem entities.
+func (c *MenuItemClient) CreateBulk(builders ...*MenuItemCreate) *MenuItemCreateBulk {
+	return &MenuItemCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *MenuItemClient) MapCreateBulk(slice any, setFunc func(*MenuItemCreate, int)) *MenuItemCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &MenuItemCreateBulk{err: fmt.Errorf("calling to MenuItemClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*MenuItemCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &MenuItemCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for MenuItem.
+func (c *MenuItemClient) Update() *MenuItemUpdate {
+	mutation := newMenuItemMutation(c.config, OpUpdate)
+	return &MenuItemUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *MenuItemClient) UpdateOne(_m *MenuItem) *MenuItemUpdateOne {
+	mutation := newMenuItemMutation(c.config, OpUpdateOne, withMenuItem(_m))
+	return &MenuItemUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *MenuItemClient) UpdateOneID(id int) *MenuItemUpdateOne {
+	mutation := newMenuItemMutation(c.config, OpUpdateOne, withMenuItemID(id))
+	return &MenuItemUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for MenuItem.
+func (c *MenuItemClient) Delete() *MenuItemDelete {
+	mutation := newMenuItemMutation(c.config, OpDelete)
+	return &MenuItemDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *MenuItemClient) DeleteOne(_m *MenuItem) *MenuItemDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *MenuItemClient) DeleteOneID(id int) *MenuItemDeleteOne {
+	builder := c.Delete().Where(menuitem.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &MenuItemDeleteOne{builder}
+}
+
+// Query returns a query builder for MenuItem.
+func (c *MenuItemClient) Query() *MenuItemQuery {
+	return &MenuItemQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeMenuItem},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a MenuItem entity by its id.
+func (c *MenuItemClient) Get(ctx context.Context, id int) (*MenuItem, error) {
+	return c.Query().Where(menuitem.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *MenuItemClient) GetX(ctx context.Context, id int) *MenuItem {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryMenu queries the menu edge of a MenuItem.
+func (c *MenuItemClient) QueryMenu(_m *MenuItem) *MenuQuery {
+	query := (&MenuClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(menuitem.Table, menuitem.FieldID, id),
+			sqlgraph.To(menu.Table, menu.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, menuitem.MenuTable, menuitem.MenuColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTranslations queries the translations edge of a MenuItem.
+func (c *MenuItemClient) QueryTranslations(_m *MenuItem) *MenuItemTranslationQuery {
+	query := (&MenuItemTranslationClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(menuitem.Table, menuitem.FieldID, id),
+			sqlgraph.To(menuitemtranslation.Table, menuitemtranslation.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, menuitem.TranslationsTable, menuitem.TranslationsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *MenuItemClient) Hooks() []Hook {
+	return c.hooks.MenuItem
+}
+
+// Interceptors returns the client interceptors.
+func (c *MenuItemClient) Interceptors() []Interceptor {
+	return c.inters.MenuItem
+}
+
+func (c *MenuItemClient) mutate(ctx context.Context, m *MenuItemMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&MenuItemCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&MenuItemUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&MenuItemUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&MenuItemDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown MenuItem mutation op: %q", m.Op())
+	}
+}
+
+// MenuItemTranslationClient is a client for the MenuItemTranslation schema.
+type MenuItemTranslationClient struct {
+	config
+}
+
+// NewMenuItemTranslationClient returns a client for the MenuItemTranslation from the given config.
+func NewMenuItemTranslationClient(c config) *MenuItemTranslationClient {
+	return &MenuItemTranslationClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `menuitemtranslation.Hooks(f(g(h())))`.
+func (c *MenuItemTranslationClient) Use(hooks ...Hook) {
+	c.hooks.MenuItemTranslation = append(c.hooks.MenuItemTranslation, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `menuitemtranslation.Intercept(f(g(h())))`.
+func (c *MenuItemTranslationClient) Intercept(interceptors ...Interceptor) {
+	c.inters.MenuItemTranslation = append(c.inters.MenuItemTranslation, interceptors...)
+}
+
+// Create returns a builder for creating a MenuItemTranslation entity.
+func (c *MenuItemTranslationClient) Create() *MenuItemTranslationCreate {
+	mutation := newMenuItemTranslationMutation(c.config, OpCreate)
+	return &MenuItemTranslationCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of MenuItemTranslation entities.
+func (c *MenuItemTranslationClient) CreateBulk(builders ...*MenuItemTranslationCreate) *MenuItemTranslationCreateBulk {
+	return &MenuItemTranslationCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *MenuItemTranslationClient) MapCreateBulk(slice any, setFunc func(*MenuItemTranslationCreate, int)) *MenuItemTranslationCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &MenuItemTranslationCreateBulk{err: fmt.Errorf("calling to MenuItemTranslationClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*MenuItemTranslationCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &MenuItemTranslationCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for MenuItemTranslation.
+func (c *MenuItemTranslationClient) Update() *MenuItemTranslationUpdate {
+	mutation := newMenuItemTranslationMutation(c.config, OpUpdate)
+	return &MenuItemTranslationUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *MenuItemTranslationClient) UpdateOne(_m *MenuItemTranslation) *MenuItemTranslationUpdateOne {
+	mutation := newMenuItemTranslationMutation(c.config, OpUpdateOne, withMenuItemTranslation(_m))
+	return &MenuItemTranslationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *MenuItemTranslationClient) UpdateOneID(id int) *MenuItemTranslationUpdateOne {
+	mutation := newMenuItemTranslationMutation(c.config, OpUpdateOne, withMenuItemTranslationID(id))
+	return &MenuItemTranslationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for MenuItemTranslation.
+func (c *MenuItemTranslationClient) Delete() *MenuItemTranslationDelete {
+	mutation := newMenuItemTranslationMutation(c.config, OpDelete)
+	return &MenuItemTranslationDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *MenuItemTranslationClient) DeleteOne(_m *MenuItemTranslation) *MenuItemTranslationDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *MenuItemTranslationClient) DeleteOneID(id int) *MenuItemTranslationDeleteOne {
+	builder := c.Delete().Where(menuitemtranslation.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &MenuItemTranslationDeleteOne{builder}
+}
+
+// Query returns a query builder for MenuItemTranslation.
+func (c *MenuItemTranslationClient) Query() *MenuItemTranslationQuery {
+	return &MenuItemTranslationQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeMenuItemTranslation},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a MenuItemTranslation entity by its id.
+func (c *MenuItemTranslationClient) Get(ctx context.Context, id int) (*MenuItemTranslation, error) {
+	return c.Query().Where(menuitemtranslation.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *MenuItemTranslationClient) GetX(ctx context.Context, id int) *MenuItemTranslation {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryMenuItem queries the menu_item edge of a MenuItemTranslation.
+func (c *MenuItemTranslationClient) QueryMenuItem(_m *MenuItemTranslation) *MenuItemQuery {
+	query := (&MenuItemClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(menuitemtranslation.Table, menuitemtranslation.FieldID, id),
+			sqlgraph.To(menuitem.Table, menuitem.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, menuitemtranslation.MenuItemTable, menuitemtranslation.MenuItemColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *MenuItemTranslationClient) Hooks() []Hook {
+	return c.hooks.MenuItemTranslation
+}
+
+// Interceptors returns the client interceptors.
+func (c *MenuItemTranslationClient) Interceptors() []Interceptor {
+	return c.inters.MenuItemTranslation
+}
+
+func (c *MenuItemTranslationClient) mutate(ctx context.Context, m *MenuItemTranslationMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&MenuItemTranslationCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&MenuItemTranslationUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&MenuItemTranslationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&MenuItemTranslationDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown MenuItemTranslation mutation op: %q", m.Op())
+	}
+}
+
+// PageClient is a client for the Page schema.
+type PageClient struct {
+	config
+}
+
+// NewPageClient returns a client for the Page from the given config.
+func NewPageClient(c config) *PageClient {
+	return &PageClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `page.Hooks(f(g(h())))`.
+func (c *PageClient) Use(hooks ...Hook) {
+	c.hooks.Page = append(c.hooks.Page, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `page.Intercept(f(g(h())))`.
+func (c *PageClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Page = append(c.inters.Page, interceptors...)
+}
+
+// Create returns a builder for creating a Page entity.
+func (c *PageClient) Create() *PageCreate {
+	mutation := newPageMutation(c.config, OpCreate)
+	return &PageCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Page entities.
+func (c *PageClient) CreateBulk(builders ...*PageCreate) *PageCreateBulk {
+	return &PageCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *PageClient) MapCreateBulk(slice any, setFunc func(*PageCreate, int)) *PageCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &PageCreateBulk{err: fmt.Errorf("calling to PageClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*PageCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &PageCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Page.
+func (c *PageClient) Update() *PageUpdate {
+	mutation := newPageMutation(c.config, OpUpdate)
+	return &PageUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *PageClient) UpdateOne(_m *Page) *PageUpdateOne {
+	mutation := newPageMutation(c.config, OpUpdateOne, withPage(_m))
+	return &PageUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *PageClient) UpdateOneID(id int) *PageUpdateOne {
+	mutation := newPageMutation(c.config, OpUpdateOne, withPageID(id))
+	return &PageUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Page.
+func (c *PageClient) Delete() *PageDelete {
+	mutation := newPageMutation(c.config, OpDelete)
+	return &PageDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *PageClient) DeleteOne(_m *Page) *PageDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *PageClient) DeleteOneID(id int) *PageDeleteOne {
+	builder := c.Delete().Where(page.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &PageDeleteOne{builder}
+}
+
+// Query returns a query builder for Page.
+func (c *PageClient) Query() *PageQuery {
+	return &PageQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypePage},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Page entity by its id.
+func (c *PageClient) Get(ctx context.Context, id int) (*Page, error) {
+	return c.Query().Where(page.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *PageClient) GetX(ctx context.Context, id int) *Page {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryTranslations queries the translations edge of a Page.
+func (c *PageClient) QueryTranslations(_m *Page) *PageTranslationQuery {
+	query := (&PageTranslationClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(page.Table, page.FieldID, id),
+			sqlgraph.To(pagetranslation.Table, pagetranslation.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, page.TranslationsTable, page.TranslationsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *PageClient) Hooks() []Hook {
+	return c.hooks.Page
+}
+
+// Interceptors returns the client interceptors.
+func (c *PageClient) Interceptors() []Interceptor {
+	return c.inters.Page
+}
+
+func (c *PageClient) mutate(ctx context.Context, m *PageMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&PageCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&PageUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&PageUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&PageDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Page mutation op: %q", m.Op())
+	}
+}
+
+// PageTranslationClient is a client for the PageTranslation schema.
+type PageTranslationClient struct {
+	config
+}
+
+// NewPageTranslationClient returns a client for the PageTranslation from the given config.
+func NewPageTranslationClient(c config) *PageTranslationClient {
+	return &PageTranslationClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `pagetranslation.Hooks(f(g(h())))`.
+func (c *PageTranslationClient) Use(hooks ...Hook) {
+	c.hooks.PageTranslation = append(c.hooks.PageTranslation, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `pagetranslation.Intercept(f(g(h())))`.
+func (c *PageTranslationClient) Intercept(interceptors ...Interceptor) {
+	c.inters.PageTranslation = append(c.inters.PageTranslation, interceptors...)
+}
+
+// Create returns a builder for creating a PageTranslation entity.
+func (c *PageTranslationClient) Create() *PageTranslationCreate {
+	mutation := newPageTranslationMutation(c.config, OpCreate)
+	return &PageTranslationCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of PageTranslation entities.
+func (c *PageTranslationClient) CreateBulk(builders ...*PageTranslationCreate) *PageTranslationCreateBulk {
+	return &PageTranslationCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *PageTranslationClient) MapCreateBulk(slice any, setFunc func(*PageTranslationCreate, int)) *PageTranslationCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &PageTranslationCreateBulk{err: fmt.Errorf("calling to PageTranslationClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*PageTranslationCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &PageTranslationCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for PageTranslation.
+func (c *PageTranslationClient) Update() *PageTranslationUpdate {
+	mutation := newPageTranslationMutation(c.config, OpUpdate)
+	return &PageTranslationUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *PageTranslationClient) UpdateOne(_m *PageTranslation) *PageTranslationUpdateOne {
+	mutation := newPageTranslationMutation(c.config, OpUpdateOne, withPageTranslation(_m))
+	return &PageTranslationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *PageTranslationClient) UpdateOneID(id int) *PageTranslationUpdateOne {
+	mutation := newPageTranslationMutation(c.config, OpUpdateOne, withPageTranslationID(id))
+	return &PageTranslationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for PageTranslation.
+func (c *PageTranslationClient) Delete() *PageTranslationDelete {
+	mutation := newPageTranslationMutation(c.config, OpDelete)
+	return &PageTranslationDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *PageTranslationClient) DeleteOne(_m *PageTranslation) *PageTranslationDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *PageTranslationClient) DeleteOneID(id int) *PageTranslationDeleteOne {
+	builder := c.Delete().Where(pagetranslation.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &PageTranslationDeleteOne{builder}
+}
+
+// Query returns a query builder for PageTranslation.
+func (c *PageTranslationClient) Query() *PageTranslationQuery {
+	return &PageTranslationQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypePageTranslation},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a PageTranslation entity by its id.
+func (c *PageTranslationClient) Get(ctx context.Context, id int) (*PageTranslation, error) {
+	return c.Query().Where(pagetranslation.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *PageTranslationClient) GetX(ctx context.Context, id int) *PageTranslation {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryPage queries the page edge of a PageTranslation.
+func (c *PageTranslationClient) QueryPage(_m *PageTranslation) *PageQuery {
+	query := (&PageClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(pagetranslation.Table, pagetranslation.FieldID, id),
+			sqlgraph.To(page.Table, page.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, pagetranslation.PageTable, pagetranslation.PageColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *PageTranslationClient) Hooks() []Hook {
+	return c.hooks.PageTranslation
+}
+
+// Interceptors returns the client interceptors.
+func (c *PageTranslationClient) Interceptors() []Interceptor {
+	return c.inters.PageTranslation
+}
+
+func (c *PageTranslationClient) mutate(ctx context.Context, m *PageTranslationMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&PageTranslationCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&PageTranslationUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&PageTranslationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&PageTranslationDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown PageTranslation mutation op: %q", m.Op())
 	}
 }
 
@@ -4040,17 +5159,19 @@ func (c *VariantPriceClient) mutate(ctx context.Context, m *VariantPriceMutation
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		AdminUser, Category, CategoryTranslation, Collection, CollectionTranslation,
-		Currency, Locale, Media, MediaTranslation, Permission, Product, ProductMedia,
-		ProductOption, ProductOptionValue, ProductTranslation, Region, Role, Store,
-		Tag, TagTranslation, TaxRate, Variant, VariantOptionValue,
+		AdminUser, BlogPost, BlogPostTranslation, Category, CategoryTranslation,
+		Collection, CollectionTranslation, Currency, Locale, Media, MediaTranslation,
+		Menu, MenuItem, MenuItemTranslation, Page, PageTranslation, Permission,
+		Product, ProductMedia, ProductOption, ProductOptionValue, ProductTranslation,
+		Region, Role, Store, Tag, TagTranslation, TaxRate, Variant, VariantOptionValue,
 		VariantPrice []ent.Hook
 	}
 	inters struct {
-		AdminUser, Category, CategoryTranslation, Collection, CollectionTranslation,
-		Currency, Locale, Media, MediaTranslation, Permission, Product, ProductMedia,
-		ProductOption, ProductOptionValue, ProductTranslation, Region, Role, Store,
-		Tag, TagTranslation, TaxRate, Variant, VariantOptionValue,
+		AdminUser, BlogPost, BlogPostTranslation, Category, CategoryTranslation,
+		Collection, CollectionTranslation, Currency, Locale, Media, MediaTranslation,
+		Menu, MenuItem, MenuItemTranslation, Page, PageTranslation, Permission,
+		Product, ProductMedia, ProductOption, ProductOptionValue, ProductTranslation,
+		Region, Role, Store, Tag, TagTranslation, TaxRate, Variant, VariantOptionValue,
 		VariantPrice []ent.Interceptor
 	}
 )

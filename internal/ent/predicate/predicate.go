@@ -9,6 +9,12 @@ import (
 // AdminUser is the predicate function for adminuser builders.
 type AdminUser func(*sql.Selector)
 
+// BlogPost is the predicate function for blogpost builders.
+type BlogPost func(*sql.Selector)
+
+// BlogPostTranslation is the predicate function for blogposttranslation builders.
+type BlogPostTranslation func(*sql.Selector)
+
 // Category is the predicate function for category builders.
 type Category func(*sql.Selector)
 
@@ -32,6 +38,21 @@ type Media func(*sql.Selector)
 
 // MediaTranslation is the predicate function for mediatranslation builders.
 type MediaTranslation func(*sql.Selector)
+
+// Menu is the predicate function for menu builders.
+type Menu func(*sql.Selector)
+
+// MenuItem is the predicate function for menuitem builders.
+type MenuItem func(*sql.Selector)
+
+// MenuItemTranslation is the predicate function for menuitemtranslation builders.
+type MenuItemTranslation func(*sql.Selector)
+
+// Page is the predicate function for page builders.
+type Page func(*sql.Selector)
+
+// PageTranslation is the predicate function for pagetranslation builders.
+type PageTranslation func(*sql.Selector)
 
 // Permission is the predicate function for permission builders.
 type Permission func(*sql.Selector)

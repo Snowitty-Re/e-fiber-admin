@@ -38,6 +38,78 @@ var (
 			},
 		},
 	}
+	// BlogPostsColumns holds the columns for the "blog_posts" table.
+	BlogPostsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "updated_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "tenant_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "slug", Type: field.TypeString, Unique: true},
+		{Name: "author_admin_id", Type: field.TypeInt},
+		{Name: "status", Type: field.TypeEnum, Enums: []string{"draft", "published", "archived"}, Default: "draft"},
+		{Name: "published_at", Type: field.TypeTime, Nullable: true},
+	}
+	// BlogPostsTable holds the schema information for the "blog_posts" table.
+	BlogPostsTable = &schema.Table{
+		Name:       "blog_posts",
+		Columns:    BlogPostsColumns,
+		PrimaryKey: []*schema.Column{BlogPostsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "blogpost_status",
+				Unique:  false,
+				Columns: []*schema.Column{BlogPostsColumns[10]},
+			},
+			{
+				Name:    "blogpost_author_admin_id",
+				Unique:  false,
+				Columns: []*schema.Column{BlogPostsColumns[9]},
+			},
+		},
+	}
+	// BlogPostTranslationsColumns holds the columns for the "blog_post_translations" table.
+	BlogPostTranslationsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "updated_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "tenant_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "locale", Type: field.TypeString, Size: 8},
+		{Name: "title", Type: field.TypeString},
+		{Name: "excerpt", Type: field.TypeString, Nullable: true, Size: 2147483647, Default: ""},
+		{Name: "content", Type: field.TypeString, Nullable: true, Size: 2147483647, Default: ""},
+		{Name: "seo_title", Type: field.TypeString, Nullable: true, Default: ""},
+		{Name: "seo_desc", Type: field.TypeString, Nullable: true, Size: 2147483647, Default: ""},
+		{Name: "blog_post_id", Type: field.TypeInt},
+	}
+	// BlogPostTranslationsTable holds the schema information for the "blog_post_translations" table.
+	BlogPostTranslationsTable = &schema.Table{
+		Name:       "blog_post_translations",
+		Columns:    BlogPostTranslationsColumns,
+		PrimaryKey: []*schema.Column{BlogPostTranslationsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "blog_post_translations_blog_posts_translations",
+				Columns:    []*schema.Column{BlogPostTranslationsColumns[14]},
+				RefColumns: []*schema.Column{BlogPostsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "blogposttranslation_blog_post_id_locale",
+				Unique:  true,
+				Columns: []*schema.Column{BlogPostTranslationsColumns[14], BlogPostTranslationsColumns[8]},
+			},
+		},
+	}
 	// CategoriesColumns holds the columns for the "categories" table.
 	CategoriesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -282,6 +354,176 @@ var (
 				Name:    "mediatranslation_media_id_locale",
 				Unique:  true,
 				Columns: []*schema.Column{MediaTranslationsColumns[10], MediaTranslationsColumns[8]},
+			},
+		},
+	}
+	// MenusColumns holds the columns for the "menus" table.
+	MenusColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "updated_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "tenant_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "slug", Type: field.TypeString, Unique: true},
+		{Name: "location", Type: field.TypeString, Default: "header"},
+	}
+	// MenusTable holds the schema information for the "menus" table.
+	MenusTable = &schema.Table{
+		Name:       "menus",
+		Columns:    MenusColumns,
+		PrimaryKey: []*schema.Column{MenusColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "menu_location",
+				Unique:  false,
+				Columns: []*schema.Column{MenusColumns[9]},
+			},
+		},
+	}
+	// MenuItemsColumns holds the columns for the "menu_items" table.
+	MenuItemsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "updated_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "tenant_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "parent_id", Type: field.TypeInt, Nullable: true},
+		{Name: "target_type", Type: field.TypeEnum, Enums: []string{"page", "category", "url", "post"}, Default: "url"},
+		{Name: "target_id", Type: field.TypeInt, Nullable: true},
+		{Name: "url", Type: field.TypeString, Nullable: true, Default: ""},
+		{Name: "position", Type: field.TypeInt, Default: 0},
+		{Name: "menu_id", Type: field.TypeInt},
+	}
+	// MenuItemsTable holds the schema information for the "menu_items" table.
+	MenuItemsTable = &schema.Table{
+		Name:       "menu_items",
+		Columns:    MenuItemsColumns,
+		PrimaryKey: []*schema.Column{MenuItemsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "menu_items_menus_items",
+				Columns:    []*schema.Column{MenuItemsColumns[13]},
+				RefColumns: []*schema.Column{MenusColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "menuitem_menu_id",
+				Unique:  false,
+				Columns: []*schema.Column{MenuItemsColumns[13]},
+			},
+			{
+				Name:    "menuitem_parent_id",
+				Unique:  false,
+				Columns: []*schema.Column{MenuItemsColumns[8]},
+			},
+		},
+	}
+	// MenuItemTranslationsColumns holds the columns for the "menu_item_translations" table.
+	MenuItemTranslationsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "updated_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "tenant_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "locale", Type: field.TypeString, Size: 8},
+		{Name: "title", Type: field.TypeString},
+		{Name: "menu_item_id", Type: field.TypeInt},
+	}
+	// MenuItemTranslationsTable holds the schema information for the "menu_item_translations" table.
+	MenuItemTranslationsTable = &schema.Table{
+		Name:       "menu_item_translations",
+		Columns:    MenuItemTranslationsColumns,
+		PrimaryKey: []*schema.Column{MenuItemTranslationsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "menu_item_translations_menu_items_translations",
+				Columns:    []*schema.Column{MenuItemTranslationsColumns[10]},
+				RefColumns: []*schema.Column{MenuItemsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "menuitemtranslation_menu_item_id_locale",
+				Unique:  true,
+				Columns: []*schema.Column{MenuItemTranslationsColumns[10], MenuItemTranslationsColumns[8]},
+			},
+		},
+	}
+	// PagesColumns holds the columns for the "pages" table.
+	PagesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "updated_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "tenant_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "slug", Type: field.TypeString, Unique: true},
+		{Name: "status", Type: field.TypeEnum, Enums: []string{"draft", "published", "archived"}, Default: "draft"},
+		{Name: "template", Type: field.TypeString, Default: "default"},
+		{Name: "published_at", Type: field.TypeTime, Nullable: true},
+	}
+	// PagesTable holds the schema information for the "pages" table.
+	PagesTable = &schema.Table{
+		Name:       "pages",
+		Columns:    PagesColumns,
+		PrimaryKey: []*schema.Column{PagesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "page_status",
+				Unique:  false,
+				Columns: []*schema.Column{PagesColumns[9]},
+			},
+		},
+	}
+	// PageTranslationsColumns holds the columns for the "page_translations" table.
+	PageTranslationsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "updated_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "tenant_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "locale", Type: field.TypeString, Size: 8},
+		{Name: "title", Type: field.TypeString},
+		{Name: "content", Type: field.TypeJSON, Nullable: true},
+		{Name: "seo_title", Type: field.TypeString, Nullable: true, Default: ""},
+		{Name: "seo_desc", Type: field.TypeString, Nullable: true, Size: 2147483647, Default: ""},
+		{Name: "page_id", Type: field.TypeInt},
+	}
+	// PageTranslationsTable holds the schema information for the "page_translations" table.
+	PageTranslationsTable = &schema.Table{
+		Name:       "page_translations",
+		Columns:    PageTranslationsColumns,
+		PrimaryKey: []*schema.Column{PageTranslationsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "page_translations_pages_translations",
+				Columns:    []*schema.Column{PageTranslationsColumns[13]},
+				RefColumns: []*schema.Column{PagesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "pagetranslation_page_id_locale",
+				Unique:  true,
+				Columns: []*schema.Column{PageTranslationsColumns[13], PageTranslationsColumns[8]},
 			},
 		},
 	}
@@ -860,6 +1102,8 @@ var (
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		AdminUsersTable,
+		BlogPostsTable,
+		BlogPostTranslationsTable,
 		CategoriesTable,
 		CategoryTranslationsTable,
 		CollectionsTable,
@@ -868,6 +1112,11 @@ var (
 		LocalesTable,
 		MediaTable,
 		MediaTranslationsTable,
+		MenusTable,
+		MenuItemsTable,
+		MenuItemTranslationsTable,
+		PagesTable,
+		PageTranslationsTable,
 		PermissionsTable,
 		ProductsTable,
 		ProductMediaTable,
@@ -889,9 +1138,13 @@ var (
 )
 
 func init() {
+	BlogPostTranslationsTable.ForeignKeys[0].RefTable = BlogPostsTable
 	CategoryTranslationsTable.ForeignKeys[0].RefTable = CategoriesTable
 	CollectionTranslationsTable.ForeignKeys[0].RefTable = CollectionsTable
 	MediaTranslationsTable.ForeignKeys[0].RefTable = MediaTable
+	MenuItemsTable.ForeignKeys[0].RefTable = MenusTable
+	MenuItemTranslationsTable.ForeignKeys[0].RefTable = MenuItemsTable
+	PageTranslationsTable.ForeignKeys[0].RefTable = PagesTable
 	ProductsTable.ForeignKeys[0].RefTable = CollectionsTable
 	ProductsTable.ForeignKeys[1].RefTable = TagsTable
 	ProductOptionsTable.ForeignKeys[0].RefTable = ProductsTable
