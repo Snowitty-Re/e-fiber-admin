@@ -18,6 +18,7 @@ import (
 	"github.com/Snowitty-Re/e-fiber-admin/internal/config"
 	authsvc "github.com/Snowitty-Re/e-fiber-admin/internal/domain/auth"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/domain/media"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/domain/product"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/domain/region"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/http/fiber/handler"
@@ -72,12 +73,15 @@ func NewApp(deps Deps) *fiber.App {
 	regionH := handler.NewRegionHandler(regionSvc)
 	mediaSvc := media.NewService(deps.EntClient, deps.MinIOClient, deps.Config.MinIO)
 	mediaH := handler.NewMediaHandler(mediaSvc)
+	productSvc := product.NewService(deps.EntClient)
+	productH := handler.NewProductHandler(productSvc)
 
 	router.Register(app, router.Deps{
 		HealthH:     healthH,
 		AuthH:       authH,
 		RegionH:     regionH,
 		MediaH:      mediaH,
+		ProductH:    productH,
 		JWTAuthFunc: pkgmw.JWTAuth(authService),
 	})
 

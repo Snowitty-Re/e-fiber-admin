@@ -14,6 +14,7 @@ type Deps struct {
 	AuthH       *handler.AuthHandler
 	RegionH     *handler.RegionHandler
 	MediaH      *handler.MediaHandler
+	ProductH    *handler.ProductHandler
 	JWTAuthFunc fiber.Handler
 }
 
@@ -64,9 +65,12 @@ func Register(app *fiber.App, deps Deps) {
 	taxRates.Delete("/:id", middleware.RBAC("region:write"), deps.RegionH.DeleteTaxRate)
 
 	products := adminProtected.Group("/products")
-	products.Get("/", middleware.RBAC("product:read"), func(c fiber.Ctx) error {
-		return c.JSON(fiber.Map{"data": []any{}, "pagination": fiber.Map{"page": 1, "page_size": 20, "total": 0, "has_more": false}})
-	})
+	products.Get("/", middleware.RBAC("product:read"), deps.ProductH.List)
+	products.Post("/", middleware.RBAC("product:write"), deps.ProductH.Create)
+	products.Get("/:id", middleware.RBAC("product:read"), deps.ProductH.Get)
+	products.Post("/:id/publish", middleware.RBAC("product:publish"), deps.ProductH.Publish)
+	products.Post("/:id/archive", middleware.RBAC("product:archive"), deps.ProductH.Archive)
+	products.Delete("/:id", middleware.RBAC("product:delete"), deps.ProductH.Delete)
 
 	mediaGroup := adminProtected.Group("/media")
 	mediaGroup.Get("/", middleware.RBAC("media:read"), deps.MediaH.List)
