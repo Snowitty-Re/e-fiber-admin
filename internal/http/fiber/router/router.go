@@ -16,6 +16,7 @@ type Deps struct {
 	MediaH       *handler.MediaHandler
 	ProductH     *handler.ProductHandler
 	CMSH         *handler.CMSHandler
+	SettingsH    *handler.SettingsHandler
 	StorefrontH  *handler.StorefrontHandler
 	JWTAuthFunc  fiber.Handler
 }
@@ -86,6 +87,11 @@ func Register(app *fiber.App, deps Deps) {
 	blog.Post("/", middleware.RBAC("cms:write"), deps.CMSH.CreateBlogPost)
 	blog.Post("/:id/publish", middleware.RBAC("cms:publish"), deps.CMSH.PublishBlogPost)
 	blog.Delete("/:id", middleware.RBAC("cms:delete"), deps.CMSH.DeleteBlogPost)
+
+	storeSettings := adminProtected.Group("/store")
+	storeSettings.Get("/", middleware.RBAC("settings:read"), deps.SettingsH.GetStore)
+	storeSettings.Patch("/", middleware.RBAC("settings:write"), deps.SettingsH.UpdateStore)
+	storeSettings.Patch("/:id/feature-flags", middleware.RBAC("settings:write"), deps.SettingsH.UpdateFeatureFlags)
 
 	mediaGroup := adminProtected.Group("/media")
 	mediaGroup.Get("/", middleware.RBAC("media:read"), deps.MediaH.List)

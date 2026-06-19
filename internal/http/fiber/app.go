@@ -21,6 +21,7 @@ import (
 	"github.com/Snowitty-Re/e-fiber-admin/internal/domain/media"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/domain/product"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/domain/region"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/domain/settings"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/http/fiber/handler"
 	pkgmw "github.com/Snowitty-Re/e-fiber-admin/internal/http/fiber/middleware"
@@ -79,6 +80,8 @@ func NewApp(deps Deps) *fiber.App {
 	storefrontH := handler.NewStorefrontHandler(deps.EntClient, productSvc)
 	cmsSvc := cms.NewService(deps.EntClient)
 	cmsH := handler.NewCMSHandler(cmsSvc, deps.EntClient)
+	settingsSvc := settings.NewService(deps.EntClient)
+	settingsH := handler.NewSettingsHandler(settingsSvc)
 
 	router.Register(app, router.Deps{
 		HealthH:     healthH,
@@ -87,6 +90,7 @@ func NewApp(deps Deps) *fiber.App {
 		MediaH:      mediaH,
 		ProductH:    productH,
 		CMSH:        cmsH,
+		SettingsH:   settingsH,
 		StorefrontH: storefrontH,
 		JWTAuthFunc: pkgmw.JWTAuth(authService),
 	})
