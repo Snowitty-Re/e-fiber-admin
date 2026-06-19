@@ -16,6 +16,7 @@ import (
 
 	"github.com/Snowitty-Re/e-fiber-admin/internal/config"
 	authsvc "github.com/Snowitty-Re/e-fiber-admin/internal/domain/auth"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/domain/region"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/http/fiber/handler"
 	pkgmw "github.com/Snowitty-Re/e-fiber-admin/internal/http/fiber/middleware"
@@ -64,10 +65,13 @@ func NewApp(deps Deps) *fiber.App {
 
 	healthH := handler.NewHealthHandler(deps.EntClient, deps.RedisClient)
 	authH := handler.NewAuthHandler(authService)
+	regionSvc := region.NewService(deps.EntClient)
+	regionH := handler.NewRegionHandler(regionSvc)
 
 	router.Register(app, router.Deps{
 		HealthH:     healthH,
 		AuthH:       authH,
+		RegionH:     regionH,
 		JWTAuthFunc: pkgmw.JWTAuth(authService),
 	})
 
