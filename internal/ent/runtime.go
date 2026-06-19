@@ -6,10 +6,15 @@ import (
 	"time"
 
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/adminuser"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/category"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/categorytranslation"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/collection"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/collectiontranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/currency"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/locale"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/permission"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/product"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/productmedia"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/productoption"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/productoptionvalue"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/producttranslation"
@@ -17,6 +22,8 @@ import (
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/role"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/schema"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/store"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/tag"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/tagtranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/taxrate"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/variant"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/variantoptionvalue"
@@ -62,6 +69,110 @@ func init() {
 	adminuserDescLastName := adminuserFields[3].Descriptor()
 	// adminuser.DefaultLastName holds the default value on creation for the last_name field.
 	adminuser.DefaultLastName = adminuserDescLastName.Default.(string)
+	categoryMixin := schema.Category{}.Mixin()
+	categoryMixinFields0 := categoryMixin[0].Fields()
+	_ = categoryMixinFields0
+	categoryFields := schema.Category{}.Fields()
+	_ = categoryFields
+	// categoryDescVersion is the schema descriptor for version field.
+	categoryDescVersion := categoryMixinFields0[3].Descriptor()
+	// category.DefaultVersion holds the default value on creation for the version field.
+	category.DefaultVersion = categoryDescVersion.Default.(int)
+	// categoryDescCreatedAt is the schema descriptor for created_at field.
+	categoryDescCreatedAt := categoryMixinFields0[4].Descriptor()
+	// category.DefaultCreatedAt holds the default value on creation for the created_at field.
+	category.DefaultCreatedAt = categoryDescCreatedAt.Default.(func() time.Time)
+	// categoryDescUpdatedAt is the schema descriptor for updated_at field.
+	categoryDescUpdatedAt := categoryMixinFields0[5].Descriptor()
+	// category.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	category.DefaultUpdatedAt = categoryDescUpdatedAt.Default.(func() time.Time)
+	// category.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	category.UpdateDefaultUpdatedAt = categoryDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// categoryDescPosition is the schema descriptor for position field.
+	categoryDescPosition := categoryFields[2].Descriptor()
+	// category.DefaultPosition holds the default value on creation for the position field.
+	category.DefaultPosition = categoryDescPosition.Default.(int)
+	categorytranslationMixin := schema.CategoryTranslation{}.Mixin()
+	categorytranslationMixinFields0 := categorytranslationMixin[0].Fields()
+	_ = categorytranslationMixinFields0
+	categorytranslationFields := schema.CategoryTranslation{}.Fields()
+	_ = categorytranslationFields
+	// categorytranslationDescVersion is the schema descriptor for version field.
+	categorytranslationDescVersion := categorytranslationMixinFields0[3].Descriptor()
+	// categorytranslation.DefaultVersion holds the default value on creation for the version field.
+	categorytranslation.DefaultVersion = categorytranslationDescVersion.Default.(int)
+	// categorytranslationDescCreatedAt is the schema descriptor for created_at field.
+	categorytranslationDescCreatedAt := categorytranslationMixinFields0[4].Descriptor()
+	// categorytranslation.DefaultCreatedAt holds the default value on creation for the created_at field.
+	categorytranslation.DefaultCreatedAt = categorytranslationDescCreatedAt.Default.(func() time.Time)
+	// categorytranslationDescUpdatedAt is the schema descriptor for updated_at field.
+	categorytranslationDescUpdatedAt := categorytranslationMixinFields0[5].Descriptor()
+	// categorytranslation.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	categorytranslation.DefaultUpdatedAt = categorytranslationDescUpdatedAt.Default.(func() time.Time)
+	// categorytranslation.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	categorytranslation.UpdateDefaultUpdatedAt = categorytranslationDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// categorytranslationDescLocale is the schema descriptor for locale field.
+	categorytranslationDescLocale := categorytranslationFields[1].Descriptor()
+	// categorytranslation.LocaleValidator is a validator for the "locale" field. It is called by the builders before save.
+	categorytranslation.LocaleValidator = categorytranslationDescLocale.Validators[0].(func(string) error)
+	// categorytranslationDescName is the schema descriptor for name field.
+	categorytranslationDescName := categorytranslationFields[2].Descriptor()
+	// categorytranslation.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	categorytranslation.NameValidator = categorytranslationDescName.Validators[0].(func(string) error)
+	// categorytranslationDescDescription is the schema descriptor for description field.
+	categorytranslationDescDescription := categorytranslationFields[3].Descriptor()
+	// categorytranslation.DefaultDescription holds the default value on creation for the description field.
+	categorytranslation.DefaultDescription = categorytranslationDescDescription.Default.(string)
+	collectionMixin := schema.Collection{}.Mixin()
+	collectionMixinFields0 := collectionMixin[0].Fields()
+	_ = collectionMixinFields0
+	collectionFields := schema.Collection{}.Fields()
+	_ = collectionFields
+	// collectionDescVersion is the schema descriptor for version field.
+	collectionDescVersion := collectionMixinFields0[3].Descriptor()
+	// collection.DefaultVersion holds the default value on creation for the version field.
+	collection.DefaultVersion = collectionDescVersion.Default.(int)
+	// collectionDescCreatedAt is the schema descriptor for created_at field.
+	collectionDescCreatedAt := collectionMixinFields0[4].Descriptor()
+	// collection.DefaultCreatedAt holds the default value on creation for the created_at field.
+	collection.DefaultCreatedAt = collectionDescCreatedAt.Default.(func() time.Time)
+	// collectionDescUpdatedAt is the schema descriptor for updated_at field.
+	collectionDescUpdatedAt := collectionMixinFields0[5].Descriptor()
+	// collection.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	collection.DefaultUpdatedAt = collectionDescUpdatedAt.Default.(func() time.Time)
+	// collection.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	collection.UpdateDefaultUpdatedAt = collectionDescUpdatedAt.UpdateDefault.(func() time.Time)
+	collectiontranslationMixin := schema.CollectionTranslation{}.Mixin()
+	collectiontranslationMixinFields0 := collectiontranslationMixin[0].Fields()
+	_ = collectiontranslationMixinFields0
+	collectiontranslationFields := schema.CollectionTranslation{}.Fields()
+	_ = collectiontranslationFields
+	// collectiontranslationDescVersion is the schema descriptor for version field.
+	collectiontranslationDescVersion := collectiontranslationMixinFields0[3].Descriptor()
+	// collectiontranslation.DefaultVersion holds the default value on creation for the version field.
+	collectiontranslation.DefaultVersion = collectiontranslationDescVersion.Default.(int)
+	// collectiontranslationDescCreatedAt is the schema descriptor for created_at field.
+	collectiontranslationDescCreatedAt := collectiontranslationMixinFields0[4].Descriptor()
+	// collectiontranslation.DefaultCreatedAt holds the default value on creation for the created_at field.
+	collectiontranslation.DefaultCreatedAt = collectiontranslationDescCreatedAt.Default.(func() time.Time)
+	// collectiontranslationDescUpdatedAt is the schema descriptor for updated_at field.
+	collectiontranslationDescUpdatedAt := collectiontranslationMixinFields0[5].Descriptor()
+	// collectiontranslation.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	collectiontranslation.DefaultUpdatedAt = collectiontranslationDescUpdatedAt.Default.(func() time.Time)
+	// collectiontranslation.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	collectiontranslation.UpdateDefaultUpdatedAt = collectiontranslationDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// collectiontranslationDescLocale is the schema descriptor for locale field.
+	collectiontranslationDescLocale := collectiontranslationFields[1].Descriptor()
+	// collectiontranslation.LocaleValidator is a validator for the "locale" field. It is called by the builders before save.
+	collectiontranslation.LocaleValidator = collectiontranslationDescLocale.Validators[0].(func(string) error)
+	// collectiontranslationDescName is the schema descriptor for name field.
+	collectiontranslationDescName := collectiontranslationFields[2].Descriptor()
+	// collectiontranslation.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	collectiontranslation.NameValidator = collectiontranslationDescName.Validators[0].(func(string) error)
+	// collectiontranslationDescDescription is the schema descriptor for description field.
+	collectiontranslationDescDescription := collectiontranslationFields[3].Descriptor()
+	// collectiontranslation.DefaultDescription holds the default value on creation for the description field.
+	collectiontranslation.DefaultDescription = collectiontranslationDescDescription.Default.(string)
 	currencyMixin := schema.Currency{}.Mixin()
 	currencyMixinFields0 := currencyMixin[0].Fields()
 	_ = currencyMixinFields0
@@ -190,6 +301,29 @@ func init() {
 	productDescIsDownloadable := productFields[6].Descriptor()
 	// product.DefaultIsDownloadable holds the default value on creation for the is_downloadable field.
 	product.DefaultIsDownloadable = productDescIsDownloadable.Default.(bool)
+	productmediaMixin := schema.ProductMedia{}.Mixin()
+	productmediaMixinFields0 := productmediaMixin[0].Fields()
+	_ = productmediaMixinFields0
+	productmediaFields := schema.ProductMedia{}.Fields()
+	_ = productmediaFields
+	// productmediaDescVersion is the schema descriptor for version field.
+	productmediaDescVersion := productmediaMixinFields0[3].Descriptor()
+	// productmedia.DefaultVersion holds the default value on creation for the version field.
+	productmedia.DefaultVersion = productmediaDescVersion.Default.(int)
+	// productmediaDescCreatedAt is the schema descriptor for created_at field.
+	productmediaDescCreatedAt := productmediaMixinFields0[4].Descriptor()
+	// productmedia.DefaultCreatedAt holds the default value on creation for the created_at field.
+	productmedia.DefaultCreatedAt = productmediaDescCreatedAt.Default.(func() time.Time)
+	// productmediaDescUpdatedAt is the schema descriptor for updated_at field.
+	productmediaDescUpdatedAt := productmediaMixinFields0[5].Descriptor()
+	// productmedia.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	productmedia.DefaultUpdatedAt = productmediaDescUpdatedAt.Default.(func() time.Time)
+	// productmedia.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	productmedia.UpdateDefaultUpdatedAt = productmediaDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// productmediaDescPosition is the schema descriptor for position field.
+	productmediaDescPosition := productmediaFields[2].Descriptor()
+	// productmedia.DefaultPosition holds the default value on creation for the position field.
+	productmedia.DefaultPosition = productmediaDescPosition.Default.(int)
 	productoptionMixin := schema.ProductOption{}.Mixin()
 	productoptionMixinFields0 := productoptionMixin[0].Fields()
 	_ = productoptionMixinFields0
@@ -404,6 +538,52 @@ func init() {
 	storeDescTimezone := storeFields[6].Descriptor()
 	// store.DefaultTimezone holds the default value on creation for the timezone field.
 	store.DefaultTimezone = storeDescTimezone.Default.(string)
+	tagMixin := schema.Tag{}.Mixin()
+	tagMixinFields0 := tagMixin[0].Fields()
+	_ = tagMixinFields0
+	tagFields := schema.Tag{}.Fields()
+	_ = tagFields
+	// tagDescVersion is the schema descriptor for version field.
+	tagDescVersion := tagMixinFields0[3].Descriptor()
+	// tag.DefaultVersion holds the default value on creation for the version field.
+	tag.DefaultVersion = tagDescVersion.Default.(int)
+	// tagDescCreatedAt is the schema descriptor for created_at field.
+	tagDescCreatedAt := tagMixinFields0[4].Descriptor()
+	// tag.DefaultCreatedAt holds the default value on creation for the created_at field.
+	tag.DefaultCreatedAt = tagDescCreatedAt.Default.(func() time.Time)
+	// tagDescUpdatedAt is the schema descriptor for updated_at field.
+	tagDescUpdatedAt := tagMixinFields0[5].Descriptor()
+	// tag.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	tag.DefaultUpdatedAt = tagDescUpdatedAt.Default.(func() time.Time)
+	// tag.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	tag.UpdateDefaultUpdatedAt = tagDescUpdatedAt.UpdateDefault.(func() time.Time)
+	tagtranslationMixin := schema.TagTranslation{}.Mixin()
+	tagtranslationMixinFields0 := tagtranslationMixin[0].Fields()
+	_ = tagtranslationMixinFields0
+	tagtranslationFields := schema.TagTranslation{}.Fields()
+	_ = tagtranslationFields
+	// tagtranslationDescVersion is the schema descriptor for version field.
+	tagtranslationDescVersion := tagtranslationMixinFields0[3].Descriptor()
+	// tagtranslation.DefaultVersion holds the default value on creation for the version field.
+	tagtranslation.DefaultVersion = tagtranslationDescVersion.Default.(int)
+	// tagtranslationDescCreatedAt is the schema descriptor for created_at field.
+	tagtranslationDescCreatedAt := tagtranslationMixinFields0[4].Descriptor()
+	// tagtranslation.DefaultCreatedAt holds the default value on creation for the created_at field.
+	tagtranslation.DefaultCreatedAt = tagtranslationDescCreatedAt.Default.(func() time.Time)
+	// tagtranslationDescUpdatedAt is the schema descriptor for updated_at field.
+	tagtranslationDescUpdatedAt := tagtranslationMixinFields0[5].Descriptor()
+	// tagtranslation.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	tagtranslation.DefaultUpdatedAt = tagtranslationDescUpdatedAt.Default.(func() time.Time)
+	// tagtranslation.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	tagtranslation.UpdateDefaultUpdatedAt = tagtranslationDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// tagtranslationDescLocale is the schema descriptor for locale field.
+	tagtranslationDescLocale := tagtranslationFields[1].Descriptor()
+	// tagtranslation.LocaleValidator is a validator for the "locale" field. It is called by the builders before save.
+	tagtranslation.LocaleValidator = tagtranslationDescLocale.Validators[0].(func(string) error)
+	// tagtranslationDescName is the schema descriptor for name field.
+	tagtranslationDescName := tagtranslationFields[2].Descriptor()
+	// tagtranslation.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	tagtranslation.NameValidator = tagtranslationDescName.Validators[0].(func(string) error)
 	taxrateMixin := schema.TaxRate{}.Mixin()
 	taxrateMixinFields0 := taxrateMixin[0].Fields()
 	_ = taxrateMixinFields0

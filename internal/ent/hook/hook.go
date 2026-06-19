@@ -21,6 +21,54 @@ func (f AdminUserFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, e
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AdminUserMutation", m)
 }
 
+// The CategoryFunc type is an adapter to allow the use of ordinary
+// function as Category mutator.
+type CategoryFunc func(context.Context, *ent.CategoryMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CategoryFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.CategoryMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CategoryMutation", m)
+}
+
+// The CategoryTranslationFunc type is an adapter to allow the use of ordinary
+// function as CategoryTranslation mutator.
+type CategoryTranslationFunc func(context.Context, *ent.CategoryTranslationMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CategoryTranslationFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.CategoryTranslationMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CategoryTranslationMutation", m)
+}
+
+// The CollectionFunc type is an adapter to allow the use of ordinary
+// function as Collection mutator.
+type CollectionFunc func(context.Context, *ent.CollectionMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CollectionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.CollectionMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CollectionMutation", m)
+}
+
+// The CollectionTranslationFunc type is an adapter to allow the use of ordinary
+// function as CollectionTranslation mutator.
+type CollectionTranslationFunc func(context.Context, *ent.CollectionTranslationMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CollectionTranslationFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.CollectionTranslationMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CollectionTranslationMutation", m)
+}
+
 // The CurrencyFunc type is an adapter to allow the use of ordinary
 // function as Currency mutator.
 type CurrencyFunc func(context.Context, *ent.CurrencyMutation) (ent.Value, error)
@@ -67,6 +115,18 @@ func (f ProductFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, err
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ProductMutation", m)
+}
+
+// The ProductMediaFunc type is an adapter to allow the use of ordinary
+// function as ProductMedia mutator.
+type ProductMediaFunc func(context.Context, *ent.ProductMediaMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ProductMediaFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ProductMediaMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ProductMediaMutation", m)
 }
 
 // The ProductOptionFunc type is an adapter to allow the use of ordinary
@@ -139,6 +199,30 @@ func (f StoreFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.StoreMutation", m)
+}
+
+// The TagFunc type is an adapter to allow the use of ordinary
+// function as Tag mutator.
+type TagFunc func(context.Context, *ent.TagMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f TagFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.TagMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.TagMutation", m)
+}
+
+// The TagTranslationFunc type is an adapter to allow the use of ordinary
+// function as TagTranslation mutator.
+type TagTranslationFunc func(context.Context, *ent.TagTranslationMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f TagTranslationFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.TagTranslationMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.TagTranslationMutation", m)
 }
 
 // The TaxRateFunc type is an adapter to allow the use of ordinary

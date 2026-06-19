@@ -14,61 +14,58 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/predicate"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/product"
-	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/productoption"
-	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/producttranslation"
-	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/variant"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/tag"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/tagtranslation"
 )
 
-// ProductQuery is the builder for querying Product entities.
-type ProductQuery struct {
+// TagQuery is the builder for querying Tag entities.
+type TagQuery struct {
 	config
 	ctx              *QueryContext
-	order            []product.OrderOption
+	order            []tag.OrderOption
 	inters           []Interceptor
-	predicates       []predicate.Product
-	withTranslations *ProductTranslationQuery
-	withVariants     *VariantQuery
-	withOptions      *ProductOptionQuery
-	withFKs          bool
+	predicates       []predicate.Tag
+	withTranslations *TagTranslationQuery
+	withProducts     *ProductQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
 }
 
-// Where adds a new predicate for the ProductQuery builder.
-func (_q *ProductQuery) Where(ps ...predicate.Product) *ProductQuery {
+// Where adds a new predicate for the TagQuery builder.
+func (_q *TagQuery) Where(ps ...predicate.Tag) *TagQuery {
 	_q.predicates = append(_q.predicates, ps...)
 	return _q
 }
 
 // Limit the number of records to be returned by this query.
-func (_q *ProductQuery) Limit(limit int) *ProductQuery {
+func (_q *TagQuery) Limit(limit int) *TagQuery {
 	_q.ctx.Limit = &limit
 	return _q
 }
 
 // Offset to start from.
-func (_q *ProductQuery) Offset(offset int) *ProductQuery {
+func (_q *TagQuery) Offset(offset int) *TagQuery {
 	_q.ctx.Offset = &offset
 	return _q
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
-func (_q *ProductQuery) Unique(unique bool) *ProductQuery {
+func (_q *TagQuery) Unique(unique bool) *TagQuery {
 	_q.ctx.Unique = &unique
 	return _q
 }
 
 // Order specifies how the records should be ordered.
-func (_q *ProductQuery) Order(o ...product.OrderOption) *ProductQuery {
+func (_q *TagQuery) Order(o ...tag.OrderOption) *TagQuery {
 	_q.order = append(_q.order, o...)
 	return _q
 }
 
 // QueryTranslations chains the current query on the "translations" edge.
-func (_q *ProductQuery) QueryTranslations() *ProductTranslationQuery {
-	query := (&ProductTranslationClient{config: _q.config}).Query()
+func (_q *TagQuery) QueryTranslations() *TagTranslationQuery {
+	query := (&TagTranslationClient{config: _q.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := _q.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -78,9 +75,9 @@ func (_q *ProductQuery) QueryTranslations() *ProductTranslationQuery {
 			return nil, err
 		}
 		step := sqlgraph.NewStep(
-			sqlgraph.From(product.Table, product.FieldID, selector),
-			sqlgraph.To(producttranslation.Table, producttranslation.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, product.TranslationsTable, product.TranslationsColumn),
+			sqlgraph.From(tag.Table, tag.FieldID, selector),
+			sqlgraph.To(tagtranslation.Table, tagtranslation.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, tag.TranslationsTable, tag.TranslationsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -88,9 +85,9 @@ func (_q *ProductQuery) QueryTranslations() *ProductTranslationQuery {
 	return query
 }
 
-// QueryVariants chains the current query on the "variants" edge.
-func (_q *ProductQuery) QueryVariants() *VariantQuery {
-	query := (&VariantClient{config: _q.config}).Query()
+// QueryProducts chains the current query on the "products" edge.
+func (_q *TagQuery) QueryProducts() *ProductQuery {
+	query := (&ProductClient{config: _q.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := _q.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -100,9 +97,9 @@ func (_q *ProductQuery) QueryVariants() *VariantQuery {
 			return nil, err
 		}
 		step := sqlgraph.NewStep(
-			sqlgraph.From(product.Table, product.FieldID, selector),
-			sqlgraph.To(variant.Table, variant.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, product.VariantsTable, product.VariantsColumn),
+			sqlgraph.From(tag.Table, tag.FieldID, selector),
+			sqlgraph.To(product.Table, product.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, tag.ProductsTable, tag.ProductsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -110,43 +107,21 @@ func (_q *ProductQuery) QueryVariants() *VariantQuery {
 	return query
 }
 
-// QueryOptions chains the current query on the "options" edge.
-func (_q *ProductQuery) QueryOptions() *ProductOptionQuery {
-	query := (&ProductOptionClient{config: _q.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := _q.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := _q.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(product.Table, product.FieldID, selector),
-			sqlgraph.To(productoption.Table, productoption.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, product.OptionsTable, product.OptionsColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// First returns the first Product entity from the query.
-// Returns a *NotFoundError when no Product was found.
-func (_q *ProductQuery) First(ctx context.Context) (*Product, error) {
+// First returns the first Tag entity from the query.
+// Returns a *NotFoundError when no Tag was found.
+func (_q *TagQuery) First(ctx context.Context) (*Tag, error) {
 	nodes, err := _q.Limit(1).All(setContextOp(ctx, _q.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
 	if len(nodes) == 0 {
-		return nil, &NotFoundError{product.Label}
+		return nil, &NotFoundError{tag.Label}
 	}
 	return nodes[0], nil
 }
 
 // FirstX is like First, but panics if an error occurs.
-func (_q *ProductQuery) FirstX(ctx context.Context) *Product {
+func (_q *TagQuery) FirstX(ctx context.Context) *Tag {
 	node, err := _q.First(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -154,22 +129,22 @@ func (_q *ProductQuery) FirstX(ctx context.Context) *Product {
 	return node
 }
 
-// FirstID returns the first Product ID from the query.
-// Returns a *NotFoundError when no Product ID was found.
-func (_q *ProductQuery) FirstID(ctx context.Context) (id int, err error) {
+// FirstID returns the first Tag ID from the query.
+// Returns a *NotFoundError when no Tag ID was found.
+func (_q *TagQuery) FirstID(ctx context.Context) (id int, err error) {
 	var ids []int
 	if ids, err = _q.Limit(1).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
-		err = &NotFoundError{product.Label}
+		err = &NotFoundError{tag.Label}
 		return
 	}
 	return ids[0], nil
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (_q *ProductQuery) FirstIDX(ctx context.Context) int {
+func (_q *TagQuery) FirstIDX(ctx context.Context) int {
 	id, err := _q.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -177,10 +152,10 @@ func (_q *ProductQuery) FirstIDX(ctx context.Context) int {
 	return id
 }
 
-// Only returns a single Product entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when more than one Product entity is found.
-// Returns a *NotFoundError when no Product entities are found.
-func (_q *ProductQuery) Only(ctx context.Context) (*Product, error) {
+// Only returns a single Tag entity found by the query, ensuring it only returns one.
+// Returns a *NotSingularError when more than one Tag entity is found.
+// Returns a *NotFoundError when no Tag entities are found.
+func (_q *TagQuery) Only(ctx context.Context) (*Tag, error) {
 	nodes, err := _q.Limit(2).All(setContextOp(ctx, _q.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
@@ -189,14 +164,14 @@ func (_q *ProductQuery) Only(ctx context.Context) (*Product, error) {
 	case 1:
 		return nodes[0], nil
 	case 0:
-		return nil, &NotFoundError{product.Label}
+		return nil, &NotFoundError{tag.Label}
 	default:
-		return nil, &NotSingularError{product.Label}
+		return nil, &NotSingularError{tag.Label}
 	}
 }
 
 // OnlyX is like Only, but panics if an error occurs.
-func (_q *ProductQuery) OnlyX(ctx context.Context) *Product {
+func (_q *TagQuery) OnlyX(ctx context.Context) *Tag {
 	node, err := _q.Only(ctx)
 	if err != nil {
 		panic(err)
@@ -204,10 +179,10 @@ func (_q *ProductQuery) OnlyX(ctx context.Context) *Product {
 	return node
 }
 
-// OnlyID is like Only, but returns the only Product ID in the query.
-// Returns a *NotSingularError when more than one Product ID is found.
+// OnlyID is like Only, but returns the only Tag ID in the query.
+// Returns a *NotSingularError when more than one Tag ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (_q *ProductQuery) OnlyID(ctx context.Context) (id int, err error) {
+func (_q *TagQuery) OnlyID(ctx context.Context) (id int, err error) {
 	var ids []int
 	if ids, err = _q.Limit(2).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
@@ -216,15 +191,15 @@ func (_q *ProductQuery) OnlyID(ctx context.Context) (id int, err error) {
 	case 1:
 		id = ids[0]
 	case 0:
-		err = &NotFoundError{product.Label}
+		err = &NotFoundError{tag.Label}
 	default:
-		err = &NotSingularError{product.Label}
+		err = &NotSingularError{tag.Label}
 	}
 	return
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (_q *ProductQuery) OnlyIDX(ctx context.Context) int {
+func (_q *TagQuery) OnlyIDX(ctx context.Context) int {
 	id, err := _q.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -232,18 +207,18 @@ func (_q *ProductQuery) OnlyIDX(ctx context.Context) int {
 	return id
 }
 
-// All executes the query and returns a list of Products.
-func (_q *ProductQuery) All(ctx context.Context) ([]*Product, error) {
+// All executes the query and returns a list of Tags.
+func (_q *TagQuery) All(ctx context.Context) ([]*Tag, error) {
 	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryAll)
 	if err := _q.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	qr := querierAll[[]*Product, *ProductQuery]()
-	return withInterceptors[[]*Product](ctx, _q, qr, _q.inters)
+	qr := querierAll[[]*Tag, *TagQuery]()
+	return withInterceptors[[]*Tag](ctx, _q, qr, _q.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
-func (_q *ProductQuery) AllX(ctx context.Context) []*Product {
+func (_q *TagQuery) AllX(ctx context.Context) []*Tag {
 	nodes, err := _q.All(ctx)
 	if err != nil {
 		panic(err)
@@ -251,20 +226,20 @@ func (_q *ProductQuery) AllX(ctx context.Context) []*Product {
 	return nodes
 }
 
-// IDs executes the query and returns a list of Product IDs.
-func (_q *ProductQuery) IDs(ctx context.Context) (ids []int, err error) {
+// IDs executes the query and returns a list of Tag IDs.
+func (_q *TagQuery) IDs(ctx context.Context) (ids []int, err error) {
 	if _q.ctx.Unique == nil && _q.path != nil {
 		_q.Unique(true)
 	}
 	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryIDs)
-	if err = _q.Select(product.FieldID).Scan(ctx, &ids); err != nil {
+	if err = _q.Select(tag.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (_q *ProductQuery) IDsX(ctx context.Context) []int {
+func (_q *TagQuery) IDsX(ctx context.Context) []int {
 	ids, err := _q.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -273,16 +248,16 @@ func (_q *ProductQuery) IDsX(ctx context.Context) []int {
 }
 
 // Count returns the count of the given query.
-func (_q *ProductQuery) Count(ctx context.Context) (int, error) {
+func (_q *TagQuery) Count(ctx context.Context) (int, error) {
 	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryCount)
 	if err := _q.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return withInterceptors[int](ctx, _q, querierCount[*ProductQuery](), _q.inters)
+	return withInterceptors[int](ctx, _q, querierCount[*TagQuery](), _q.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
-func (_q *ProductQuery) CountX(ctx context.Context) int {
+func (_q *TagQuery) CountX(ctx context.Context) int {
 	count, err := _q.Count(ctx)
 	if err != nil {
 		panic(err)
@@ -291,7 +266,7 @@ func (_q *ProductQuery) CountX(ctx context.Context) int {
 }
 
 // Exist returns true if the query has elements in the graph.
-func (_q *ProductQuery) Exist(ctx context.Context) (bool, error) {
+func (_q *TagQuery) Exist(ctx context.Context) (bool, error) {
 	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryExist)
 	switch _, err := _q.FirstID(ctx); {
 	case IsNotFound(err):
@@ -304,7 +279,7 @@ func (_q *ProductQuery) Exist(ctx context.Context) (bool, error) {
 }
 
 // ExistX is like Exist, but panics if an error occurs.
-func (_q *ProductQuery) ExistX(ctx context.Context) bool {
+func (_q *TagQuery) ExistX(ctx context.Context) bool {
 	exist, err := _q.Exist(ctx)
 	if err != nil {
 		panic(err)
@@ -312,21 +287,20 @@ func (_q *ProductQuery) ExistX(ctx context.Context) bool {
 	return exist
 }
 
-// Clone returns a duplicate of the ProductQuery builder, including all associated steps. It can be
+// Clone returns a duplicate of the TagQuery builder, including all associated steps. It can be
 // used to prepare common query builders and use them differently after the clone is made.
-func (_q *ProductQuery) Clone() *ProductQuery {
+func (_q *TagQuery) Clone() *TagQuery {
 	if _q == nil {
 		return nil
 	}
-	return &ProductQuery{
+	return &TagQuery{
 		config:           _q.config,
 		ctx:              _q.ctx.Clone(),
-		order:            append([]product.OrderOption{}, _q.order...),
+		order:            append([]tag.OrderOption{}, _q.order...),
 		inters:           append([]Interceptor{}, _q.inters...),
-		predicates:       append([]predicate.Product{}, _q.predicates...),
+		predicates:       append([]predicate.Tag{}, _q.predicates...),
 		withTranslations: _q.withTranslations.Clone(),
-		withVariants:     _q.withVariants.Clone(),
-		withOptions:      _q.withOptions.Clone(),
+		withProducts:     _q.withProducts.Clone(),
 		// clone intermediate query.
 		sql:  _q.sql.Clone(),
 		path: _q.path,
@@ -335,8 +309,8 @@ func (_q *ProductQuery) Clone() *ProductQuery {
 
 // WithTranslations tells the query-builder to eager-load the nodes that are connected to
 // the "translations" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *ProductQuery) WithTranslations(opts ...func(*ProductTranslationQuery)) *ProductQuery {
-	query := (&ProductTranslationClient{config: _q.config}).Query()
+func (_q *TagQuery) WithTranslations(opts ...func(*TagTranslationQuery)) *TagQuery {
+	query := (&TagTranslationClient{config: _q.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -344,25 +318,14 @@ func (_q *ProductQuery) WithTranslations(opts ...func(*ProductTranslationQuery))
 	return _q
 }
 
-// WithVariants tells the query-builder to eager-load the nodes that are connected to
-// the "variants" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *ProductQuery) WithVariants(opts ...func(*VariantQuery)) *ProductQuery {
-	query := (&VariantClient{config: _q.config}).Query()
+// WithProducts tells the query-builder to eager-load the nodes that are connected to
+// the "products" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *TagQuery) WithProducts(opts ...func(*ProductQuery)) *TagQuery {
+	query := (&ProductClient{config: _q.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	_q.withVariants = query
-	return _q
-}
-
-// WithOptions tells the query-builder to eager-load the nodes that are connected to
-// the "options" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *ProductQuery) WithOptions(opts ...func(*ProductOptionQuery)) *ProductQuery {
-	query := (&ProductOptionClient{config: _q.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	_q.withOptions = query
+	_q.withProducts = query
 	return _q
 }
 
@@ -376,15 +339,15 @@ func (_q *ProductQuery) WithOptions(opts ...func(*ProductOptionQuery)) *ProductQ
 //		Count int `json:"count,omitempty"`
 //	}
 //
-//	client.Product.Query().
-//		GroupBy(product.FieldCreatedBy).
+//	client.Tag.Query().
+//		GroupBy(tag.FieldCreatedBy).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-func (_q *ProductQuery) GroupBy(field string, fields ...string) *ProductGroupBy {
+func (_q *TagQuery) GroupBy(field string, fields ...string) *TagGroupBy {
 	_q.ctx.Fields = append([]string{field}, fields...)
-	grbuild := &ProductGroupBy{build: _q}
+	grbuild := &TagGroupBy{build: _q}
 	grbuild.flds = &_q.ctx.Fields
-	grbuild.label = product.Label
+	grbuild.label = tag.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
 }
@@ -398,23 +361,23 @@ func (_q *ProductQuery) GroupBy(field string, fields ...string) *ProductGroupBy 
 //		CreatedBy int64 `json:"created_by,omitempty"`
 //	}
 //
-//	client.Product.Query().
-//		Select(product.FieldCreatedBy).
+//	client.Tag.Query().
+//		Select(tag.FieldCreatedBy).
 //		Scan(ctx, &v)
-func (_q *ProductQuery) Select(fields ...string) *ProductSelect {
+func (_q *TagQuery) Select(fields ...string) *TagSelect {
 	_q.ctx.Fields = append(_q.ctx.Fields, fields...)
-	sbuild := &ProductSelect{ProductQuery: _q}
-	sbuild.label = product.Label
+	sbuild := &TagSelect{TagQuery: _q}
+	sbuild.label = tag.Label
 	sbuild.flds, sbuild.scan = &_q.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
-// Aggregate returns a ProductSelect configured with the given aggregations.
-func (_q *ProductQuery) Aggregate(fns ...AggregateFunc) *ProductSelect {
+// Aggregate returns a TagSelect configured with the given aggregations.
+func (_q *TagQuery) Aggregate(fns ...AggregateFunc) *TagSelect {
 	return _q.Select().Aggregate(fns...)
 }
 
-func (_q *ProductQuery) prepareQuery(ctx context.Context) error {
+func (_q *TagQuery) prepareQuery(ctx context.Context) error {
 	for _, inter := range _q.inters {
 		if inter == nil {
 			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
@@ -426,7 +389,7 @@ func (_q *ProductQuery) prepareQuery(ctx context.Context) error {
 		}
 	}
 	for _, f := range _q.ctx.Fields {
-		if !product.ValidColumn(f) {
+		if !tag.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
 	}
@@ -440,25 +403,20 @@ func (_q *ProductQuery) prepareQuery(ctx context.Context) error {
 	return nil
 }
 
-func (_q *ProductQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Product, error) {
+func (_q *TagQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Tag, error) {
 	var (
-		nodes       = []*Product{}
-		withFKs     = _q.withFKs
+		nodes       = []*Tag{}
 		_spec       = _q.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [2]bool{
 			_q.withTranslations != nil,
-			_q.withVariants != nil,
-			_q.withOptions != nil,
+			_q.withProducts != nil,
 		}
 	)
-	if withFKs {
-		_spec.Node.Columns = append(_spec.Node.Columns, product.ForeignKeys...)
-	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
-		return (*Product).scanValues(nil, columns)
+		return (*Tag).scanValues(nil, columns)
 	}
 	_spec.Assign = func(columns []string, values []any) error {
-		node := &Product{config: _q.config}
+		node := &Tag{config: _q.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
@@ -474,31 +432,24 @@ func (_q *ProductQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Prod
 	}
 	if query := _q.withTranslations; query != nil {
 		if err := _q.loadTranslations(ctx, query, nodes,
-			func(n *Product) { n.Edges.Translations = []*ProductTranslation{} },
-			func(n *Product, e *ProductTranslation) { n.Edges.Translations = append(n.Edges.Translations, e) }); err != nil {
+			func(n *Tag) { n.Edges.Translations = []*TagTranslation{} },
+			func(n *Tag, e *TagTranslation) { n.Edges.Translations = append(n.Edges.Translations, e) }); err != nil {
 			return nil, err
 		}
 	}
-	if query := _q.withVariants; query != nil {
-		if err := _q.loadVariants(ctx, query, nodes,
-			func(n *Product) { n.Edges.Variants = []*Variant{} },
-			func(n *Product, e *Variant) { n.Edges.Variants = append(n.Edges.Variants, e) }); err != nil {
-			return nil, err
-		}
-	}
-	if query := _q.withOptions; query != nil {
-		if err := _q.loadOptions(ctx, query, nodes,
-			func(n *Product) { n.Edges.Options = []*ProductOption{} },
-			func(n *Product, e *ProductOption) { n.Edges.Options = append(n.Edges.Options, e) }); err != nil {
+	if query := _q.withProducts; query != nil {
+		if err := _q.loadProducts(ctx, query, nodes,
+			func(n *Tag) { n.Edges.Products = []*Product{} },
+			func(n *Tag, e *Product) { n.Edges.Products = append(n.Edges.Products, e) }); err != nil {
 			return nil, err
 		}
 	}
 	return nodes, nil
 }
 
-func (_q *ProductQuery) loadTranslations(ctx context.Context, query *ProductTranslationQuery, nodes []*Product, init func(*Product), assign func(*Product, *ProductTranslation)) error {
+func (_q *TagQuery) loadTranslations(ctx context.Context, query *TagTranslationQuery, nodes []*Tag, init func(*Tag), assign func(*Tag, *TagTranslation)) error {
 	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[int]*Product)
+	nodeids := make(map[int]*Tag)
 	for i := range nodes {
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]
@@ -507,28 +458,28 @@ func (_q *ProductQuery) loadTranslations(ctx context.Context, query *ProductTran
 		}
 	}
 	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(producttranslation.FieldProductID)
+		query.ctx.AppendFieldOnce(tagtranslation.FieldTagID)
 	}
-	query.Where(predicate.ProductTranslation(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(product.TranslationsColumn), fks...))
+	query.Where(predicate.TagTranslation(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(tag.TranslationsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.ProductID
+		fk := n.TagID
 		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "product_id" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "tag_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}
 	return nil
 }
-func (_q *ProductQuery) loadVariants(ctx context.Context, query *VariantQuery, nodes []*Product, init func(*Product), assign func(*Product, *Variant)) error {
+func (_q *TagQuery) loadProducts(ctx context.Context, query *ProductQuery, nodes []*Tag, init func(*Tag), assign func(*Tag, *Product)) error {
 	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[int]*Product)
+	nodeids := make(map[int]*Tag)
 	for i := range nodes {
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]
@@ -536,58 +487,29 @@ func (_q *ProductQuery) loadVariants(ctx context.Context, query *VariantQuery, n
 			init(nodes[i])
 		}
 	}
-	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(variant.FieldProductID)
-	}
-	query.Where(predicate.Variant(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(product.VariantsColumn), fks...))
+	query.withFKs = true
+	query.Where(predicate.Product(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(tag.ProductsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.ProductID
-		node, ok := nodeids[fk]
-		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "product_id" returned %v for node %v`, fk, n.ID)
+		fk := n.tag_products
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "tag_products" is nil for node %v`, n.ID)
 		}
-		assign(node, n)
-	}
-	return nil
-}
-func (_q *ProductQuery) loadOptions(ctx context.Context, query *ProductOptionQuery, nodes []*Product, init func(*Product), assign func(*Product, *ProductOption)) error {
-	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[int]*Product)
-	for i := range nodes {
-		fks = append(fks, nodes[i].ID)
-		nodeids[nodes[i].ID] = nodes[i]
-		if init != nil {
-			init(nodes[i])
-		}
-	}
-	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(productoption.FieldProductID)
-	}
-	query.Where(predicate.ProductOption(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(product.OptionsColumn), fks...))
-	}))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		fk := n.ProductID
-		node, ok := nodeids[fk]
+		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "product_id" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "tag_products" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
 	return nil
 }
 
-func (_q *ProductQuery) sqlCount(ctx context.Context) (int, error) {
+func (_q *TagQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := _q.querySpec()
 	_spec.Node.Columns = _q.ctx.Fields
 	if len(_q.ctx.Fields) > 0 {
@@ -596,8 +518,8 @@ func (_q *ProductQuery) sqlCount(ctx context.Context) (int, error) {
 	return sqlgraph.CountNodes(ctx, _q.driver, _spec)
 }
 
-func (_q *ProductQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(product.Table, product.Columns, sqlgraph.NewFieldSpec(product.FieldID, field.TypeInt))
+func (_q *TagQuery) querySpec() *sqlgraph.QuerySpec {
+	_spec := sqlgraph.NewQuerySpec(tag.Table, tag.Columns, sqlgraph.NewFieldSpec(tag.FieldID, field.TypeInt))
 	_spec.From = _q.sql
 	if unique := _q.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
@@ -606,9 +528,9 @@ func (_q *ProductQuery) querySpec() *sqlgraph.QuerySpec {
 	}
 	if fields := _q.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
-		_spec.Node.Columns = append(_spec.Node.Columns, product.FieldID)
+		_spec.Node.Columns = append(_spec.Node.Columns, tag.FieldID)
 		for i := range fields {
-			if fields[i] != product.FieldID {
+			if fields[i] != tag.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
 		}
@@ -636,12 +558,12 @@ func (_q *ProductQuery) querySpec() *sqlgraph.QuerySpec {
 	return _spec
 }
 
-func (_q *ProductQuery) sqlQuery(ctx context.Context) *sql.Selector {
+func (_q *TagQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(_q.driver.Dialect())
-	t1 := builder.Table(product.Table)
+	t1 := builder.Table(tag.Table)
 	columns := _q.ctx.Fields
 	if len(columns) == 0 {
-		columns = product.Columns
+		columns = tag.Columns
 	}
 	selector := builder.Select(t1.Columns(columns...)...).From(t1)
 	if _q.sql != nil {
@@ -668,28 +590,28 @@ func (_q *ProductQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	return selector
 }
 
-// ProductGroupBy is the group-by builder for Product entities.
-type ProductGroupBy struct {
+// TagGroupBy is the group-by builder for Tag entities.
+type TagGroupBy struct {
 	selector
-	build *ProductQuery
+	build *TagQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
-func (_g *ProductGroupBy) Aggregate(fns ...AggregateFunc) *ProductGroupBy {
+func (_g *TagGroupBy) Aggregate(fns ...AggregateFunc) *TagGroupBy {
 	_g.fns = append(_g.fns, fns...)
 	return _g
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (_g *ProductGroupBy) Scan(ctx context.Context, v any) error {
+func (_g *TagGroupBy) Scan(ctx context.Context, v any) error {
 	ctx = setContextOp(ctx, _g.build.ctx, ent.OpQueryGroupBy)
 	if err := _g.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	return scanWithInterceptors[*ProductQuery, *ProductGroupBy](ctx, _g.build, _g, _g.build.inters, v)
+	return scanWithInterceptors[*TagQuery, *TagGroupBy](ctx, _g.build, _g, _g.build.inters, v)
 }
 
-func (_g *ProductGroupBy) sqlScan(ctx context.Context, root *ProductQuery, v any) error {
+func (_g *TagGroupBy) sqlScan(ctx context.Context, root *TagQuery, v any) error {
 	selector := root.sqlQuery(ctx).Select()
 	aggregation := make([]string, 0, len(_g.fns))
 	for _, fn := range _g.fns {
@@ -716,28 +638,28 @@ func (_g *ProductGroupBy) sqlScan(ctx context.Context, root *ProductQuery, v any
 	return sql.ScanSlice(rows, v)
 }
 
-// ProductSelect is the builder for selecting fields of Product entities.
-type ProductSelect struct {
-	*ProductQuery
+// TagSelect is the builder for selecting fields of Tag entities.
+type TagSelect struct {
+	*TagQuery
 	selector
 }
 
 // Aggregate adds the given aggregation functions to the selector query.
-func (_s *ProductSelect) Aggregate(fns ...AggregateFunc) *ProductSelect {
+func (_s *TagSelect) Aggregate(fns ...AggregateFunc) *TagSelect {
 	_s.fns = append(_s.fns, fns...)
 	return _s
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (_s *ProductSelect) Scan(ctx context.Context, v any) error {
+func (_s *TagSelect) Scan(ctx context.Context, v any) error {
 	ctx = setContextOp(ctx, _s.ctx, ent.OpQuerySelect)
 	if err := _s.prepareQuery(ctx); err != nil {
 		return err
 	}
-	return scanWithInterceptors[*ProductQuery, *ProductSelect](ctx, _s.ProductQuery, _s, _s.inters, v)
+	return scanWithInterceptors[*TagQuery, *TagSelect](ctx, _s.TagQuery, _s, _s.inters, v)
 }
 
-func (_s *ProductSelect) sqlScan(ctx context.Context, root *ProductQuery, v any) error {
+func (_s *TagSelect) sqlScan(ctx context.Context, root *TagQuery, v any) error {
 	selector := root.sqlQuery(ctx)
 	aggregation := make([]string, 0, len(_s.fns))
 	for _, fn := range _s.fns {

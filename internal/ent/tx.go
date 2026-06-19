@@ -14,6 +14,14 @@ type Tx struct {
 	config
 	// AdminUser is the client for interacting with the AdminUser builders.
 	AdminUser *AdminUserClient
+	// Category is the client for interacting with the Category builders.
+	Category *CategoryClient
+	// CategoryTranslation is the client for interacting with the CategoryTranslation builders.
+	CategoryTranslation *CategoryTranslationClient
+	// Collection is the client for interacting with the Collection builders.
+	Collection *CollectionClient
+	// CollectionTranslation is the client for interacting with the CollectionTranslation builders.
+	CollectionTranslation *CollectionTranslationClient
 	// Currency is the client for interacting with the Currency builders.
 	Currency *CurrencyClient
 	// Locale is the client for interacting with the Locale builders.
@@ -22,6 +30,8 @@ type Tx struct {
 	Permission *PermissionClient
 	// Product is the client for interacting with the Product builders.
 	Product *ProductClient
+	// ProductMedia is the client for interacting with the ProductMedia builders.
+	ProductMedia *ProductMediaClient
 	// ProductOption is the client for interacting with the ProductOption builders.
 	ProductOption *ProductOptionClient
 	// ProductOptionValue is the client for interacting with the ProductOptionValue builders.
@@ -34,6 +44,10 @@ type Tx struct {
 	Role *RoleClient
 	// Store is the client for interacting with the Store builders.
 	Store *StoreClient
+	// Tag is the client for interacting with the Tag builders.
+	Tag *TagClient
+	// TagTranslation is the client for interacting with the TagTranslation builders.
+	TagTranslation *TagTranslationClient
 	// TaxRate is the client for interacting with the TaxRate builders.
 	TaxRate *TaxRateClient
 	// Variant is the client for interacting with the Variant builders.
@@ -174,16 +188,23 @@ func (tx *Tx) Client() *Client {
 
 func (tx *Tx) init() {
 	tx.AdminUser = NewAdminUserClient(tx.config)
+	tx.Category = NewCategoryClient(tx.config)
+	tx.CategoryTranslation = NewCategoryTranslationClient(tx.config)
+	tx.Collection = NewCollectionClient(tx.config)
+	tx.CollectionTranslation = NewCollectionTranslationClient(tx.config)
 	tx.Currency = NewCurrencyClient(tx.config)
 	tx.Locale = NewLocaleClient(tx.config)
 	tx.Permission = NewPermissionClient(tx.config)
 	tx.Product = NewProductClient(tx.config)
+	tx.ProductMedia = NewProductMediaClient(tx.config)
 	tx.ProductOption = NewProductOptionClient(tx.config)
 	tx.ProductOptionValue = NewProductOptionValueClient(tx.config)
 	tx.ProductTranslation = NewProductTranslationClient(tx.config)
 	tx.Region = NewRegionClient(tx.config)
 	tx.Role = NewRoleClient(tx.config)
 	tx.Store = NewStoreClient(tx.config)
+	tx.Tag = NewTagClient(tx.config)
+	tx.TagTranslation = NewTagTranslationClient(tx.config)
 	tx.TaxRate = NewTaxRateClient(tx.config)
 	tx.Variant = NewVariantClient(tx.config)
 	tx.VariantOptionValue = NewVariantOptionValueClient(tx.config)

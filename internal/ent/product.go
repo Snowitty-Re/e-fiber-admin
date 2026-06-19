@@ -49,8 +49,10 @@ type Product struct {
 	PublishedAt *time.Time `json:"published_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ProductQuery when eager-loading is set.
-	Edges        ProductEdges `json:"edges"`
-	selectValues sql.SelectValues
+	Edges               ProductEdges `json:"edges"`
+	collection_products *int
+	tag_products        *int
+	selectValues        sql.SelectValues
 }
 
 // ProductEdges holds the relations/edges for other nodes in the graph.
@@ -106,6 +108,10 @@ func (*Product) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullString)
 		case product.FieldCreatedAt, product.FieldUpdatedAt, product.FieldDeletedAt, product.FieldPublishedAt:
 			values[i] = new(sql.NullTime)
+		case product.ForeignKeys[0]: // collection_products
+			values[i] = new(sql.NullInt64)
+		case product.ForeignKeys[1]: // tag_products
+			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -218,6 +224,20 @@ func (_m *Product) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.PublishedAt = new(time.Time)
 				*_m.PublishedAt = value.Time
+			}
+		case product.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for edge-field collection_products", value)
+			} else if value.Valid {
+				_m.collection_products = new(int)
+				*_m.collection_products = int(value.Int64)
+			}
+		case product.ForeignKeys[1]:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for edge-field tag_products", value)
+			} else if value.Valid {
+				_m.tag_products = new(int)
+				*_m.tag_products = int(value.Int64)
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])

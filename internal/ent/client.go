@@ -16,16 +16,23 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/adminuser"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/category"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/categorytranslation"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/collection"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/collectiontranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/currency"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/locale"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/permission"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/product"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/productmedia"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/productoption"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/productoptionvalue"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/producttranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/region"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/role"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/store"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/tag"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/tagtranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/taxrate"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/variant"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/variantoptionvalue"
@@ -39,6 +46,14 @@ type Client struct {
 	Schema *migrate.Schema
 	// AdminUser is the client for interacting with the AdminUser builders.
 	AdminUser *AdminUserClient
+	// Category is the client for interacting with the Category builders.
+	Category *CategoryClient
+	// CategoryTranslation is the client for interacting with the CategoryTranslation builders.
+	CategoryTranslation *CategoryTranslationClient
+	// Collection is the client for interacting with the Collection builders.
+	Collection *CollectionClient
+	// CollectionTranslation is the client for interacting with the CollectionTranslation builders.
+	CollectionTranslation *CollectionTranslationClient
 	// Currency is the client for interacting with the Currency builders.
 	Currency *CurrencyClient
 	// Locale is the client for interacting with the Locale builders.
@@ -47,6 +62,8 @@ type Client struct {
 	Permission *PermissionClient
 	// Product is the client for interacting with the Product builders.
 	Product *ProductClient
+	// ProductMedia is the client for interacting with the ProductMedia builders.
+	ProductMedia *ProductMediaClient
 	// ProductOption is the client for interacting with the ProductOption builders.
 	ProductOption *ProductOptionClient
 	// ProductOptionValue is the client for interacting with the ProductOptionValue builders.
@@ -59,6 +76,10 @@ type Client struct {
 	Role *RoleClient
 	// Store is the client for interacting with the Store builders.
 	Store *StoreClient
+	// Tag is the client for interacting with the Tag builders.
+	Tag *TagClient
+	// TagTranslation is the client for interacting with the TagTranslation builders.
+	TagTranslation *TagTranslationClient
 	// TaxRate is the client for interacting with the TaxRate builders.
 	TaxRate *TaxRateClient
 	// Variant is the client for interacting with the Variant builders.
@@ -79,16 +100,23 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.AdminUser = NewAdminUserClient(c.config)
+	c.Category = NewCategoryClient(c.config)
+	c.CategoryTranslation = NewCategoryTranslationClient(c.config)
+	c.Collection = NewCollectionClient(c.config)
+	c.CollectionTranslation = NewCollectionTranslationClient(c.config)
 	c.Currency = NewCurrencyClient(c.config)
 	c.Locale = NewLocaleClient(c.config)
 	c.Permission = NewPermissionClient(c.config)
 	c.Product = NewProductClient(c.config)
+	c.ProductMedia = NewProductMediaClient(c.config)
 	c.ProductOption = NewProductOptionClient(c.config)
 	c.ProductOptionValue = NewProductOptionValueClient(c.config)
 	c.ProductTranslation = NewProductTranslationClient(c.config)
 	c.Region = NewRegionClient(c.config)
 	c.Role = NewRoleClient(c.config)
 	c.Store = NewStoreClient(c.config)
+	c.Tag = NewTagClient(c.config)
+	c.TagTranslation = NewTagTranslationClient(c.config)
 	c.TaxRate = NewTaxRateClient(c.config)
 	c.Variant = NewVariantClient(c.config)
 	c.VariantOptionValue = NewVariantOptionValueClient(c.config)
@@ -183,23 +211,30 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:                ctx,
-		config:             cfg,
-		AdminUser:          NewAdminUserClient(cfg),
-		Currency:           NewCurrencyClient(cfg),
-		Locale:             NewLocaleClient(cfg),
-		Permission:         NewPermissionClient(cfg),
-		Product:            NewProductClient(cfg),
-		ProductOption:      NewProductOptionClient(cfg),
-		ProductOptionValue: NewProductOptionValueClient(cfg),
-		ProductTranslation: NewProductTranslationClient(cfg),
-		Region:             NewRegionClient(cfg),
-		Role:               NewRoleClient(cfg),
-		Store:              NewStoreClient(cfg),
-		TaxRate:            NewTaxRateClient(cfg),
-		Variant:            NewVariantClient(cfg),
-		VariantOptionValue: NewVariantOptionValueClient(cfg),
-		VariantPrice:       NewVariantPriceClient(cfg),
+		ctx:                   ctx,
+		config:                cfg,
+		AdminUser:             NewAdminUserClient(cfg),
+		Category:              NewCategoryClient(cfg),
+		CategoryTranslation:   NewCategoryTranslationClient(cfg),
+		Collection:            NewCollectionClient(cfg),
+		CollectionTranslation: NewCollectionTranslationClient(cfg),
+		Currency:              NewCurrencyClient(cfg),
+		Locale:                NewLocaleClient(cfg),
+		Permission:            NewPermissionClient(cfg),
+		Product:               NewProductClient(cfg),
+		ProductMedia:          NewProductMediaClient(cfg),
+		ProductOption:         NewProductOptionClient(cfg),
+		ProductOptionValue:    NewProductOptionValueClient(cfg),
+		ProductTranslation:    NewProductTranslationClient(cfg),
+		Region:                NewRegionClient(cfg),
+		Role:                  NewRoleClient(cfg),
+		Store:                 NewStoreClient(cfg),
+		Tag:                   NewTagClient(cfg),
+		TagTranslation:        NewTagTranslationClient(cfg),
+		TaxRate:               NewTaxRateClient(cfg),
+		Variant:               NewVariantClient(cfg),
+		VariantOptionValue:    NewVariantOptionValueClient(cfg),
+		VariantPrice:          NewVariantPriceClient(cfg),
 	}, nil
 }
 
@@ -217,23 +252,30 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:                ctx,
-		config:             cfg,
-		AdminUser:          NewAdminUserClient(cfg),
-		Currency:           NewCurrencyClient(cfg),
-		Locale:             NewLocaleClient(cfg),
-		Permission:         NewPermissionClient(cfg),
-		Product:            NewProductClient(cfg),
-		ProductOption:      NewProductOptionClient(cfg),
-		ProductOptionValue: NewProductOptionValueClient(cfg),
-		ProductTranslation: NewProductTranslationClient(cfg),
-		Region:             NewRegionClient(cfg),
-		Role:               NewRoleClient(cfg),
-		Store:              NewStoreClient(cfg),
-		TaxRate:            NewTaxRateClient(cfg),
-		Variant:            NewVariantClient(cfg),
-		VariantOptionValue: NewVariantOptionValueClient(cfg),
-		VariantPrice:       NewVariantPriceClient(cfg),
+		ctx:                   ctx,
+		config:                cfg,
+		AdminUser:             NewAdminUserClient(cfg),
+		Category:              NewCategoryClient(cfg),
+		CategoryTranslation:   NewCategoryTranslationClient(cfg),
+		Collection:            NewCollectionClient(cfg),
+		CollectionTranslation: NewCollectionTranslationClient(cfg),
+		Currency:              NewCurrencyClient(cfg),
+		Locale:                NewLocaleClient(cfg),
+		Permission:            NewPermissionClient(cfg),
+		Product:               NewProductClient(cfg),
+		ProductMedia:          NewProductMediaClient(cfg),
+		ProductOption:         NewProductOptionClient(cfg),
+		ProductOptionValue:    NewProductOptionValueClient(cfg),
+		ProductTranslation:    NewProductTranslationClient(cfg),
+		Region:                NewRegionClient(cfg),
+		Role:                  NewRoleClient(cfg),
+		Store:                 NewStoreClient(cfg),
+		Tag:                   NewTagClient(cfg),
+		TagTranslation:        NewTagTranslationClient(cfg),
+		TaxRate:               NewTaxRateClient(cfg),
+		Variant:               NewVariantClient(cfg),
+		VariantOptionValue:    NewVariantOptionValueClient(cfg),
+		VariantPrice:          NewVariantPriceClient(cfg),
 	}, nil
 }
 
@@ -263,9 +305,11 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
-		c.AdminUser, c.Currency, c.Locale, c.Permission, c.Product, c.ProductOption,
-		c.ProductOptionValue, c.ProductTranslation, c.Region, c.Role, c.Store,
-		c.TaxRate, c.Variant, c.VariantOptionValue, c.VariantPrice,
+		c.AdminUser, c.Category, c.CategoryTranslation, c.Collection,
+		c.CollectionTranslation, c.Currency, c.Locale, c.Permission, c.Product,
+		c.ProductMedia, c.ProductOption, c.ProductOptionValue, c.ProductTranslation,
+		c.Region, c.Role, c.Store, c.Tag, c.TagTranslation, c.TaxRate, c.Variant,
+		c.VariantOptionValue, c.VariantPrice,
 	} {
 		n.Use(hooks...)
 	}
@@ -275,9 +319,11 @@ func (c *Client) Use(hooks ...Hook) {
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
-		c.AdminUser, c.Currency, c.Locale, c.Permission, c.Product, c.ProductOption,
-		c.ProductOptionValue, c.ProductTranslation, c.Region, c.Role, c.Store,
-		c.TaxRate, c.Variant, c.VariantOptionValue, c.VariantPrice,
+		c.AdminUser, c.Category, c.CategoryTranslation, c.Collection,
+		c.CollectionTranslation, c.Currency, c.Locale, c.Permission, c.Product,
+		c.ProductMedia, c.ProductOption, c.ProductOptionValue, c.ProductTranslation,
+		c.Region, c.Role, c.Store, c.Tag, c.TagTranslation, c.TaxRate, c.Variant,
+		c.VariantOptionValue, c.VariantPrice,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -288,6 +334,14 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
 	case *AdminUserMutation:
 		return c.AdminUser.mutate(ctx, m)
+	case *CategoryMutation:
+		return c.Category.mutate(ctx, m)
+	case *CategoryTranslationMutation:
+		return c.CategoryTranslation.mutate(ctx, m)
+	case *CollectionMutation:
+		return c.Collection.mutate(ctx, m)
+	case *CollectionTranslationMutation:
+		return c.CollectionTranslation.mutate(ctx, m)
 	case *CurrencyMutation:
 		return c.Currency.mutate(ctx, m)
 	case *LocaleMutation:
@@ -296,6 +350,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Permission.mutate(ctx, m)
 	case *ProductMutation:
 		return c.Product.mutate(ctx, m)
+	case *ProductMediaMutation:
+		return c.ProductMedia.mutate(ctx, m)
 	case *ProductOptionMutation:
 		return c.ProductOption.mutate(ctx, m)
 	case *ProductOptionValueMutation:
@@ -308,6 +364,10 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Role.mutate(ctx, m)
 	case *StoreMutation:
 		return c.Store.mutate(ctx, m)
+	case *TagMutation:
+		return c.Tag.mutate(ctx, m)
+	case *TagTranslationMutation:
+		return c.TagTranslation.mutate(ctx, m)
 	case *TaxRateMutation:
 		return c.TaxRate.mutate(ctx, m)
 	case *VariantMutation:
@@ -467,6 +527,618 @@ func (c *AdminUserClient) mutate(ctx context.Context, m *AdminUserMutation) (Val
 		return (&AdminUserDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown AdminUser mutation op: %q", m.Op())
+	}
+}
+
+// CategoryClient is a client for the Category schema.
+type CategoryClient struct {
+	config
+}
+
+// NewCategoryClient returns a client for the Category from the given config.
+func NewCategoryClient(c config) *CategoryClient {
+	return &CategoryClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `category.Hooks(f(g(h())))`.
+func (c *CategoryClient) Use(hooks ...Hook) {
+	c.hooks.Category = append(c.hooks.Category, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `category.Intercept(f(g(h())))`.
+func (c *CategoryClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Category = append(c.inters.Category, interceptors...)
+}
+
+// Create returns a builder for creating a Category entity.
+func (c *CategoryClient) Create() *CategoryCreate {
+	mutation := newCategoryMutation(c.config, OpCreate)
+	return &CategoryCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Category entities.
+func (c *CategoryClient) CreateBulk(builders ...*CategoryCreate) *CategoryCreateBulk {
+	return &CategoryCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *CategoryClient) MapCreateBulk(slice any, setFunc func(*CategoryCreate, int)) *CategoryCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &CategoryCreateBulk{err: fmt.Errorf("calling to CategoryClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*CategoryCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &CategoryCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Category.
+func (c *CategoryClient) Update() *CategoryUpdate {
+	mutation := newCategoryMutation(c.config, OpUpdate)
+	return &CategoryUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CategoryClient) UpdateOne(_m *Category) *CategoryUpdateOne {
+	mutation := newCategoryMutation(c.config, OpUpdateOne, withCategory(_m))
+	return &CategoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CategoryClient) UpdateOneID(id int) *CategoryUpdateOne {
+	mutation := newCategoryMutation(c.config, OpUpdateOne, withCategoryID(id))
+	return &CategoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Category.
+func (c *CategoryClient) Delete() *CategoryDelete {
+	mutation := newCategoryMutation(c.config, OpDelete)
+	return &CategoryDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CategoryClient) DeleteOne(_m *Category) *CategoryDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *CategoryClient) DeleteOneID(id int) *CategoryDeleteOne {
+	builder := c.Delete().Where(category.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CategoryDeleteOne{builder}
+}
+
+// Query returns a query builder for Category.
+func (c *CategoryClient) Query() *CategoryQuery {
+	return &CategoryQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeCategory},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Category entity by its id.
+func (c *CategoryClient) Get(ctx context.Context, id int) (*Category, error) {
+	return c.Query().Where(category.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CategoryClient) GetX(ctx context.Context, id int) *Category {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryTranslations queries the translations edge of a Category.
+func (c *CategoryClient) QueryTranslations(_m *Category) *CategoryTranslationQuery {
+	query := (&CategoryTranslationClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(category.Table, category.FieldID, id),
+			sqlgraph.To(categorytranslation.Table, categorytranslation.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, category.TranslationsTable, category.TranslationsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *CategoryClient) Hooks() []Hook {
+	return c.hooks.Category
+}
+
+// Interceptors returns the client interceptors.
+func (c *CategoryClient) Interceptors() []Interceptor {
+	return c.inters.Category
+}
+
+func (c *CategoryClient) mutate(ctx context.Context, m *CategoryMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CategoryCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CategoryUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CategoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CategoryDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Category mutation op: %q", m.Op())
+	}
+}
+
+// CategoryTranslationClient is a client for the CategoryTranslation schema.
+type CategoryTranslationClient struct {
+	config
+}
+
+// NewCategoryTranslationClient returns a client for the CategoryTranslation from the given config.
+func NewCategoryTranslationClient(c config) *CategoryTranslationClient {
+	return &CategoryTranslationClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `categorytranslation.Hooks(f(g(h())))`.
+func (c *CategoryTranslationClient) Use(hooks ...Hook) {
+	c.hooks.CategoryTranslation = append(c.hooks.CategoryTranslation, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `categorytranslation.Intercept(f(g(h())))`.
+func (c *CategoryTranslationClient) Intercept(interceptors ...Interceptor) {
+	c.inters.CategoryTranslation = append(c.inters.CategoryTranslation, interceptors...)
+}
+
+// Create returns a builder for creating a CategoryTranslation entity.
+func (c *CategoryTranslationClient) Create() *CategoryTranslationCreate {
+	mutation := newCategoryTranslationMutation(c.config, OpCreate)
+	return &CategoryTranslationCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of CategoryTranslation entities.
+func (c *CategoryTranslationClient) CreateBulk(builders ...*CategoryTranslationCreate) *CategoryTranslationCreateBulk {
+	return &CategoryTranslationCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *CategoryTranslationClient) MapCreateBulk(slice any, setFunc func(*CategoryTranslationCreate, int)) *CategoryTranslationCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &CategoryTranslationCreateBulk{err: fmt.Errorf("calling to CategoryTranslationClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*CategoryTranslationCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &CategoryTranslationCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for CategoryTranslation.
+func (c *CategoryTranslationClient) Update() *CategoryTranslationUpdate {
+	mutation := newCategoryTranslationMutation(c.config, OpUpdate)
+	return &CategoryTranslationUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CategoryTranslationClient) UpdateOne(_m *CategoryTranslation) *CategoryTranslationUpdateOne {
+	mutation := newCategoryTranslationMutation(c.config, OpUpdateOne, withCategoryTranslation(_m))
+	return &CategoryTranslationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CategoryTranslationClient) UpdateOneID(id int) *CategoryTranslationUpdateOne {
+	mutation := newCategoryTranslationMutation(c.config, OpUpdateOne, withCategoryTranslationID(id))
+	return &CategoryTranslationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for CategoryTranslation.
+func (c *CategoryTranslationClient) Delete() *CategoryTranslationDelete {
+	mutation := newCategoryTranslationMutation(c.config, OpDelete)
+	return &CategoryTranslationDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CategoryTranslationClient) DeleteOne(_m *CategoryTranslation) *CategoryTranslationDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *CategoryTranslationClient) DeleteOneID(id int) *CategoryTranslationDeleteOne {
+	builder := c.Delete().Where(categorytranslation.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CategoryTranslationDeleteOne{builder}
+}
+
+// Query returns a query builder for CategoryTranslation.
+func (c *CategoryTranslationClient) Query() *CategoryTranslationQuery {
+	return &CategoryTranslationQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeCategoryTranslation},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a CategoryTranslation entity by its id.
+func (c *CategoryTranslationClient) Get(ctx context.Context, id int) (*CategoryTranslation, error) {
+	return c.Query().Where(categorytranslation.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CategoryTranslationClient) GetX(ctx context.Context, id int) *CategoryTranslation {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryCategory queries the category edge of a CategoryTranslation.
+func (c *CategoryTranslationClient) QueryCategory(_m *CategoryTranslation) *CategoryQuery {
+	query := (&CategoryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(categorytranslation.Table, categorytranslation.FieldID, id),
+			sqlgraph.To(category.Table, category.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, categorytranslation.CategoryTable, categorytranslation.CategoryColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *CategoryTranslationClient) Hooks() []Hook {
+	return c.hooks.CategoryTranslation
+}
+
+// Interceptors returns the client interceptors.
+func (c *CategoryTranslationClient) Interceptors() []Interceptor {
+	return c.inters.CategoryTranslation
+}
+
+func (c *CategoryTranslationClient) mutate(ctx context.Context, m *CategoryTranslationMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CategoryTranslationCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CategoryTranslationUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CategoryTranslationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CategoryTranslationDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown CategoryTranslation mutation op: %q", m.Op())
+	}
+}
+
+// CollectionClient is a client for the Collection schema.
+type CollectionClient struct {
+	config
+}
+
+// NewCollectionClient returns a client for the Collection from the given config.
+func NewCollectionClient(c config) *CollectionClient {
+	return &CollectionClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `collection.Hooks(f(g(h())))`.
+func (c *CollectionClient) Use(hooks ...Hook) {
+	c.hooks.Collection = append(c.hooks.Collection, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `collection.Intercept(f(g(h())))`.
+func (c *CollectionClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Collection = append(c.inters.Collection, interceptors...)
+}
+
+// Create returns a builder for creating a Collection entity.
+func (c *CollectionClient) Create() *CollectionCreate {
+	mutation := newCollectionMutation(c.config, OpCreate)
+	return &CollectionCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Collection entities.
+func (c *CollectionClient) CreateBulk(builders ...*CollectionCreate) *CollectionCreateBulk {
+	return &CollectionCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *CollectionClient) MapCreateBulk(slice any, setFunc func(*CollectionCreate, int)) *CollectionCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &CollectionCreateBulk{err: fmt.Errorf("calling to CollectionClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*CollectionCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &CollectionCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Collection.
+func (c *CollectionClient) Update() *CollectionUpdate {
+	mutation := newCollectionMutation(c.config, OpUpdate)
+	return &CollectionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CollectionClient) UpdateOne(_m *Collection) *CollectionUpdateOne {
+	mutation := newCollectionMutation(c.config, OpUpdateOne, withCollection(_m))
+	return &CollectionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CollectionClient) UpdateOneID(id int) *CollectionUpdateOne {
+	mutation := newCollectionMutation(c.config, OpUpdateOne, withCollectionID(id))
+	return &CollectionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Collection.
+func (c *CollectionClient) Delete() *CollectionDelete {
+	mutation := newCollectionMutation(c.config, OpDelete)
+	return &CollectionDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CollectionClient) DeleteOne(_m *Collection) *CollectionDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *CollectionClient) DeleteOneID(id int) *CollectionDeleteOne {
+	builder := c.Delete().Where(collection.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CollectionDeleteOne{builder}
+}
+
+// Query returns a query builder for Collection.
+func (c *CollectionClient) Query() *CollectionQuery {
+	return &CollectionQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeCollection},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Collection entity by its id.
+func (c *CollectionClient) Get(ctx context.Context, id int) (*Collection, error) {
+	return c.Query().Where(collection.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CollectionClient) GetX(ctx context.Context, id int) *Collection {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryTranslations queries the translations edge of a Collection.
+func (c *CollectionClient) QueryTranslations(_m *Collection) *CollectionTranslationQuery {
+	query := (&CollectionTranslationClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(collection.Table, collection.FieldID, id),
+			sqlgraph.To(collectiontranslation.Table, collectiontranslation.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, collection.TranslationsTable, collection.TranslationsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryProducts queries the products edge of a Collection.
+func (c *CollectionClient) QueryProducts(_m *Collection) *ProductQuery {
+	query := (&ProductClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(collection.Table, collection.FieldID, id),
+			sqlgraph.To(product.Table, product.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, collection.ProductsTable, collection.ProductsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *CollectionClient) Hooks() []Hook {
+	return c.hooks.Collection
+}
+
+// Interceptors returns the client interceptors.
+func (c *CollectionClient) Interceptors() []Interceptor {
+	return c.inters.Collection
+}
+
+func (c *CollectionClient) mutate(ctx context.Context, m *CollectionMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CollectionCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CollectionUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CollectionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CollectionDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Collection mutation op: %q", m.Op())
+	}
+}
+
+// CollectionTranslationClient is a client for the CollectionTranslation schema.
+type CollectionTranslationClient struct {
+	config
+}
+
+// NewCollectionTranslationClient returns a client for the CollectionTranslation from the given config.
+func NewCollectionTranslationClient(c config) *CollectionTranslationClient {
+	return &CollectionTranslationClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `collectiontranslation.Hooks(f(g(h())))`.
+func (c *CollectionTranslationClient) Use(hooks ...Hook) {
+	c.hooks.CollectionTranslation = append(c.hooks.CollectionTranslation, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `collectiontranslation.Intercept(f(g(h())))`.
+func (c *CollectionTranslationClient) Intercept(interceptors ...Interceptor) {
+	c.inters.CollectionTranslation = append(c.inters.CollectionTranslation, interceptors...)
+}
+
+// Create returns a builder for creating a CollectionTranslation entity.
+func (c *CollectionTranslationClient) Create() *CollectionTranslationCreate {
+	mutation := newCollectionTranslationMutation(c.config, OpCreate)
+	return &CollectionTranslationCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of CollectionTranslation entities.
+func (c *CollectionTranslationClient) CreateBulk(builders ...*CollectionTranslationCreate) *CollectionTranslationCreateBulk {
+	return &CollectionTranslationCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *CollectionTranslationClient) MapCreateBulk(slice any, setFunc func(*CollectionTranslationCreate, int)) *CollectionTranslationCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &CollectionTranslationCreateBulk{err: fmt.Errorf("calling to CollectionTranslationClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*CollectionTranslationCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &CollectionTranslationCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for CollectionTranslation.
+func (c *CollectionTranslationClient) Update() *CollectionTranslationUpdate {
+	mutation := newCollectionTranslationMutation(c.config, OpUpdate)
+	return &CollectionTranslationUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CollectionTranslationClient) UpdateOne(_m *CollectionTranslation) *CollectionTranslationUpdateOne {
+	mutation := newCollectionTranslationMutation(c.config, OpUpdateOne, withCollectionTranslation(_m))
+	return &CollectionTranslationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CollectionTranslationClient) UpdateOneID(id int) *CollectionTranslationUpdateOne {
+	mutation := newCollectionTranslationMutation(c.config, OpUpdateOne, withCollectionTranslationID(id))
+	return &CollectionTranslationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for CollectionTranslation.
+func (c *CollectionTranslationClient) Delete() *CollectionTranslationDelete {
+	mutation := newCollectionTranslationMutation(c.config, OpDelete)
+	return &CollectionTranslationDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CollectionTranslationClient) DeleteOne(_m *CollectionTranslation) *CollectionTranslationDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *CollectionTranslationClient) DeleteOneID(id int) *CollectionTranslationDeleteOne {
+	builder := c.Delete().Where(collectiontranslation.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CollectionTranslationDeleteOne{builder}
+}
+
+// Query returns a query builder for CollectionTranslation.
+func (c *CollectionTranslationClient) Query() *CollectionTranslationQuery {
+	return &CollectionTranslationQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeCollectionTranslation},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a CollectionTranslation entity by its id.
+func (c *CollectionTranslationClient) Get(ctx context.Context, id int) (*CollectionTranslation, error) {
+	return c.Query().Where(collectiontranslation.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CollectionTranslationClient) GetX(ctx context.Context, id int) *CollectionTranslation {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryCollection queries the collection edge of a CollectionTranslation.
+func (c *CollectionTranslationClient) QueryCollection(_m *CollectionTranslation) *CollectionQuery {
+	query := (&CollectionClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(collectiontranslation.Table, collectiontranslation.FieldID, id),
+			sqlgraph.To(collection.Table, collection.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, collectiontranslation.CollectionTable, collectiontranslation.CollectionColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *CollectionTranslationClient) Hooks() []Hook {
+	return c.hooks.CollectionTranslation
+}
+
+// Interceptors returns the client interceptors.
+func (c *CollectionTranslationClient) Interceptors() []Interceptor {
+	return c.inters.CollectionTranslation
+}
+
+func (c *CollectionTranslationClient) mutate(ctx context.Context, m *CollectionTranslationMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CollectionTranslationCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CollectionTranslationUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CollectionTranslationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CollectionTranslationDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown CollectionTranslation mutation op: %q", m.Op())
 	}
 }
 
@@ -1063,6 +1735,139 @@ func (c *ProductClient) mutate(ctx context.Context, m *ProductMutation) (Value, 
 		return (&ProductDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Product mutation op: %q", m.Op())
+	}
+}
+
+// ProductMediaClient is a client for the ProductMedia schema.
+type ProductMediaClient struct {
+	config
+}
+
+// NewProductMediaClient returns a client for the ProductMedia from the given config.
+func NewProductMediaClient(c config) *ProductMediaClient {
+	return &ProductMediaClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `productmedia.Hooks(f(g(h())))`.
+func (c *ProductMediaClient) Use(hooks ...Hook) {
+	c.hooks.ProductMedia = append(c.hooks.ProductMedia, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `productmedia.Intercept(f(g(h())))`.
+func (c *ProductMediaClient) Intercept(interceptors ...Interceptor) {
+	c.inters.ProductMedia = append(c.inters.ProductMedia, interceptors...)
+}
+
+// Create returns a builder for creating a ProductMedia entity.
+func (c *ProductMediaClient) Create() *ProductMediaCreate {
+	mutation := newProductMediaMutation(c.config, OpCreate)
+	return &ProductMediaCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ProductMedia entities.
+func (c *ProductMediaClient) CreateBulk(builders ...*ProductMediaCreate) *ProductMediaCreateBulk {
+	return &ProductMediaCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ProductMediaClient) MapCreateBulk(slice any, setFunc func(*ProductMediaCreate, int)) *ProductMediaCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ProductMediaCreateBulk{err: fmt.Errorf("calling to ProductMediaClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ProductMediaCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ProductMediaCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ProductMedia.
+func (c *ProductMediaClient) Update() *ProductMediaUpdate {
+	mutation := newProductMediaMutation(c.config, OpUpdate)
+	return &ProductMediaUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ProductMediaClient) UpdateOne(_m *ProductMedia) *ProductMediaUpdateOne {
+	mutation := newProductMediaMutation(c.config, OpUpdateOne, withProductMedia(_m))
+	return &ProductMediaUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ProductMediaClient) UpdateOneID(id int) *ProductMediaUpdateOne {
+	mutation := newProductMediaMutation(c.config, OpUpdateOne, withProductMediaID(id))
+	return &ProductMediaUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ProductMedia.
+func (c *ProductMediaClient) Delete() *ProductMediaDelete {
+	mutation := newProductMediaMutation(c.config, OpDelete)
+	return &ProductMediaDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ProductMediaClient) DeleteOne(_m *ProductMedia) *ProductMediaDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ProductMediaClient) DeleteOneID(id int) *ProductMediaDeleteOne {
+	builder := c.Delete().Where(productmedia.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ProductMediaDeleteOne{builder}
+}
+
+// Query returns a query builder for ProductMedia.
+func (c *ProductMediaClient) Query() *ProductMediaQuery {
+	return &ProductMediaQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeProductMedia},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a ProductMedia entity by its id.
+func (c *ProductMediaClient) Get(ctx context.Context, id int) (*ProductMedia, error) {
+	return c.Query().Where(productmedia.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ProductMediaClient) GetX(ctx context.Context, id int) *ProductMedia {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *ProductMediaClient) Hooks() []Hook {
+	return c.hooks.ProductMedia
+}
+
+// Interceptors returns the client interceptors.
+func (c *ProductMediaClient) Interceptors() []Interceptor {
+	return c.inters.ProductMedia
+}
+
+func (c *ProductMediaClient) mutate(ctx context.Context, m *ProductMediaMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ProductMediaCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ProductMediaUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ProductMediaUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ProductMediaDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown ProductMedia mutation op: %q", m.Op())
 	}
 }
 
@@ -1976,6 +2781,320 @@ func (c *StoreClient) mutate(ctx context.Context, m *StoreMutation) (Value, erro
 	}
 }
 
+// TagClient is a client for the Tag schema.
+type TagClient struct {
+	config
+}
+
+// NewTagClient returns a client for the Tag from the given config.
+func NewTagClient(c config) *TagClient {
+	return &TagClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `tag.Hooks(f(g(h())))`.
+func (c *TagClient) Use(hooks ...Hook) {
+	c.hooks.Tag = append(c.hooks.Tag, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `tag.Intercept(f(g(h())))`.
+func (c *TagClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Tag = append(c.inters.Tag, interceptors...)
+}
+
+// Create returns a builder for creating a Tag entity.
+func (c *TagClient) Create() *TagCreate {
+	mutation := newTagMutation(c.config, OpCreate)
+	return &TagCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Tag entities.
+func (c *TagClient) CreateBulk(builders ...*TagCreate) *TagCreateBulk {
+	return &TagCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *TagClient) MapCreateBulk(slice any, setFunc func(*TagCreate, int)) *TagCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &TagCreateBulk{err: fmt.Errorf("calling to TagClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*TagCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &TagCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Tag.
+func (c *TagClient) Update() *TagUpdate {
+	mutation := newTagMutation(c.config, OpUpdate)
+	return &TagUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *TagClient) UpdateOne(_m *Tag) *TagUpdateOne {
+	mutation := newTagMutation(c.config, OpUpdateOne, withTag(_m))
+	return &TagUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *TagClient) UpdateOneID(id int) *TagUpdateOne {
+	mutation := newTagMutation(c.config, OpUpdateOne, withTagID(id))
+	return &TagUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Tag.
+func (c *TagClient) Delete() *TagDelete {
+	mutation := newTagMutation(c.config, OpDelete)
+	return &TagDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *TagClient) DeleteOne(_m *Tag) *TagDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *TagClient) DeleteOneID(id int) *TagDeleteOne {
+	builder := c.Delete().Where(tag.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &TagDeleteOne{builder}
+}
+
+// Query returns a query builder for Tag.
+func (c *TagClient) Query() *TagQuery {
+	return &TagQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeTag},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Tag entity by its id.
+func (c *TagClient) Get(ctx context.Context, id int) (*Tag, error) {
+	return c.Query().Where(tag.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *TagClient) GetX(ctx context.Context, id int) *Tag {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryTranslations queries the translations edge of a Tag.
+func (c *TagClient) QueryTranslations(_m *Tag) *TagTranslationQuery {
+	query := (&TagTranslationClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(tag.Table, tag.FieldID, id),
+			sqlgraph.To(tagtranslation.Table, tagtranslation.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, tag.TranslationsTable, tag.TranslationsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryProducts queries the products edge of a Tag.
+func (c *TagClient) QueryProducts(_m *Tag) *ProductQuery {
+	query := (&ProductClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(tag.Table, tag.FieldID, id),
+			sqlgraph.To(product.Table, product.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, tag.ProductsTable, tag.ProductsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *TagClient) Hooks() []Hook {
+	return c.hooks.Tag
+}
+
+// Interceptors returns the client interceptors.
+func (c *TagClient) Interceptors() []Interceptor {
+	return c.inters.Tag
+}
+
+func (c *TagClient) mutate(ctx context.Context, m *TagMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&TagCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&TagUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&TagUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&TagDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Tag mutation op: %q", m.Op())
+	}
+}
+
+// TagTranslationClient is a client for the TagTranslation schema.
+type TagTranslationClient struct {
+	config
+}
+
+// NewTagTranslationClient returns a client for the TagTranslation from the given config.
+func NewTagTranslationClient(c config) *TagTranslationClient {
+	return &TagTranslationClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `tagtranslation.Hooks(f(g(h())))`.
+func (c *TagTranslationClient) Use(hooks ...Hook) {
+	c.hooks.TagTranslation = append(c.hooks.TagTranslation, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `tagtranslation.Intercept(f(g(h())))`.
+func (c *TagTranslationClient) Intercept(interceptors ...Interceptor) {
+	c.inters.TagTranslation = append(c.inters.TagTranslation, interceptors...)
+}
+
+// Create returns a builder for creating a TagTranslation entity.
+func (c *TagTranslationClient) Create() *TagTranslationCreate {
+	mutation := newTagTranslationMutation(c.config, OpCreate)
+	return &TagTranslationCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of TagTranslation entities.
+func (c *TagTranslationClient) CreateBulk(builders ...*TagTranslationCreate) *TagTranslationCreateBulk {
+	return &TagTranslationCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *TagTranslationClient) MapCreateBulk(slice any, setFunc func(*TagTranslationCreate, int)) *TagTranslationCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &TagTranslationCreateBulk{err: fmt.Errorf("calling to TagTranslationClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*TagTranslationCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &TagTranslationCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for TagTranslation.
+func (c *TagTranslationClient) Update() *TagTranslationUpdate {
+	mutation := newTagTranslationMutation(c.config, OpUpdate)
+	return &TagTranslationUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *TagTranslationClient) UpdateOne(_m *TagTranslation) *TagTranslationUpdateOne {
+	mutation := newTagTranslationMutation(c.config, OpUpdateOne, withTagTranslation(_m))
+	return &TagTranslationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *TagTranslationClient) UpdateOneID(id int) *TagTranslationUpdateOne {
+	mutation := newTagTranslationMutation(c.config, OpUpdateOne, withTagTranslationID(id))
+	return &TagTranslationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for TagTranslation.
+func (c *TagTranslationClient) Delete() *TagTranslationDelete {
+	mutation := newTagTranslationMutation(c.config, OpDelete)
+	return &TagTranslationDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *TagTranslationClient) DeleteOne(_m *TagTranslation) *TagTranslationDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *TagTranslationClient) DeleteOneID(id int) *TagTranslationDeleteOne {
+	builder := c.Delete().Where(tagtranslation.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &TagTranslationDeleteOne{builder}
+}
+
+// Query returns a query builder for TagTranslation.
+func (c *TagTranslationClient) Query() *TagTranslationQuery {
+	return &TagTranslationQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeTagTranslation},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a TagTranslation entity by its id.
+func (c *TagTranslationClient) Get(ctx context.Context, id int) (*TagTranslation, error) {
+	return c.Query().Where(tagtranslation.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *TagTranslationClient) GetX(ctx context.Context, id int) *TagTranslation {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryTag queries the tag edge of a TagTranslation.
+func (c *TagTranslationClient) QueryTag(_m *TagTranslation) *TagQuery {
+	query := (&TagClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(tagtranslation.Table, tagtranslation.FieldID, id),
+			sqlgraph.To(tag.Table, tag.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, tagtranslation.TagTable, tagtranslation.TagColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *TagTranslationClient) Hooks() []Hook {
+	return c.hooks.TagTranslation
+}
+
+// Interceptors returns the client interceptors.
+func (c *TagTranslationClient) Interceptors() []Interceptor {
+	return c.inters.TagTranslation
+}
+
+func (c *TagTranslationClient) mutate(ctx context.Context, m *TagTranslationMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&TagTranslationCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&TagTranslationUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&TagTranslationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&TagTranslationDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown TagTranslation mutation op: %q", m.Op())
+	}
+}
+
 // TaxRateClient is a client for the TaxRate schema.
 type TaxRateClient struct {
 	config
@@ -2607,13 +3726,16 @@ func (c *VariantPriceClient) mutate(ctx context.Context, m *VariantPriceMutation
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		AdminUser, Currency, Locale, Permission, Product, ProductOption,
-		ProductOptionValue, ProductTranslation, Region, Role, Store, TaxRate, Variant,
-		VariantOptionValue, VariantPrice []ent.Hook
+		AdminUser, Category, CategoryTranslation, Collection, CollectionTranslation,
+		Currency, Locale, Permission, Product, ProductMedia, ProductOption,
+		ProductOptionValue, ProductTranslation, Region, Role, Store, Tag,
+		TagTranslation, TaxRate, Variant, VariantOptionValue, VariantPrice []ent.Hook
 	}
 	inters struct {
-		AdminUser, Currency, Locale, Permission, Product, ProductOption,
-		ProductOptionValue, ProductTranslation, Region, Role, Store, TaxRate, Variant,
-		VariantOptionValue, VariantPrice []ent.Interceptor
+		AdminUser, Category, CategoryTranslation, Collection, CollectionTranslation,
+		Currency, Locale, Permission, Product, ProductMedia, ProductOption,
+		ProductOptionValue, ProductTranslation, Region, Role, Store, Tag,
+		TagTranslation, TaxRate, Variant, VariantOptionValue,
+		VariantPrice []ent.Interceptor
 	}
 )

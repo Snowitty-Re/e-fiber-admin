@@ -9,6 +9,18 @@ import (
 // AdminUser is the predicate function for adminuser builders.
 type AdminUser func(*sql.Selector)
 
+// Category is the predicate function for category builders.
+type Category func(*sql.Selector)
+
+// CategoryTranslation is the predicate function for categorytranslation builders.
+type CategoryTranslation func(*sql.Selector)
+
+// Collection is the predicate function for collection builders.
+type Collection func(*sql.Selector)
+
+// CollectionTranslation is the predicate function for collectiontranslation builders.
+type CollectionTranslation func(*sql.Selector)
+
 // Currency is the predicate function for currency builders.
 type Currency func(*sql.Selector)
 
@@ -20,6 +32,9 @@ type Permission func(*sql.Selector)
 
 // Product is the predicate function for product builders.
 type Product func(*sql.Selector)
+
+// ProductMedia is the predicate function for productmedia builders.
+type ProductMedia func(*sql.Selector)
 
 // ProductOption is the predicate function for productoption builders.
 type ProductOption func(*sql.Selector)
@@ -38,6 +53,12 @@ type Role func(*sql.Selector)
 
 // Store is the predicate function for store builders.
 type Store func(*sql.Selector)
+
+// Tag is the predicate function for tag builders.
+type Tag func(*sql.Selector)
+
+// TagTranslation is the predicate function for tagtranslation builders.
+type TagTranslation func(*sql.Selector)
 
 // TaxRate is the predicate function for taxrate builders.
 type TaxRate func(*sql.Selector)
