@@ -10,15 +10,17 @@ import (
 )
 
 type Deps struct {
-	HealthH     *handler.HealthHandler
-	AuthH       *handler.AuthHandler
-	RegionH     *handler.RegionHandler
-	MediaH      *handler.MediaHandler
-	ProductH    *handler.ProductHandler
-	CMSH        *handler.CMSHandler
-	SettingsH   *handler.SettingsHandler
-	StorefrontH *handler.StorefrontHandler
-	JWTAuthFunc fiber.Handler
+	HealthH            *handler.HealthHandler
+	AuthH              *handler.AuthHandler
+	RegionH            *handler.RegionHandler
+	MediaH             *handler.MediaHandler
+	ProductH           *handler.ProductHandler
+	CMSH               *handler.CMSHandler
+	SettingsH          *handler.SettingsHandler
+	StorefrontH        *handler.StorefrontHandler
+	CustomerH          *handler.CustomerHandler
+	JWTAuthFunc        fiber.Handler
+	CustomerJWTAuthFunc fiber.Handler
 }
 
 func Register(app *fiber.App, deps Deps) {
@@ -109,4 +111,17 @@ func Register(app *fiber.App, deps Deps) {
 
 	storeBlog := store.Group("/blog-posts")
 	storeBlog.Get("/", deps.CMSH.StoreListBlogPosts)
+
+	storeAuth := store.Group("/auth")
+	storeAuth.Post("/register", deps.CustomerH.Register)
+	storeAuth.Post("/login", deps.CustomerH.Login)
+	storeAuth.Post("/refresh", deps.CustomerH.Refresh)
+	storeAuthProtected := storeAuth.Use(deps.CustomerJWTAuthFunc)
+	storeAuthProtected.Get("/me", deps.CustomerH.Me)
+	storeAuthProtected.Post("/logout", deps.CustomerH.Logout)
+
+	customers := adminProtected.Group("/customers")
+	customers.Get("/", middleware.RBAC("customer:read"), deps.CustomerH.AdminList)
+	customers.Get("/:id", middleware.RBAC("customer:read"), deps.CustomerH.AdminGet)
+	customers.Post("/:id/disable", middleware.RBAC("customer:write"), deps.CustomerH.AdminDisable)
 }

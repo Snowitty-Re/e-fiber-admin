@@ -6,6 +6,7 @@ import (
 	"github.com/gofiber/fiber/v3"
 
 	authsvc "github.com/Snowitty-Re/e-fiber-admin/internal/domain/auth"
+	customerauth "github.com/Snowitty-Re/e-fiber-admin/internal/domain/customer"
 	pkgerr "github.com/Snowitty-Re/e-fiber-admin/internal/pkg/errors"
 )
 
@@ -19,6 +20,36 @@ func extractToken(c fiber.Ctx) string {
 		return strings.TrimSpace(parts[1])
 	}
 	return ""
+}
+
+func CustomerJWTAuth(customerAuthService *customerauth.Service) fiber.Handler {
+	return func(c fiber.Ctx) error {
+		token := extractToken(c)
+		if token == "" {
+			return pkgerr.ErrUnauthorized
+		}
+		claims, err := customerAuthService.ParseAccess(token)
+		if err != nil {
+			return err
+		}
+		c.Locals("customer_id", claims.CustomerID)
+		return c.Next()
+	}
+}
+
+func OptionalCustomerJWTAuth(customerAuthService *customerauth.Service) fiber.Handler {
+	return func(c fiber.Ctx) error {
+		token := extractToken(c)
+		if token == "" {
+			return c.Next()
+		}
+		claims, err := customerAuthService.ParseAccess(token)
+		if err != nil {
+			return c.Next()
+		}
+		c.Locals("customer_id", claims.CustomerID)
+		return c.Next()
+	}
 }
 
 func JWTAuth(authService *authsvc.Service) fiber.Handler {

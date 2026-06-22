@@ -19,6 +19,7 @@ import (
 	"github.com/Snowitty-Re/e-fiber-admin/internal/config"
 	authsvc "github.com/Snowitty-Re/e-fiber-admin/internal/domain/auth"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/domain/cms"
+	customersvc "github.com/Snowitty-Re/e-fiber-admin/internal/domain/customer"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/domain/media"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/domain/product"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/domain/region"
@@ -84,17 +85,21 @@ func NewApp(deps Deps) *fiber.App {
 	cmsH := handler.NewCMSHandler(cmsSvc, deps.EntClient)
 	settingsSvc := settings.NewService(deps.EntClient)
 	settingsH := handler.NewSettingsHandler(settingsSvc)
+	customerSvc := customersvc.NewService(deps.EntClient, deps.RedisClient, tokenManager)
+	customerH := handler.NewCustomerHandler(customerSvc)
 
 	router.Register(app, router.Deps{
-		HealthH:     healthH,
-		AuthH:       authH,
-		RegionH:     regionH,
-		MediaH:      mediaH,
-		ProductH:    productH,
-		CMSH:        cmsH,
-		SettingsH:   settingsH,
-		StorefrontH: storefrontH,
-		JWTAuthFunc: pkgmw.JWTAuth(authService),
+		HealthH:             healthH,
+		AuthH:               authH,
+		RegionH:             regionH,
+		MediaH:              mediaH,
+		ProductH:            productH,
+		CMSH:                cmsH,
+		SettingsH:           settingsH,
+		StorefrontH:         storefrontH,
+		CustomerH:           customerH,
+		JWTAuthFunc:         pkgmw.JWTAuth(authService),
+		CustomerJWTAuthFunc: pkgmw.CustomerJWTAuth(customerSvc),
 	})
 
 	return app
