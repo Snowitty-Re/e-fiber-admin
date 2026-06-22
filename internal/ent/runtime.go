@@ -13,6 +13,9 @@ import (
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/collection"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/collectiontranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/currency"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/customer"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/customeraddress"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/customergroup"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/locale"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/media"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/mediatranslation"
@@ -283,6 +286,147 @@ func init() {
 	currencyDescIsActive := currencyFields[4].Descriptor()
 	// currency.DefaultIsActive holds the default value on creation for the is_active field.
 	currency.DefaultIsActive = currencyDescIsActive.Default.(bool)
+	customerMixin := schema.Customer{}.Mixin()
+	customerMixinFields0 := customerMixin[0].Fields()
+	_ = customerMixinFields0
+	customerFields := schema.Customer{}.Fields()
+	_ = customerFields
+	// customerDescVersion is the schema descriptor for version field.
+	customerDescVersion := customerMixinFields0[3].Descriptor()
+	// customer.DefaultVersion holds the default value on creation for the version field.
+	customer.DefaultVersion = customerDescVersion.Default.(int)
+	// customerDescCreatedAt is the schema descriptor for created_at field.
+	customerDescCreatedAt := customerMixinFields0[4].Descriptor()
+	// customer.DefaultCreatedAt holds the default value on creation for the created_at field.
+	customer.DefaultCreatedAt = customerDescCreatedAt.Default.(func() time.Time)
+	// customerDescUpdatedAt is the schema descriptor for updated_at field.
+	customerDescUpdatedAt := customerMixinFields0[5].Descriptor()
+	// customer.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	customer.DefaultUpdatedAt = customerDescUpdatedAt.Default.(func() time.Time)
+	// customer.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	customer.UpdateDefaultUpdatedAt = customerDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// customerDescEmail is the schema descriptor for email field.
+	customerDescEmail := customerFields[0].Descriptor()
+	// customer.EmailValidator is a validator for the "email" field. It is called by the builders before save.
+	customer.EmailValidator = customerDescEmail.Validators[0].(func(string) error)
+	// customerDescPhone is the schema descriptor for phone field.
+	customerDescPhone := customerFields[1].Descriptor()
+	// customer.DefaultPhone holds the default value on creation for the phone field.
+	customer.DefaultPhone = customerDescPhone.Default.(string)
+	// customerDescFirstName is the schema descriptor for first_name field.
+	customerDescFirstName := customerFields[2].Descriptor()
+	// customer.DefaultFirstName holds the default value on creation for the first_name field.
+	customer.DefaultFirstName = customerDescFirstName.Default.(string)
+	// customerDescLastName is the schema descriptor for last_name field.
+	customerDescLastName := customerFields[3].Descriptor()
+	// customer.DefaultLastName holds the default value on creation for the last_name field.
+	customer.DefaultLastName = customerDescLastName.Default.(string)
+	// customerDescPasswordHash is the schema descriptor for password_hash field.
+	customerDescPasswordHash := customerFields[4].Descriptor()
+	// customer.DefaultPasswordHash holds the default value on creation for the password_hash field.
+	customer.DefaultPasswordHash = customerDescPasswordHash.Default.(string)
+	// customerDescDefaultCurrency is the schema descriptor for default_currency field.
+	customerDescDefaultCurrency := customerFields[6].Descriptor()
+	// customer.DefaultDefaultCurrency holds the default value on creation for the default_currency field.
+	customer.DefaultDefaultCurrency = customerDescDefaultCurrency.Default.(string)
+	// customer.DefaultCurrencyValidator is a validator for the "default_currency" field. It is called by the builders before save.
+	customer.DefaultCurrencyValidator = customerDescDefaultCurrency.Validators[0].(func(string) error)
+	// customerDescDefaultLocale is the schema descriptor for default_locale field.
+	customerDescDefaultLocale := customerFields[7].Descriptor()
+	// customer.DefaultDefaultLocale holds the default value on creation for the default_locale field.
+	customer.DefaultDefaultLocale = customerDescDefaultLocale.Default.(string)
+	// customer.DefaultLocaleValidator is a validator for the "default_locale" field. It is called by the builders before save.
+	customer.DefaultLocaleValidator = customerDescDefaultLocale.Validators[0].(func(string) error)
+	customeraddressMixin := schema.CustomerAddress{}.Mixin()
+	customeraddressMixinFields0 := customeraddressMixin[0].Fields()
+	_ = customeraddressMixinFields0
+	customeraddressFields := schema.CustomerAddress{}.Fields()
+	_ = customeraddressFields
+	// customeraddressDescVersion is the schema descriptor for version field.
+	customeraddressDescVersion := customeraddressMixinFields0[3].Descriptor()
+	// customeraddress.DefaultVersion holds the default value on creation for the version field.
+	customeraddress.DefaultVersion = customeraddressDescVersion.Default.(int)
+	// customeraddressDescCreatedAt is the schema descriptor for created_at field.
+	customeraddressDescCreatedAt := customeraddressMixinFields0[4].Descriptor()
+	// customeraddress.DefaultCreatedAt holds the default value on creation for the created_at field.
+	customeraddress.DefaultCreatedAt = customeraddressDescCreatedAt.Default.(func() time.Time)
+	// customeraddressDescUpdatedAt is the schema descriptor for updated_at field.
+	customeraddressDescUpdatedAt := customeraddressMixinFields0[5].Descriptor()
+	// customeraddress.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	customeraddress.DefaultUpdatedAt = customeraddressDescUpdatedAt.Default.(func() time.Time)
+	// customeraddress.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	customeraddress.UpdateDefaultUpdatedAt = customeraddressDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// customeraddressDescFirstName is the schema descriptor for first_name field.
+	customeraddressDescFirstName := customeraddressFields[1].Descriptor()
+	// customeraddress.DefaultFirstName holds the default value on creation for the first_name field.
+	customeraddress.DefaultFirstName = customeraddressDescFirstName.Default.(string)
+	// customeraddressDescLastName is the schema descriptor for last_name field.
+	customeraddressDescLastName := customeraddressFields[2].Descriptor()
+	// customeraddress.DefaultLastName holds the default value on creation for the last_name field.
+	customeraddress.DefaultLastName = customeraddressDescLastName.Default.(string)
+	// customeraddressDescCompany is the schema descriptor for company field.
+	customeraddressDescCompany := customeraddressFields[3].Descriptor()
+	// customeraddress.DefaultCompany holds the default value on creation for the company field.
+	customeraddress.DefaultCompany = customeraddressDescCompany.Default.(string)
+	// customeraddressDescAddress1 is the schema descriptor for address1 field.
+	customeraddressDescAddress1 := customeraddressFields[4].Descriptor()
+	// customeraddress.DefaultAddress1 holds the default value on creation for the address1 field.
+	customeraddress.DefaultAddress1 = customeraddressDescAddress1.Default.(string)
+	// customeraddressDescAddress2 is the schema descriptor for address2 field.
+	customeraddressDescAddress2 := customeraddressFields[5].Descriptor()
+	// customeraddress.DefaultAddress2 holds the default value on creation for the address2 field.
+	customeraddress.DefaultAddress2 = customeraddressDescAddress2.Default.(string)
+	// customeraddressDescCity is the schema descriptor for city field.
+	customeraddressDescCity := customeraddressFields[6].Descriptor()
+	// customeraddress.DefaultCity holds the default value on creation for the city field.
+	customeraddress.DefaultCity = customeraddressDescCity.Default.(string)
+	// customeraddressDescProvince is the schema descriptor for province field.
+	customeraddressDescProvince := customeraddressFields[7].Descriptor()
+	// customeraddress.DefaultProvince holds the default value on creation for the province field.
+	customeraddress.DefaultProvince = customeraddressDescProvince.Default.(string)
+	// customeraddressDescPostalCode is the schema descriptor for postal_code field.
+	customeraddressDescPostalCode := customeraddressFields[8].Descriptor()
+	// customeraddress.DefaultPostalCode holds the default value on creation for the postal_code field.
+	customeraddress.DefaultPostalCode = customeraddressDescPostalCode.Default.(string)
+	// customeraddressDescCountryCode is the schema descriptor for country_code field.
+	customeraddressDescCountryCode := customeraddressFields[9].Descriptor()
+	// customeraddress.DefaultCountryCode holds the default value on creation for the country_code field.
+	customeraddress.DefaultCountryCode = customeraddressDescCountryCode.Default.(string)
+	// customeraddressDescPhone is the schema descriptor for phone field.
+	customeraddressDescPhone := customeraddressFields[10].Descriptor()
+	// customeraddress.DefaultPhone holds the default value on creation for the phone field.
+	customeraddress.DefaultPhone = customeraddressDescPhone.Default.(string)
+	// customeraddressDescIsDefaultShipping is the schema descriptor for is_default_shipping field.
+	customeraddressDescIsDefaultShipping := customeraddressFields[11].Descriptor()
+	// customeraddress.DefaultIsDefaultShipping holds the default value on creation for the is_default_shipping field.
+	customeraddress.DefaultIsDefaultShipping = customeraddressDescIsDefaultShipping.Default.(bool)
+	// customeraddressDescIsDefaultBilling is the schema descriptor for is_default_billing field.
+	customeraddressDescIsDefaultBilling := customeraddressFields[12].Descriptor()
+	// customeraddress.DefaultIsDefaultBilling holds the default value on creation for the is_default_billing field.
+	customeraddress.DefaultIsDefaultBilling = customeraddressDescIsDefaultBilling.Default.(bool)
+	customergroupMixin := schema.CustomerGroup{}.Mixin()
+	customergroupMixinFields0 := customergroupMixin[0].Fields()
+	_ = customergroupMixinFields0
+	customergroupFields := schema.CustomerGroup{}.Fields()
+	_ = customergroupFields
+	// customergroupDescVersion is the schema descriptor for version field.
+	customergroupDescVersion := customergroupMixinFields0[3].Descriptor()
+	// customergroup.DefaultVersion holds the default value on creation for the version field.
+	customergroup.DefaultVersion = customergroupDescVersion.Default.(int)
+	// customergroupDescCreatedAt is the schema descriptor for created_at field.
+	customergroupDescCreatedAt := customergroupMixinFields0[4].Descriptor()
+	// customergroup.DefaultCreatedAt holds the default value on creation for the created_at field.
+	customergroup.DefaultCreatedAt = customergroupDescCreatedAt.Default.(func() time.Time)
+	// customergroupDescUpdatedAt is the schema descriptor for updated_at field.
+	customergroupDescUpdatedAt := customergroupMixinFields0[5].Descriptor()
+	// customergroup.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	customergroup.DefaultUpdatedAt = customergroupDescUpdatedAt.Default.(func() time.Time)
+	// customergroup.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	customergroup.UpdateDefaultUpdatedAt = customergroupDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// customergroupDescName is the schema descriptor for name field.
+	customergroupDescName := customergroupFields[1].Descriptor()
+	// customergroup.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	customergroup.NameValidator = customergroupDescName.Validators[0].(func(string) error)
 	localeMixin := schema.Locale{}.Mixin()
 	localeMixinFields0 := localeMixin[0].Fields()
 	_ = localeMixinFields0

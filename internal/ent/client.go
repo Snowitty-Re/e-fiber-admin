@@ -23,6 +23,9 @@ import (
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/collection"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/collectiontranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/currency"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/customer"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/customeraddress"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/customergroup"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/locale"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/media"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/mediatranslation"
@@ -69,6 +72,12 @@ type Client struct {
 	CollectionTranslation *CollectionTranslationClient
 	// Currency is the client for interacting with the Currency builders.
 	Currency *CurrencyClient
+	// Customer is the client for interacting with the Customer builders.
+	Customer *CustomerClient
+	// CustomerAddress is the client for interacting with the CustomerAddress builders.
+	CustomerAddress *CustomerAddressClient
+	// CustomerGroup is the client for interacting with the CustomerGroup builders.
+	CustomerGroup *CustomerGroupClient
 	// Locale is the client for interacting with the Locale builders.
 	Locale *LocaleClient
 	// Media is the client for interacting with the Media builders.
@@ -134,6 +143,9 @@ func (c *Client) init() {
 	c.Collection = NewCollectionClient(c.config)
 	c.CollectionTranslation = NewCollectionTranslationClient(c.config)
 	c.Currency = NewCurrencyClient(c.config)
+	c.Customer = NewCustomerClient(c.config)
+	c.CustomerAddress = NewCustomerAddressClient(c.config)
+	c.CustomerGroup = NewCustomerGroupClient(c.config)
 	c.Locale = NewLocaleClient(c.config)
 	c.Media = NewMediaClient(c.config)
 	c.MediaTranslation = NewMediaTranslationClient(c.config)
@@ -257,6 +269,9 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Collection:            NewCollectionClient(cfg),
 		CollectionTranslation: NewCollectionTranslationClient(cfg),
 		Currency:              NewCurrencyClient(cfg),
+		Customer:              NewCustomerClient(cfg),
+		CustomerAddress:       NewCustomerAddressClient(cfg),
+		CustomerGroup:         NewCustomerGroupClient(cfg),
 		Locale:                NewLocaleClient(cfg),
 		Media:                 NewMediaClient(cfg),
 		MediaTranslation:      NewMediaTranslationClient(cfg),
@@ -307,6 +322,9 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Collection:            NewCollectionClient(cfg),
 		CollectionTranslation: NewCollectionTranslationClient(cfg),
 		Currency:              NewCurrencyClient(cfg),
+		Customer:              NewCustomerClient(cfg),
+		CustomerAddress:       NewCustomerAddressClient(cfg),
+		CustomerGroup:         NewCustomerGroupClient(cfg),
 		Locale:                NewLocaleClient(cfg),
 		Media:                 NewMediaClient(cfg),
 		MediaTranslation:      NewMediaTranslationClient(cfg),
@@ -361,11 +379,11 @@ func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.AdminUser, c.BlogPost, c.BlogPostTranslation, c.Category,
 		c.CategoryTranslation, c.Collection, c.CollectionTranslation, c.Currency,
-		c.Locale, c.Media, c.MediaTranslation, c.Menu, c.MenuItem,
-		c.MenuItemTranslation, c.Page, c.PageTranslation, c.Permission, c.Product,
-		c.ProductMedia, c.ProductOption, c.ProductOptionValue, c.ProductTranslation,
-		c.Region, c.Role, c.Store, c.Tag, c.TagTranslation, c.TaxRate, c.Variant,
-		c.VariantOptionValue, c.VariantPrice,
+		c.Customer, c.CustomerAddress, c.CustomerGroup, c.Locale, c.Media,
+		c.MediaTranslation, c.Menu, c.MenuItem, c.MenuItemTranslation, c.Page,
+		c.PageTranslation, c.Permission, c.Product, c.ProductMedia, c.ProductOption,
+		c.ProductOptionValue, c.ProductTranslation, c.Region, c.Role, c.Store, c.Tag,
+		c.TagTranslation, c.TaxRate, c.Variant, c.VariantOptionValue, c.VariantPrice,
 	} {
 		n.Use(hooks...)
 	}
@@ -377,11 +395,11 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.AdminUser, c.BlogPost, c.BlogPostTranslation, c.Category,
 		c.CategoryTranslation, c.Collection, c.CollectionTranslation, c.Currency,
-		c.Locale, c.Media, c.MediaTranslation, c.Menu, c.MenuItem,
-		c.MenuItemTranslation, c.Page, c.PageTranslation, c.Permission, c.Product,
-		c.ProductMedia, c.ProductOption, c.ProductOptionValue, c.ProductTranslation,
-		c.Region, c.Role, c.Store, c.Tag, c.TagTranslation, c.TaxRate, c.Variant,
-		c.VariantOptionValue, c.VariantPrice,
+		c.Customer, c.CustomerAddress, c.CustomerGroup, c.Locale, c.Media,
+		c.MediaTranslation, c.Menu, c.MenuItem, c.MenuItemTranslation, c.Page,
+		c.PageTranslation, c.Permission, c.Product, c.ProductMedia, c.ProductOption,
+		c.ProductOptionValue, c.ProductTranslation, c.Region, c.Role, c.Store, c.Tag,
+		c.TagTranslation, c.TaxRate, c.Variant, c.VariantOptionValue, c.VariantPrice,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -406,6 +424,12 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.CollectionTranslation.mutate(ctx, m)
 	case *CurrencyMutation:
 		return c.Currency.mutate(ctx, m)
+	case *CustomerMutation:
+		return c.Customer.mutate(ctx, m)
+	case *CustomerAddressMutation:
+		return c.CustomerAddress.mutate(ctx, m)
+	case *CustomerGroupMutation:
+		return c.CustomerGroup.mutate(ctx, m)
 	case *LocaleMutation:
 		return c.Locale.mutate(ctx, m)
 	case *MediaMutation:
@@ -1646,6 +1670,453 @@ func (c *CurrencyClient) mutate(ctx context.Context, m *CurrencyMutation) (Value
 		return (&CurrencyDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Currency mutation op: %q", m.Op())
+	}
+}
+
+// CustomerClient is a client for the Customer schema.
+type CustomerClient struct {
+	config
+}
+
+// NewCustomerClient returns a client for the Customer from the given config.
+func NewCustomerClient(c config) *CustomerClient {
+	return &CustomerClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `customer.Hooks(f(g(h())))`.
+func (c *CustomerClient) Use(hooks ...Hook) {
+	c.hooks.Customer = append(c.hooks.Customer, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `customer.Intercept(f(g(h())))`.
+func (c *CustomerClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Customer = append(c.inters.Customer, interceptors...)
+}
+
+// Create returns a builder for creating a Customer entity.
+func (c *CustomerClient) Create() *CustomerCreate {
+	mutation := newCustomerMutation(c.config, OpCreate)
+	return &CustomerCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Customer entities.
+func (c *CustomerClient) CreateBulk(builders ...*CustomerCreate) *CustomerCreateBulk {
+	return &CustomerCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *CustomerClient) MapCreateBulk(slice any, setFunc func(*CustomerCreate, int)) *CustomerCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &CustomerCreateBulk{err: fmt.Errorf("calling to CustomerClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*CustomerCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &CustomerCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Customer.
+func (c *CustomerClient) Update() *CustomerUpdate {
+	mutation := newCustomerMutation(c.config, OpUpdate)
+	return &CustomerUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CustomerClient) UpdateOne(_m *Customer) *CustomerUpdateOne {
+	mutation := newCustomerMutation(c.config, OpUpdateOne, withCustomer(_m))
+	return &CustomerUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CustomerClient) UpdateOneID(id int) *CustomerUpdateOne {
+	mutation := newCustomerMutation(c.config, OpUpdateOne, withCustomerID(id))
+	return &CustomerUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Customer.
+func (c *CustomerClient) Delete() *CustomerDelete {
+	mutation := newCustomerMutation(c.config, OpDelete)
+	return &CustomerDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CustomerClient) DeleteOne(_m *Customer) *CustomerDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *CustomerClient) DeleteOneID(id int) *CustomerDeleteOne {
+	builder := c.Delete().Where(customer.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CustomerDeleteOne{builder}
+}
+
+// Query returns a query builder for Customer.
+func (c *CustomerClient) Query() *CustomerQuery {
+	return &CustomerQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeCustomer},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Customer entity by its id.
+func (c *CustomerClient) Get(ctx context.Context, id int) (*Customer, error) {
+	return c.Query().Where(customer.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CustomerClient) GetX(ctx context.Context, id int) *Customer {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryAddresses queries the addresses edge of a Customer.
+func (c *CustomerClient) QueryAddresses(_m *Customer) *CustomerAddressQuery {
+	query := (&CustomerAddressClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(customer.Table, customer.FieldID, id),
+			sqlgraph.To(customeraddress.Table, customeraddress.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, customer.AddressesTable, customer.AddressesColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryGroups queries the groups edge of a Customer.
+func (c *CustomerClient) QueryGroups(_m *Customer) *CustomerGroupQuery {
+	query := (&CustomerGroupClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(customer.Table, customer.FieldID, id),
+			sqlgraph.To(customergroup.Table, customergroup.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, customer.GroupsTable, customer.GroupsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *CustomerClient) Hooks() []Hook {
+	return c.hooks.Customer
+}
+
+// Interceptors returns the client interceptors.
+func (c *CustomerClient) Interceptors() []Interceptor {
+	return c.inters.Customer
+}
+
+func (c *CustomerClient) mutate(ctx context.Context, m *CustomerMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CustomerCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CustomerUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CustomerUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CustomerDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Customer mutation op: %q", m.Op())
+	}
+}
+
+// CustomerAddressClient is a client for the CustomerAddress schema.
+type CustomerAddressClient struct {
+	config
+}
+
+// NewCustomerAddressClient returns a client for the CustomerAddress from the given config.
+func NewCustomerAddressClient(c config) *CustomerAddressClient {
+	return &CustomerAddressClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `customeraddress.Hooks(f(g(h())))`.
+func (c *CustomerAddressClient) Use(hooks ...Hook) {
+	c.hooks.CustomerAddress = append(c.hooks.CustomerAddress, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `customeraddress.Intercept(f(g(h())))`.
+func (c *CustomerAddressClient) Intercept(interceptors ...Interceptor) {
+	c.inters.CustomerAddress = append(c.inters.CustomerAddress, interceptors...)
+}
+
+// Create returns a builder for creating a CustomerAddress entity.
+func (c *CustomerAddressClient) Create() *CustomerAddressCreate {
+	mutation := newCustomerAddressMutation(c.config, OpCreate)
+	return &CustomerAddressCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of CustomerAddress entities.
+func (c *CustomerAddressClient) CreateBulk(builders ...*CustomerAddressCreate) *CustomerAddressCreateBulk {
+	return &CustomerAddressCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *CustomerAddressClient) MapCreateBulk(slice any, setFunc func(*CustomerAddressCreate, int)) *CustomerAddressCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &CustomerAddressCreateBulk{err: fmt.Errorf("calling to CustomerAddressClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*CustomerAddressCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &CustomerAddressCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for CustomerAddress.
+func (c *CustomerAddressClient) Update() *CustomerAddressUpdate {
+	mutation := newCustomerAddressMutation(c.config, OpUpdate)
+	return &CustomerAddressUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CustomerAddressClient) UpdateOne(_m *CustomerAddress) *CustomerAddressUpdateOne {
+	mutation := newCustomerAddressMutation(c.config, OpUpdateOne, withCustomerAddress(_m))
+	return &CustomerAddressUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CustomerAddressClient) UpdateOneID(id int) *CustomerAddressUpdateOne {
+	mutation := newCustomerAddressMutation(c.config, OpUpdateOne, withCustomerAddressID(id))
+	return &CustomerAddressUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for CustomerAddress.
+func (c *CustomerAddressClient) Delete() *CustomerAddressDelete {
+	mutation := newCustomerAddressMutation(c.config, OpDelete)
+	return &CustomerAddressDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CustomerAddressClient) DeleteOne(_m *CustomerAddress) *CustomerAddressDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *CustomerAddressClient) DeleteOneID(id int) *CustomerAddressDeleteOne {
+	builder := c.Delete().Where(customeraddress.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CustomerAddressDeleteOne{builder}
+}
+
+// Query returns a query builder for CustomerAddress.
+func (c *CustomerAddressClient) Query() *CustomerAddressQuery {
+	return &CustomerAddressQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeCustomerAddress},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a CustomerAddress entity by its id.
+func (c *CustomerAddressClient) Get(ctx context.Context, id int) (*CustomerAddress, error) {
+	return c.Query().Where(customeraddress.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CustomerAddressClient) GetX(ctx context.Context, id int) *CustomerAddress {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryCustomer queries the customer edge of a CustomerAddress.
+func (c *CustomerAddressClient) QueryCustomer(_m *CustomerAddress) *CustomerQuery {
+	query := (&CustomerClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(customeraddress.Table, customeraddress.FieldID, id),
+			sqlgraph.To(customer.Table, customer.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, customeraddress.CustomerTable, customeraddress.CustomerColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *CustomerAddressClient) Hooks() []Hook {
+	return c.hooks.CustomerAddress
+}
+
+// Interceptors returns the client interceptors.
+func (c *CustomerAddressClient) Interceptors() []Interceptor {
+	return c.inters.CustomerAddress
+}
+
+func (c *CustomerAddressClient) mutate(ctx context.Context, m *CustomerAddressMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CustomerAddressCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CustomerAddressUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CustomerAddressUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CustomerAddressDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown CustomerAddress mutation op: %q", m.Op())
+	}
+}
+
+// CustomerGroupClient is a client for the CustomerGroup schema.
+type CustomerGroupClient struct {
+	config
+}
+
+// NewCustomerGroupClient returns a client for the CustomerGroup from the given config.
+func NewCustomerGroupClient(c config) *CustomerGroupClient {
+	return &CustomerGroupClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `customergroup.Hooks(f(g(h())))`.
+func (c *CustomerGroupClient) Use(hooks ...Hook) {
+	c.hooks.CustomerGroup = append(c.hooks.CustomerGroup, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `customergroup.Intercept(f(g(h())))`.
+func (c *CustomerGroupClient) Intercept(interceptors ...Interceptor) {
+	c.inters.CustomerGroup = append(c.inters.CustomerGroup, interceptors...)
+}
+
+// Create returns a builder for creating a CustomerGroup entity.
+func (c *CustomerGroupClient) Create() *CustomerGroupCreate {
+	mutation := newCustomerGroupMutation(c.config, OpCreate)
+	return &CustomerGroupCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of CustomerGroup entities.
+func (c *CustomerGroupClient) CreateBulk(builders ...*CustomerGroupCreate) *CustomerGroupCreateBulk {
+	return &CustomerGroupCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *CustomerGroupClient) MapCreateBulk(slice any, setFunc func(*CustomerGroupCreate, int)) *CustomerGroupCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &CustomerGroupCreateBulk{err: fmt.Errorf("calling to CustomerGroupClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*CustomerGroupCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &CustomerGroupCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for CustomerGroup.
+func (c *CustomerGroupClient) Update() *CustomerGroupUpdate {
+	mutation := newCustomerGroupMutation(c.config, OpUpdate)
+	return &CustomerGroupUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CustomerGroupClient) UpdateOne(_m *CustomerGroup) *CustomerGroupUpdateOne {
+	mutation := newCustomerGroupMutation(c.config, OpUpdateOne, withCustomerGroup(_m))
+	return &CustomerGroupUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CustomerGroupClient) UpdateOneID(id int) *CustomerGroupUpdateOne {
+	mutation := newCustomerGroupMutation(c.config, OpUpdateOne, withCustomerGroupID(id))
+	return &CustomerGroupUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for CustomerGroup.
+func (c *CustomerGroupClient) Delete() *CustomerGroupDelete {
+	mutation := newCustomerGroupMutation(c.config, OpDelete)
+	return &CustomerGroupDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CustomerGroupClient) DeleteOne(_m *CustomerGroup) *CustomerGroupDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *CustomerGroupClient) DeleteOneID(id int) *CustomerGroupDeleteOne {
+	builder := c.Delete().Where(customergroup.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CustomerGroupDeleteOne{builder}
+}
+
+// Query returns a query builder for CustomerGroup.
+func (c *CustomerGroupClient) Query() *CustomerGroupQuery {
+	return &CustomerGroupQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeCustomerGroup},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a CustomerGroup entity by its id.
+func (c *CustomerGroupClient) Get(ctx context.Context, id int) (*CustomerGroup, error) {
+	return c.Query().Where(customergroup.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CustomerGroupClient) GetX(ctx context.Context, id int) *CustomerGroup {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *CustomerGroupClient) Hooks() []Hook {
+	return c.hooks.CustomerGroup
+}
+
+// Interceptors returns the client interceptors.
+func (c *CustomerGroupClient) Interceptors() []Interceptor {
+	return c.inters.CustomerGroup
+}
+
+func (c *CustomerGroupClient) mutate(ctx context.Context, m *CustomerGroupMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CustomerGroupCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CustomerGroupUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CustomerGroupUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CustomerGroupDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown CustomerGroup mutation op: %q", m.Op())
 	}
 }
 
@@ -5160,18 +5631,20 @@ func (c *VariantPriceClient) mutate(ctx context.Context, m *VariantPriceMutation
 type (
 	hooks struct {
 		AdminUser, BlogPost, BlogPostTranslation, Category, CategoryTranslation,
-		Collection, CollectionTranslation, Currency, Locale, Media, MediaTranslation,
-		Menu, MenuItem, MenuItemTranslation, Page, PageTranslation, Permission,
-		Product, ProductMedia, ProductOption, ProductOptionValue, ProductTranslation,
-		Region, Role, Store, Tag, TagTranslation, TaxRate, Variant, VariantOptionValue,
+		Collection, CollectionTranslation, Currency, Customer, CustomerAddress,
+		CustomerGroup, Locale, Media, MediaTranslation, Menu, MenuItem,
+		MenuItemTranslation, Page, PageTranslation, Permission, Product, ProductMedia,
+		ProductOption, ProductOptionValue, ProductTranslation, Region, Role, Store,
+		Tag, TagTranslation, TaxRate, Variant, VariantOptionValue,
 		VariantPrice []ent.Hook
 	}
 	inters struct {
 		AdminUser, BlogPost, BlogPostTranslation, Category, CategoryTranslation,
-		Collection, CollectionTranslation, Currency, Locale, Media, MediaTranslation,
-		Menu, MenuItem, MenuItemTranslation, Page, PageTranslation, Permission,
-		Product, ProductMedia, ProductOption, ProductOptionValue, ProductTranslation,
-		Region, Role, Store, Tag, TagTranslation, TaxRate, Variant, VariantOptionValue,
+		Collection, CollectionTranslation, Currency, Customer, CustomerAddress,
+		CustomerGroup, Locale, Media, MediaTranslation, Menu, MenuItem,
+		MenuItemTranslation, Page, PageTranslation, Permission, Product, ProductMedia,
+		ProductOption, ProductOptionValue, ProductTranslation, Region, Role, Store,
+		Tag, TagTranslation, TaxRate, Variant, VariantOptionValue,
 		VariantPrice []ent.Interceptor
 	}
 )

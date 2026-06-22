@@ -20,6 +20,9 @@ import (
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/collection"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/collectiontranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/currency"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/customer"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/customeraddress"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/customergroup"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/locale"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/media"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/mediatranslation"
@@ -111,6 +114,9 @@ func checkColumn(t, c string) error {
 			collection.Table:            collection.ValidColumn,
 			collectiontranslation.Table: collectiontranslation.ValidColumn,
 			currency.Table:              currency.ValidColumn,
+			customer.Table:              customer.ValidColumn,
+			customeraddress.Table:       customeraddress.ValidColumn,
+			customergroup.Table:         customergroup.ValidColumn,
 			locale.Table:                locale.ValidColumn,
 			media.Table:                 media.ValidColumn,
 			mediatranslation.Table:      mediatranslation.ValidColumn,

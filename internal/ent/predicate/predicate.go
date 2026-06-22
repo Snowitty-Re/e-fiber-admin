@@ -30,6 +30,15 @@ type CollectionTranslation func(*sql.Selector)
 // Currency is the predicate function for currency builders.
 type Currency func(*sql.Selector)
 
+// Customer is the predicate function for customer builders.
+type Customer func(*sql.Selector)
+
+// CustomerAddress is the predicate function for customeraddress builders.
+type CustomerAddress func(*sql.Selector)
+
+// CustomerGroup is the predicate function for customergroup builders.
+type CustomerGroup func(*sql.Selector)
+
 // Locale is the predicate function for locale builders.
 type Locale func(*sql.Selector)
 

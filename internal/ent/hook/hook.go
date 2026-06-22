@@ -105,6 +105,42 @@ func (f CurrencyFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, er
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CurrencyMutation", m)
 }
 
+// The CustomerFunc type is an adapter to allow the use of ordinary
+// function as Customer mutator.
+type CustomerFunc func(context.Context, *ent.CustomerMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CustomerFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.CustomerMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CustomerMutation", m)
+}
+
+// The CustomerAddressFunc type is an adapter to allow the use of ordinary
+// function as CustomerAddress mutator.
+type CustomerAddressFunc func(context.Context, *ent.CustomerAddressMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CustomerAddressFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.CustomerAddressMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CustomerAddressMutation", m)
+}
+
+// The CustomerGroupFunc type is an adapter to allow the use of ordinary
+// function as CustomerGroup mutator.
+type CustomerGroupFunc func(context.Context, *ent.CustomerGroupMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CustomerGroupFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.CustomerGroupMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CustomerGroupMutation", m)
+}
+
 // The LocaleFunc type is an adapter to allow the use of ordinary
 // function as Locale mutator.
 type LocaleFunc func(context.Context, *ent.LocaleMutation) (ent.Value, error)

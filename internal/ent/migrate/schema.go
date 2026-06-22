@@ -264,6 +264,111 @@ var (
 			},
 		},
 	}
+	// CustomersColumns holds the columns for the "customers" table.
+	CustomersColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "updated_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "tenant_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "email", Type: field.TypeString, Unique: true},
+		{Name: "phone", Type: field.TypeString, Nullable: true, Default: ""},
+		{Name: "first_name", Type: field.TypeString, Nullable: true, Default: ""},
+		{Name: "last_name", Type: field.TypeString, Nullable: true, Default: ""},
+		{Name: "password_hash", Type: field.TypeString, Nullable: true, Default: ""},
+		{Name: "status", Type: field.TypeEnum, Enums: []string{"active", "disabled", "guest"}, Default: "active"},
+		{Name: "default_currency", Type: field.TypeString, Size: 3, Default: "USD"},
+		{Name: "default_locale", Type: field.TypeString, Size: 8, Default: "en"},
+	}
+	// CustomersTable holds the schema information for the "customers" table.
+	CustomersTable = &schema.Table{
+		Name:       "customers",
+		Columns:    CustomersColumns,
+		PrimaryKey: []*schema.Column{CustomersColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "customer_status",
+				Unique:  false,
+				Columns: []*schema.Column{CustomersColumns[13]},
+			},
+		},
+	}
+	// CustomerAddressesColumns holds the columns for the "customer_addresses" table.
+	CustomerAddressesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "updated_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "tenant_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "first_name", Type: field.TypeString, Default: ""},
+		{Name: "last_name", Type: field.TypeString, Default: ""},
+		{Name: "company", Type: field.TypeString, Nullable: true, Default: ""},
+		{Name: "address1", Type: field.TypeString, Default: ""},
+		{Name: "address2", Type: field.TypeString, Nullable: true, Default: ""},
+		{Name: "city", Type: field.TypeString, Default: ""},
+		{Name: "province", Type: field.TypeString, Nullable: true, Default: ""},
+		{Name: "postal_code", Type: field.TypeString, Nullable: true, Default: ""},
+		{Name: "country_code", Type: field.TypeString, Default: ""},
+		{Name: "phone", Type: field.TypeString, Nullable: true, Default: ""},
+		{Name: "is_default_shipping", Type: field.TypeBool, Default: false},
+		{Name: "is_default_billing", Type: field.TypeBool, Default: false},
+		{Name: "customer_id", Type: field.TypeInt},
+	}
+	// CustomerAddressesTable holds the schema information for the "customer_addresses" table.
+	CustomerAddressesTable = &schema.Table{
+		Name:       "customer_addresses",
+		Columns:    CustomerAddressesColumns,
+		PrimaryKey: []*schema.Column{CustomerAddressesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "customer_addresses_customers_addresses",
+				Columns:    []*schema.Column{CustomerAddressesColumns[20]},
+				RefColumns: []*schema.Column{CustomersColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "customeraddress_customer_id",
+				Unique:  false,
+				Columns: []*schema.Column{CustomerAddressesColumns[20]},
+			},
+		},
+	}
+	// CustomerGroupsColumns holds the columns for the "customer_groups" table.
+	CustomerGroupsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "updated_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "tenant_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "slug", Type: field.TypeString, Unique: true},
+		{Name: "name", Type: field.TypeString},
+		{Name: "customer_groups", Type: field.TypeInt, Nullable: true},
+	}
+	// CustomerGroupsTable holds the schema information for the "customer_groups" table.
+	CustomerGroupsTable = &schema.Table{
+		Name:       "customer_groups",
+		Columns:    CustomerGroupsColumns,
+		PrimaryKey: []*schema.Column{CustomerGroupsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "customer_groups_customers_groups",
+				Columns:    []*schema.Column{CustomerGroupsColumns[10]},
+				RefColumns: []*schema.Column{CustomersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// LocalesColumns holds the columns for the "locales" table.
 	LocalesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -1109,6 +1214,9 @@ var (
 		CollectionsTable,
 		CollectionTranslationsTable,
 		CurrenciesTable,
+		CustomersTable,
+		CustomerAddressesTable,
+		CustomerGroupsTable,
 		LocalesTable,
 		MediaTable,
 		MediaTranslationsTable,
@@ -1141,6 +1249,8 @@ func init() {
 	BlogPostTranslationsTable.ForeignKeys[0].RefTable = BlogPostsTable
 	CategoryTranslationsTable.ForeignKeys[0].RefTable = CategoriesTable
 	CollectionTranslationsTable.ForeignKeys[0].RefTable = CollectionsTable
+	CustomerAddressesTable.ForeignKeys[0].RefTable = CustomersTable
+	CustomerGroupsTable.ForeignKeys[0].RefTable = CustomersTable
 	MediaTranslationsTable.ForeignKeys[0].RefTable = MediaTable
 	MenuItemsTable.ForeignKeys[0].RefTable = MenusTable
 	MenuItemTranslationsTable.ForeignKeys[0].RefTable = MenuItemsTable
