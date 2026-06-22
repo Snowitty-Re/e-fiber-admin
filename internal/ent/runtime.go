@@ -16,6 +16,9 @@ import (
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/customer"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/customeraddress"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/customergroup"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/formdefinition"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/formdefinitiontranslation"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/inquiry"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/locale"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/media"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/mediatranslation"
@@ -427,6 +430,91 @@ func init() {
 	customergroupDescName := customergroupFields[1].Descriptor()
 	// customergroup.NameValidator is a validator for the "name" field. It is called by the builders before save.
 	customergroup.NameValidator = customergroupDescName.Validators[0].(func(string) error)
+	formdefinitionMixin := schema.FormDefinition{}.Mixin()
+	formdefinitionMixinFields0 := formdefinitionMixin[0].Fields()
+	_ = formdefinitionMixinFields0
+	formdefinitionFields := schema.FormDefinition{}.Fields()
+	_ = formdefinitionFields
+	// formdefinitionDescVersion is the schema descriptor for version field.
+	formdefinitionDescVersion := formdefinitionMixinFields0[3].Descriptor()
+	// formdefinition.DefaultVersion holds the default value on creation for the version field.
+	formdefinition.DefaultVersion = formdefinitionDescVersion.Default.(int)
+	// formdefinitionDescCreatedAt is the schema descriptor for created_at field.
+	formdefinitionDescCreatedAt := formdefinitionMixinFields0[4].Descriptor()
+	// formdefinition.DefaultCreatedAt holds the default value on creation for the created_at field.
+	formdefinition.DefaultCreatedAt = formdefinitionDescCreatedAt.Default.(func() time.Time)
+	// formdefinitionDescUpdatedAt is the schema descriptor for updated_at field.
+	formdefinitionDescUpdatedAt := formdefinitionMixinFields0[5].Descriptor()
+	// formdefinition.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	formdefinition.DefaultUpdatedAt = formdefinitionDescUpdatedAt.Default.(func() time.Time)
+	// formdefinition.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	formdefinition.UpdateDefaultUpdatedAt = formdefinitionDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// formdefinitionDescIsActive is the schema descriptor for is_active field.
+	formdefinitionDescIsActive := formdefinitionFields[3].Descriptor()
+	// formdefinition.DefaultIsActive holds the default value on creation for the is_active field.
+	formdefinition.DefaultIsActive = formdefinitionDescIsActive.Default.(bool)
+	formdefinitiontranslationMixin := schema.FormDefinitionTranslation{}.Mixin()
+	formdefinitiontranslationMixinFields0 := formdefinitiontranslationMixin[0].Fields()
+	_ = formdefinitiontranslationMixinFields0
+	formdefinitiontranslationFields := schema.FormDefinitionTranslation{}.Fields()
+	_ = formdefinitiontranslationFields
+	// formdefinitiontranslationDescVersion is the schema descriptor for version field.
+	formdefinitiontranslationDescVersion := formdefinitiontranslationMixinFields0[3].Descriptor()
+	// formdefinitiontranslation.DefaultVersion holds the default value on creation for the version field.
+	formdefinitiontranslation.DefaultVersion = formdefinitiontranslationDescVersion.Default.(int)
+	// formdefinitiontranslationDescCreatedAt is the schema descriptor for created_at field.
+	formdefinitiontranslationDescCreatedAt := formdefinitiontranslationMixinFields0[4].Descriptor()
+	// formdefinitiontranslation.DefaultCreatedAt holds the default value on creation for the created_at field.
+	formdefinitiontranslation.DefaultCreatedAt = formdefinitiontranslationDescCreatedAt.Default.(func() time.Time)
+	// formdefinitiontranslationDescUpdatedAt is the schema descriptor for updated_at field.
+	formdefinitiontranslationDescUpdatedAt := formdefinitiontranslationMixinFields0[5].Descriptor()
+	// formdefinitiontranslation.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	formdefinitiontranslation.DefaultUpdatedAt = formdefinitiontranslationDescUpdatedAt.Default.(func() time.Time)
+	// formdefinitiontranslation.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	formdefinitiontranslation.UpdateDefaultUpdatedAt = formdefinitiontranslationDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// formdefinitiontranslationDescLocale is the schema descriptor for locale field.
+	formdefinitiontranslationDescLocale := formdefinitiontranslationFields[1].Descriptor()
+	// formdefinitiontranslation.LocaleValidator is a validator for the "locale" field. It is called by the builders before save.
+	formdefinitiontranslation.LocaleValidator = formdefinitiontranslationDescLocale.Validators[0].(func(string) error)
+	// formdefinitiontranslationDescTitle is the schema descriptor for title field.
+	formdefinitiontranslationDescTitle := formdefinitiontranslationFields[2].Descriptor()
+	// formdefinitiontranslation.TitleValidator is a validator for the "title" field. It is called by the builders before save.
+	formdefinitiontranslation.TitleValidator = formdefinitiontranslationDescTitle.Validators[0].(func(string) error)
+	inquiryMixin := schema.Inquiry{}.Mixin()
+	inquiryMixinFields0 := inquiryMixin[0].Fields()
+	_ = inquiryMixinFields0
+	inquiryFields := schema.Inquiry{}.Fields()
+	_ = inquiryFields
+	// inquiryDescVersion is the schema descriptor for version field.
+	inquiryDescVersion := inquiryMixinFields0[3].Descriptor()
+	// inquiry.DefaultVersion holds the default value on creation for the version field.
+	inquiry.DefaultVersion = inquiryDescVersion.Default.(int)
+	// inquiryDescCreatedAt is the schema descriptor for created_at field.
+	inquiryDescCreatedAt := inquiryMixinFields0[4].Descriptor()
+	// inquiry.DefaultCreatedAt holds the default value on creation for the created_at field.
+	inquiry.DefaultCreatedAt = inquiryDescCreatedAt.Default.(func() time.Time)
+	// inquiryDescUpdatedAt is the schema descriptor for updated_at field.
+	inquiryDescUpdatedAt := inquiryMixinFields0[5].Descriptor()
+	// inquiry.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	inquiry.DefaultUpdatedAt = inquiryDescUpdatedAt.Default.(func() time.Time)
+	// inquiry.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	inquiry.UpdateDefaultUpdatedAt = inquiryDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// inquiryDescEmail is the schema descriptor for email field.
+	inquiryDescEmail := inquiryFields[2].Descriptor()
+	// inquiry.EmailValidator is a validator for the "email" field. It is called by the builders before save.
+	inquiry.EmailValidator = inquiryDescEmail.Validators[0].(func(string) error)
+	// inquiryDescPhone is the schema descriptor for phone field.
+	inquiryDescPhone := inquiryFields[3].Descriptor()
+	// inquiry.DefaultPhone holds the default value on creation for the phone field.
+	inquiry.DefaultPhone = inquiryDescPhone.Default.(string)
+	// inquiryDescName is the schema descriptor for name field.
+	inquiryDescName := inquiryFields[4].Descriptor()
+	// inquiry.DefaultName holds the default value on creation for the name field.
+	inquiry.DefaultName = inquiryDescName.Default.(string)
+	// inquiryDescCompany is the schema descriptor for company field.
+	inquiryDescCompany := inquiryFields[5].Descriptor()
+	// inquiry.DefaultCompany holds the default value on creation for the company field.
+	inquiry.DefaultCompany = inquiryDescCompany.Default.(string)
 	localeMixin := schema.Locale{}.Mixin()
 	localeMixinFields0 := localeMixin[0].Fields()
 	_ = localeMixinFields0

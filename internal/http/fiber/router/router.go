@@ -10,17 +10,19 @@ import (
 )
 
 type Deps struct {
-	HealthH            *handler.HealthHandler
-	AuthH              *handler.AuthHandler
-	RegionH            *handler.RegionHandler
-	MediaH             *handler.MediaHandler
-	ProductH           *handler.ProductHandler
-	CMSH               *handler.CMSHandler
-	SettingsH          *handler.SettingsHandler
-	StorefrontH        *handler.StorefrontHandler
-	CustomerH          *handler.CustomerHandler
-	JWTAuthFunc        fiber.Handler
-	CustomerJWTAuthFunc fiber.Handler
+	HealthH                  *handler.HealthHandler
+	AuthH                    *handler.AuthHandler
+	RegionH                  *handler.RegionHandler
+	MediaH                   *handler.MediaHandler
+	ProductH                 *handler.ProductHandler
+	CMSH                     *handler.CMSHandler
+	SettingsH                *handler.SettingsHandler
+	StorefrontH              *handler.StorefrontHandler
+	CustomerH                *handler.CustomerHandler
+	InquiryH                 *handler.InquiryHandler
+	JWTAuthFunc              fiber.Handler
+	CustomerJWTAuthFunc      fiber.Handler
+	CustomerOptionalAuthFunc fiber.Handler
 }
 
 func Register(app *fiber.App, deps Deps) {
@@ -124,4 +126,17 @@ func Register(app *fiber.App, deps Deps) {
 	customers.Get("/", middleware.RBAC("customer:read"), deps.CustomerH.AdminList)
 	customers.Get("/:id", middleware.RBAC("customer:read"), deps.CustomerH.AdminGet)
 	customers.Post("/:id/disable", middleware.RBAC("customer:write"), deps.CustomerH.AdminDisable)
+
+	forms := adminProtected.Group("/forms")
+	forms.Get("/", middleware.RBAC("inquiry:read"), deps.InquiryH.ListForms)
+	forms.Post("/", middleware.RBAC("inquiry:update"), deps.InquiryH.CreateForm)
+
+	inquiries := adminProtected.Group("/inquiries")
+	inquiries.Get("/", middleware.RBAC("inquiry:read"), deps.InquiryH.AdminListInquiries)
+	inquiries.Get("/:id", middleware.RBAC("inquiry:read"), deps.InquiryH.AdminGetInquiry)
+	inquiries.Post("/:id/assign", middleware.RBAC("inquiry:assign"), deps.InquiryH.AdminAssign)
+	inquiries.Patch("/:id/status", middleware.RBAC("inquiry:update"), deps.InquiryH.AdminUpdateStatus)
+
+	storeInquiries := store.Group("/inquiries")
+	storeInquiries.Post("/", deps.CustomerOptionalAuthFunc, deps.InquiryH.StoreSubmitInquiry)
 }

@@ -26,6 +26,9 @@ import (
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/customer"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/customeraddress"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/customergroup"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/formdefinition"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/formdefinitiontranslation"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/inquiry"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/locale"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/media"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/mediatranslation"
@@ -78,6 +81,12 @@ type Client struct {
 	CustomerAddress *CustomerAddressClient
 	// CustomerGroup is the client for interacting with the CustomerGroup builders.
 	CustomerGroup *CustomerGroupClient
+	// FormDefinition is the client for interacting with the FormDefinition builders.
+	FormDefinition *FormDefinitionClient
+	// FormDefinitionTranslation is the client for interacting with the FormDefinitionTranslation builders.
+	FormDefinitionTranslation *FormDefinitionTranslationClient
+	// Inquiry is the client for interacting with the Inquiry builders.
+	Inquiry *InquiryClient
 	// Locale is the client for interacting with the Locale builders.
 	Locale *LocaleClient
 	// Media is the client for interacting with the Media builders.
@@ -146,6 +155,9 @@ func (c *Client) init() {
 	c.Customer = NewCustomerClient(c.config)
 	c.CustomerAddress = NewCustomerAddressClient(c.config)
 	c.CustomerGroup = NewCustomerGroupClient(c.config)
+	c.FormDefinition = NewFormDefinitionClient(c.config)
+	c.FormDefinitionTranslation = NewFormDefinitionTranslationClient(c.config)
+	c.Inquiry = NewInquiryClient(c.config)
 	c.Locale = NewLocaleClient(c.config)
 	c.Media = NewMediaClient(c.config)
 	c.MediaTranslation = NewMediaTranslationClient(c.config)
@@ -259,42 +271,45 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:                   ctx,
-		config:                cfg,
-		AdminUser:             NewAdminUserClient(cfg),
-		BlogPost:              NewBlogPostClient(cfg),
-		BlogPostTranslation:   NewBlogPostTranslationClient(cfg),
-		Category:              NewCategoryClient(cfg),
-		CategoryTranslation:   NewCategoryTranslationClient(cfg),
-		Collection:            NewCollectionClient(cfg),
-		CollectionTranslation: NewCollectionTranslationClient(cfg),
-		Currency:              NewCurrencyClient(cfg),
-		Customer:              NewCustomerClient(cfg),
-		CustomerAddress:       NewCustomerAddressClient(cfg),
-		CustomerGroup:         NewCustomerGroupClient(cfg),
-		Locale:                NewLocaleClient(cfg),
-		Media:                 NewMediaClient(cfg),
-		MediaTranslation:      NewMediaTranslationClient(cfg),
-		Menu:                  NewMenuClient(cfg),
-		MenuItem:              NewMenuItemClient(cfg),
-		MenuItemTranslation:   NewMenuItemTranslationClient(cfg),
-		Page:                  NewPageClient(cfg),
-		PageTranslation:       NewPageTranslationClient(cfg),
-		Permission:            NewPermissionClient(cfg),
-		Product:               NewProductClient(cfg),
-		ProductMedia:          NewProductMediaClient(cfg),
-		ProductOption:         NewProductOptionClient(cfg),
-		ProductOptionValue:    NewProductOptionValueClient(cfg),
-		ProductTranslation:    NewProductTranslationClient(cfg),
-		Region:                NewRegionClient(cfg),
-		Role:                  NewRoleClient(cfg),
-		Store:                 NewStoreClient(cfg),
-		Tag:                   NewTagClient(cfg),
-		TagTranslation:        NewTagTranslationClient(cfg),
-		TaxRate:               NewTaxRateClient(cfg),
-		Variant:               NewVariantClient(cfg),
-		VariantOptionValue:    NewVariantOptionValueClient(cfg),
-		VariantPrice:          NewVariantPriceClient(cfg),
+		ctx:                       ctx,
+		config:                    cfg,
+		AdminUser:                 NewAdminUserClient(cfg),
+		BlogPost:                  NewBlogPostClient(cfg),
+		BlogPostTranslation:       NewBlogPostTranslationClient(cfg),
+		Category:                  NewCategoryClient(cfg),
+		CategoryTranslation:       NewCategoryTranslationClient(cfg),
+		Collection:                NewCollectionClient(cfg),
+		CollectionTranslation:     NewCollectionTranslationClient(cfg),
+		Currency:                  NewCurrencyClient(cfg),
+		Customer:                  NewCustomerClient(cfg),
+		CustomerAddress:           NewCustomerAddressClient(cfg),
+		CustomerGroup:             NewCustomerGroupClient(cfg),
+		FormDefinition:            NewFormDefinitionClient(cfg),
+		FormDefinitionTranslation: NewFormDefinitionTranslationClient(cfg),
+		Inquiry:                   NewInquiryClient(cfg),
+		Locale:                    NewLocaleClient(cfg),
+		Media:                     NewMediaClient(cfg),
+		MediaTranslation:          NewMediaTranslationClient(cfg),
+		Menu:                      NewMenuClient(cfg),
+		MenuItem:                  NewMenuItemClient(cfg),
+		MenuItemTranslation:       NewMenuItemTranslationClient(cfg),
+		Page:                      NewPageClient(cfg),
+		PageTranslation:           NewPageTranslationClient(cfg),
+		Permission:                NewPermissionClient(cfg),
+		Product:                   NewProductClient(cfg),
+		ProductMedia:              NewProductMediaClient(cfg),
+		ProductOption:             NewProductOptionClient(cfg),
+		ProductOptionValue:        NewProductOptionValueClient(cfg),
+		ProductTranslation:        NewProductTranslationClient(cfg),
+		Region:                    NewRegionClient(cfg),
+		Role:                      NewRoleClient(cfg),
+		Store:                     NewStoreClient(cfg),
+		Tag:                       NewTagClient(cfg),
+		TagTranslation:            NewTagTranslationClient(cfg),
+		TaxRate:                   NewTaxRateClient(cfg),
+		Variant:                   NewVariantClient(cfg),
+		VariantOptionValue:        NewVariantOptionValueClient(cfg),
+		VariantPrice:              NewVariantPriceClient(cfg),
 	}, nil
 }
 
@@ -312,42 +327,45 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:                   ctx,
-		config:                cfg,
-		AdminUser:             NewAdminUserClient(cfg),
-		BlogPost:              NewBlogPostClient(cfg),
-		BlogPostTranslation:   NewBlogPostTranslationClient(cfg),
-		Category:              NewCategoryClient(cfg),
-		CategoryTranslation:   NewCategoryTranslationClient(cfg),
-		Collection:            NewCollectionClient(cfg),
-		CollectionTranslation: NewCollectionTranslationClient(cfg),
-		Currency:              NewCurrencyClient(cfg),
-		Customer:              NewCustomerClient(cfg),
-		CustomerAddress:       NewCustomerAddressClient(cfg),
-		CustomerGroup:         NewCustomerGroupClient(cfg),
-		Locale:                NewLocaleClient(cfg),
-		Media:                 NewMediaClient(cfg),
-		MediaTranslation:      NewMediaTranslationClient(cfg),
-		Menu:                  NewMenuClient(cfg),
-		MenuItem:              NewMenuItemClient(cfg),
-		MenuItemTranslation:   NewMenuItemTranslationClient(cfg),
-		Page:                  NewPageClient(cfg),
-		PageTranslation:       NewPageTranslationClient(cfg),
-		Permission:            NewPermissionClient(cfg),
-		Product:               NewProductClient(cfg),
-		ProductMedia:          NewProductMediaClient(cfg),
-		ProductOption:         NewProductOptionClient(cfg),
-		ProductOptionValue:    NewProductOptionValueClient(cfg),
-		ProductTranslation:    NewProductTranslationClient(cfg),
-		Region:                NewRegionClient(cfg),
-		Role:                  NewRoleClient(cfg),
-		Store:                 NewStoreClient(cfg),
-		Tag:                   NewTagClient(cfg),
-		TagTranslation:        NewTagTranslationClient(cfg),
-		TaxRate:               NewTaxRateClient(cfg),
-		Variant:               NewVariantClient(cfg),
-		VariantOptionValue:    NewVariantOptionValueClient(cfg),
-		VariantPrice:          NewVariantPriceClient(cfg),
+		ctx:                       ctx,
+		config:                    cfg,
+		AdminUser:                 NewAdminUserClient(cfg),
+		BlogPost:                  NewBlogPostClient(cfg),
+		BlogPostTranslation:       NewBlogPostTranslationClient(cfg),
+		Category:                  NewCategoryClient(cfg),
+		CategoryTranslation:       NewCategoryTranslationClient(cfg),
+		Collection:                NewCollectionClient(cfg),
+		CollectionTranslation:     NewCollectionTranslationClient(cfg),
+		Currency:                  NewCurrencyClient(cfg),
+		Customer:                  NewCustomerClient(cfg),
+		CustomerAddress:           NewCustomerAddressClient(cfg),
+		CustomerGroup:             NewCustomerGroupClient(cfg),
+		FormDefinition:            NewFormDefinitionClient(cfg),
+		FormDefinitionTranslation: NewFormDefinitionTranslationClient(cfg),
+		Inquiry:                   NewInquiryClient(cfg),
+		Locale:                    NewLocaleClient(cfg),
+		Media:                     NewMediaClient(cfg),
+		MediaTranslation:          NewMediaTranslationClient(cfg),
+		Menu:                      NewMenuClient(cfg),
+		MenuItem:                  NewMenuItemClient(cfg),
+		MenuItemTranslation:       NewMenuItemTranslationClient(cfg),
+		Page:                      NewPageClient(cfg),
+		PageTranslation:           NewPageTranslationClient(cfg),
+		Permission:                NewPermissionClient(cfg),
+		Product:                   NewProductClient(cfg),
+		ProductMedia:              NewProductMediaClient(cfg),
+		ProductOption:             NewProductOptionClient(cfg),
+		ProductOptionValue:        NewProductOptionValueClient(cfg),
+		ProductTranslation:        NewProductTranslationClient(cfg),
+		Region:                    NewRegionClient(cfg),
+		Role:                      NewRoleClient(cfg),
+		Store:                     NewStoreClient(cfg),
+		Tag:                       NewTagClient(cfg),
+		TagTranslation:            NewTagTranslationClient(cfg),
+		TaxRate:                   NewTaxRateClient(cfg),
+		Variant:                   NewVariantClient(cfg),
+		VariantOptionValue:        NewVariantOptionValueClient(cfg),
+		VariantPrice:              NewVariantPriceClient(cfg),
 	}, nil
 }
 
@@ -379,11 +397,12 @@ func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.AdminUser, c.BlogPost, c.BlogPostTranslation, c.Category,
 		c.CategoryTranslation, c.Collection, c.CollectionTranslation, c.Currency,
-		c.Customer, c.CustomerAddress, c.CustomerGroup, c.Locale, c.Media,
-		c.MediaTranslation, c.Menu, c.MenuItem, c.MenuItemTranslation, c.Page,
-		c.PageTranslation, c.Permission, c.Product, c.ProductMedia, c.ProductOption,
-		c.ProductOptionValue, c.ProductTranslation, c.Region, c.Role, c.Store, c.Tag,
-		c.TagTranslation, c.TaxRate, c.Variant, c.VariantOptionValue, c.VariantPrice,
+		c.Customer, c.CustomerAddress, c.CustomerGroup, c.FormDefinition,
+		c.FormDefinitionTranslation, c.Inquiry, c.Locale, c.Media, c.MediaTranslation,
+		c.Menu, c.MenuItem, c.MenuItemTranslation, c.Page, c.PageTranslation,
+		c.Permission, c.Product, c.ProductMedia, c.ProductOption, c.ProductOptionValue,
+		c.ProductTranslation, c.Region, c.Role, c.Store, c.Tag, c.TagTranslation,
+		c.TaxRate, c.Variant, c.VariantOptionValue, c.VariantPrice,
 	} {
 		n.Use(hooks...)
 	}
@@ -395,11 +414,12 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.AdminUser, c.BlogPost, c.BlogPostTranslation, c.Category,
 		c.CategoryTranslation, c.Collection, c.CollectionTranslation, c.Currency,
-		c.Customer, c.CustomerAddress, c.CustomerGroup, c.Locale, c.Media,
-		c.MediaTranslation, c.Menu, c.MenuItem, c.MenuItemTranslation, c.Page,
-		c.PageTranslation, c.Permission, c.Product, c.ProductMedia, c.ProductOption,
-		c.ProductOptionValue, c.ProductTranslation, c.Region, c.Role, c.Store, c.Tag,
-		c.TagTranslation, c.TaxRate, c.Variant, c.VariantOptionValue, c.VariantPrice,
+		c.Customer, c.CustomerAddress, c.CustomerGroup, c.FormDefinition,
+		c.FormDefinitionTranslation, c.Inquiry, c.Locale, c.Media, c.MediaTranslation,
+		c.Menu, c.MenuItem, c.MenuItemTranslation, c.Page, c.PageTranslation,
+		c.Permission, c.Product, c.ProductMedia, c.ProductOption, c.ProductOptionValue,
+		c.ProductTranslation, c.Region, c.Role, c.Store, c.Tag, c.TagTranslation,
+		c.TaxRate, c.Variant, c.VariantOptionValue, c.VariantPrice,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -430,6 +450,12 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.CustomerAddress.mutate(ctx, m)
 	case *CustomerGroupMutation:
 		return c.CustomerGroup.mutate(ctx, m)
+	case *FormDefinitionMutation:
+		return c.FormDefinition.mutate(ctx, m)
+	case *FormDefinitionTranslationMutation:
+		return c.FormDefinitionTranslation.mutate(ctx, m)
+	case *InquiryMutation:
+		return c.Inquiry.mutate(ctx, m)
 	case *LocaleMutation:
 		return c.Locale.mutate(ctx, m)
 	case *MediaMutation:
@@ -2117,6 +2143,469 @@ func (c *CustomerGroupClient) mutate(ctx context.Context, m *CustomerGroupMutati
 		return (&CustomerGroupDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown CustomerGroup mutation op: %q", m.Op())
+	}
+}
+
+// FormDefinitionClient is a client for the FormDefinition schema.
+type FormDefinitionClient struct {
+	config
+}
+
+// NewFormDefinitionClient returns a client for the FormDefinition from the given config.
+func NewFormDefinitionClient(c config) *FormDefinitionClient {
+	return &FormDefinitionClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `formdefinition.Hooks(f(g(h())))`.
+func (c *FormDefinitionClient) Use(hooks ...Hook) {
+	c.hooks.FormDefinition = append(c.hooks.FormDefinition, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `formdefinition.Intercept(f(g(h())))`.
+func (c *FormDefinitionClient) Intercept(interceptors ...Interceptor) {
+	c.inters.FormDefinition = append(c.inters.FormDefinition, interceptors...)
+}
+
+// Create returns a builder for creating a FormDefinition entity.
+func (c *FormDefinitionClient) Create() *FormDefinitionCreate {
+	mutation := newFormDefinitionMutation(c.config, OpCreate)
+	return &FormDefinitionCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of FormDefinition entities.
+func (c *FormDefinitionClient) CreateBulk(builders ...*FormDefinitionCreate) *FormDefinitionCreateBulk {
+	return &FormDefinitionCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *FormDefinitionClient) MapCreateBulk(slice any, setFunc func(*FormDefinitionCreate, int)) *FormDefinitionCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &FormDefinitionCreateBulk{err: fmt.Errorf("calling to FormDefinitionClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*FormDefinitionCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &FormDefinitionCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for FormDefinition.
+func (c *FormDefinitionClient) Update() *FormDefinitionUpdate {
+	mutation := newFormDefinitionMutation(c.config, OpUpdate)
+	return &FormDefinitionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *FormDefinitionClient) UpdateOne(_m *FormDefinition) *FormDefinitionUpdateOne {
+	mutation := newFormDefinitionMutation(c.config, OpUpdateOne, withFormDefinition(_m))
+	return &FormDefinitionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *FormDefinitionClient) UpdateOneID(id int) *FormDefinitionUpdateOne {
+	mutation := newFormDefinitionMutation(c.config, OpUpdateOne, withFormDefinitionID(id))
+	return &FormDefinitionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for FormDefinition.
+func (c *FormDefinitionClient) Delete() *FormDefinitionDelete {
+	mutation := newFormDefinitionMutation(c.config, OpDelete)
+	return &FormDefinitionDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *FormDefinitionClient) DeleteOne(_m *FormDefinition) *FormDefinitionDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *FormDefinitionClient) DeleteOneID(id int) *FormDefinitionDeleteOne {
+	builder := c.Delete().Where(formdefinition.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &FormDefinitionDeleteOne{builder}
+}
+
+// Query returns a query builder for FormDefinition.
+func (c *FormDefinitionClient) Query() *FormDefinitionQuery {
+	return &FormDefinitionQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeFormDefinition},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a FormDefinition entity by its id.
+func (c *FormDefinitionClient) Get(ctx context.Context, id int) (*FormDefinition, error) {
+	return c.Query().Where(formdefinition.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *FormDefinitionClient) GetX(ctx context.Context, id int) *FormDefinition {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryTranslations queries the translations edge of a FormDefinition.
+func (c *FormDefinitionClient) QueryTranslations(_m *FormDefinition) *FormDefinitionTranslationQuery {
+	query := (&FormDefinitionTranslationClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(formdefinition.Table, formdefinition.FieldID, id),
+			sqlgraph.To(formdefinitiontranslation.Table, formdefinitiontranslation.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, formdefinition.TranslationsTable, formdefinition.TranslationsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryInquiries queries the inquiries edge of a FormDefinition.
+func (c *FormDefinitionClient) QueryInquiries(_m *FormDefinition) *InquiryQuery {
+	query := (&InquiryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(formdefinition.Table, formdefinition.FieldID, id),
+			sqlgraph.To(inquiry.Table, inquiry.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, formdefinition.InquiriesTable, formdefinition.InquiriesColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *FormDefinitionClient) Hooks() []Hook {
+	return c.hooks.FormDefinition
+}
+
+// Interceptors returns the client interceptors.
+func (c *FormDefinitionClient) Interceptors() []Interceptor {
+	return c.inters.FormDefinition
+}
+
+func (c *FormDefinitionClient) mutate(ctx context.Context, m *FormDefinitionMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&FormDefinitionCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&FormDefinitionUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&FormDefinitionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&FormDefinitionDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown FormDefinition mutation op: %q", m.Op())
+	}
+}
+
+// FormDefinitionTranslationClient is a client for the FormDefinitionTranslation schema.
+type FormDefinitionTranslationClient struct {
+	config
+}
+
+// NewFormDefinitionTranslationClient returns a client for the FormDefinitionTranslation from the given config.
+func NewFormDefinitionTranslationClient(c config) *FormDefinitionTranslationClient {
+	return &FormDefinitionTranslationClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `formdefinitiontranslation.Hooks(f(g(h())))`.
+func (c *FormDefinitionTranslationClient) Use(hooks ...Hook) {
+	c.hooks.FormDefinitionTranslation = append(c.hooks.FormDefinitionTranslation, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `formdefinitiontranslation.Intercept(f(g(h())))`.
+func (c *FormDefinitionTranslationClient) Intercept(interceptors ...Interceptor) {
+	c.inters.FormDefinitionTranslation = append(c.inters.FormDefinitionTranslation, interceptors...)
+}
+
+// Create returns a builder for creating a FormDefinitionTranslation entity.
+func (c *FormDefinitionTranslationClient) Create() *FormDefinitionTranslationCreate {
+	mutation := newFormDefinitionTranslationMutation(c.config, OpCreate)
+	return &FormDefinitionTranslationCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of FormDefinitionTranslation entities.
+func (c *FormDefinitionTranslationClient) CreateBulk(builders ...*FormDefinitionTranslationCreate) *FormDefinitionTranslationCreateBulk {
+	return &FormDefinitionTranslationCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *FormDefinitionTranslationClient) MapCreateBulk(slice any, setFunc func(*FormDefinitionTranslationCreate, int)) *FormDefinitionTranslationCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &FormDefinitionTranslationCreateBulk{err: fmt.Errorf("calling to FormDefinitionTranslationClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*FormDefinitionTranslationCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &FormDefinitionTranslationCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for FormDefinitionTranslation.
+func (c *FormDefinitionTranslationClient) Update() *FormDefinitionTranslationUpdate {
+	mutation := newFormDefinitionTranslationMutation(c.config, OpUpdate)
+	return &FormDefinitionTranslationUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *FormDefinitionTranslationClient) UpdateOne(_m *FormDefinitionTranslation) *FormDefinitionTranslationUpdateOne {
+	mutation := newFormDefinitionTranslationMutation(c.config, OpUpdateOne, withFormDefinitionTranslation(_m))
+	return &FormDefinitionTranslationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *FormDefinitionTranslationClient) UpdateOneID(id int) *FormDefinitionTranslationUpdateOne {
+	mutation := newFormDefinitionTranslationMutation(c.config, OpUpdateOne, withFormDefinitionTranslationID(id))
+	return &FormDefinitionTranslationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for FormDefinitionTranslation.
+func (c *FormDefinitionTranslationClient) Delete() *FormDefinitionTranslationDelete {
+	mutation := newFormDefinitionTranslationMutation(c.config, OpDelete)
+	return &FormDefinitionTranslationDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *FormDefinitionTranslationClient) DeleteOne(_m *FormDefinitionTranslation) *FormDefinitionTranslationDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *FormDefinitionTranslationClient) DeleteOneID(id int) *FormDefinitionTranslationDeleteOne {
+	builder := c.Delete().Where(formdefinitiontranslation.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &FormDefinitionTranslationDeleteOne{builder}
+}
+
+// Query returns a query builder for FormDefinitionTranslation.
+func (c *FormDefinitionTranslationClient) Query() *FormDefinitionTranslationQuery {
+	return &FormDefinitionTranslationQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeFormDefinitionTranslation},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a FormDefinitionTranslation entity by its id.
+func (c *FormDefinitionTranslationClient) Get(ctx context.Context, id int) (*FormDefinitionTranslation, error) {
+	return c.Query().Where(formdefinitiontranslation.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *FormDefinitionTranslationClient) GetX(ctx context.Context, id int) *FormDefinitionTranslation {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryFormDefinition queries the form_definition edge of a FormDefinitionTranslation.
+func (c *FormDefinitionTranslationClient) QueryFormDefinition(_m *FormDefinitionTranslation) *FormDefinitionQuery {
+	query := (&FormDefinitionClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(formdefinitiontranslation.Table, formdefinitiontranslation.FieldID, id),
+			sqlgraph.To(formdefinition.Table, formdefinition.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, formdefinitiontranslation.FormDefinitionTable, formdefinitiontranslation.FormDefinitionColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *FormDefinitionTranslationClient) Hooks() []Hook {
+	return c.hooks.FormDefinitionTranslation
+}
+
+// Interceptors returns the client interceptors.
+func (c *FormDefinitionTranslationClient) Interceptors() []Interceptor {
+	return c.inters.FormDefinitionTranslation
+}
+
+func (c *FormDefinitionTranslationClient) mutate(ctx context.Context, m *FormDefinitionTranslationMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&FormDefinitionTranslationCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&FormDefinitionTranslationUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&FormDefinitionTranslationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&FormDefinitionTranslationDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown FormDefinitionTranslation mutation op: %q", m.Op())
+	}
+}
+
+// InquiryClient is a client for the Inquiry schema.
+type InquiryClient struct {
+	config
+}
+
+// NewInquiryClient returns a client for the Inquiry from the given config.
+func NewInquiryClient(c config) *InquiryClient {
+	return &InquiryClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `inquiry.Hooks(f(g(h())))`.
+func (c *InquiryClient) Use(hooks ...Hook) {
+	c.hooks.Inquiry = append(c.hooks.Inquiry, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `inquiry.Intercept(f(g(h())))`.
+func (c *InquiryClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Inquiry = append(c.inters.Inquiry, interceptors...)
+}
+
+// Create returns a builder for creating a Inquiry entity.
+func (c *InquiryClient) Create() *InquiryCreate {
+	mutation := newInquiryMutation(c.config, OpCreate)
+	return &InquiryCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Inquiry entities.
+func (c *InquiryClient) CreateBulk(builders ...*InquiryCreate) *InquiryCreateBulk {
+	return &InquiryCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *InquiryClient) MapCreateBulk(slice any, setFunc func(*InquiryCreate, int)) *InquiryCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &InquiryCreateBulk{err: fmt.Errorf("calling to InquiryClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*InquiryCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &InquiryCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Inquiry.
+func (c *InquiryClient) Update() *InquiryUpdate {
+	mutation := newInquiryMutation(c.config, OpUpdate)
+	return &InquiryUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *InquiryClient) UpdateOne(_m *Inquiry) *InquiryUpdateOne {
+	mutation := newInquiryMutation(c.config, OpUpdateOne, withInquiry(_m))
+	return &InquiryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *InquiryClient) UpdateOneID(id int) *InquiryUpdateOne {
+	mutation := newInquiryMutation(c.config, OpUpdateOne, withInquiryID(id))
+	return &InquiryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Inquiry.
+func (c *InquiryClient) Delete() *InquiryDelete {
+	mutation := newInquiryMutation(c.config, OpDelete)
+	return &InquiryDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *InquiryClient) DeleteOne(_m *Inquiry) *InquiryDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *InquiryClient) DeleteOneID(id int) *InquiryDeleteOne {
+	builder := c.Delete().Where(inquiry.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &InquiryDeleteOne{builder}
+}
+
+// Query returns a query builder for Inquiry.
+func (c *InquiryClient) Query() *InquiryQuery {
+	return &InquiryQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeInquiry},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Inquiry entity by its id.
+func (c *InquiryClient) Get(ctx context.Context, id int) (*Inquiry, error) {
+	return c.Query().Where(inquiry.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *InquiryClient) GetX(ctx context.Context, id int) *Inquiry {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryForm queries the form edge of a Inquiry.
+func (c *InquiryClient) QueryForm(_m *Inquiry) *FormDefinitionQuery {
+	query := (&FormDefinitionClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(inquiry.Table, inquiry.FieldID, id),
+			sqlgraph.To(formdefinition.Table, formdefinition.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, inquiry.FormTable, inquiry.FormColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *InquiryClient) Hooks() []Hook {
+	return c.hooks.Inquiry
+}
+
+// Interceptors returns the client interceptors.
+func (c *InquiryClient) Interceptors() []Interceptor {
+	return c.inters.Inquiry
+}
+
+func (c *InquiryClient) mutate(ctx context.Context, m *InquiryMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&InquiryCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&InquiryUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&InquiryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&InquiryDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Inquiry mutation op: %q", m.Op())
 	}
 }
 
@@ -5632,19 +6121,20 @@ type (
 	hooks struct {
 		AdminUser, BlogPost, BlogPostTranslation, Category, CategoryTranslation,
 		Collection, CollectionTranslation, Currency, Customer, CustomerAddress,
-		CustomerGroup, Locale, Media, MediaTranslation, Menu, MenuItem,
-		MenuItemTranslation, Page, PageTranslation, Permission, Product, ProductMedia,
-		ProductOption, ProductOptionValue, ProductTranslation, Region, Role, Store,
-		Tag, TagTranslation, TaxRate, Variant, VariantOptionValue,
-		VariantPrice []ent.Hook
+		CustomerGroup, FormDefinition, FormDefinitionTranslation, Inquiry, Locale,
+		Media, MediaTranslation, Menu, MenuItem, MenuItemTranslation, Page,
+		PageTranslation, Permission, Product, ProductMedia, ProductOption,
+		ProductOptionValue, ProductTranslation, Region, Role, Store, Tag,
+		TagTranslation, TaxRate, Variant, VariantOptionValue, VariantPrice []ent.Hook
 	}
 	inters struct {
 		AdminUser, BlogPost, BlogPostTranslation, Category, CategoryTranslation,
 		Collection, CollectionTranslation, Currency, Customer, CustomerAddress,
-		CustomerGroup, Locale, Media, MediaTranslation, Menu, MenuItem,
-		MenuItemTranslation, Page, PageTranslation, Permission, Product, ProductMedia,
-		ProductOption, ProductOptionValue, ProductTranslation, Region, Role, Store,
-		Tag, TagTranslation, TaxRate, Variant, VariantOptionValue,
+		CustomerGroup, FormDefinition, FormDefinitionTranslation, Inquiry, Locale,
+		Media, MediaTranslation, Menu, MenuItem, MenuItemTranslation, Page,
+		PageTranslation, Permission, Product, ProductMedia, ProductOption,
+		ProductOptionValue, ProductTranslation, Region, Role, Store, Tag,
+		TagTranslation, TaxRate, Variant, VariantOptionValue,
 		VariantPrice []ent.Interceptor
 	}
 )

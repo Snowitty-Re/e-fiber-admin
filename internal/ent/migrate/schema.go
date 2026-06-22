@@ -369,6 +369,123 @@ var (
 			},
 		},
 	}
+	// FormDefinitionsColumns holds the columns for the "form_definitions" table.
+	FormDefinitionsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "updated_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "tenant_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "slug", Type: field.TypeString, Unique: true},
+		{Name: "fields", Type: field.TypeJSON, Nullable: true},
+		{Name: "notify_emails", Type: field.TypeJSON, Nullable: true},
+		{Name: "is_active", Type: field.TypeBool, Default: true},
+	}
+	// FormDefinitionsTable holds the schema information for the "form_definitions" table.
+	FormDefinitionsTable = &schema.Table{
+		Name:       "form_definitions",
+		Columns:    FormDefinitionsColumns,
+		PrimaryKey: []*schema.Column{FormDefinitionsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "formdefinition_is_active",
+				Unique:  false,
+				Columns: []*schema.Column{FormDefinitionsColumns[11]},
+			},
+		},
+	}
+	// FormDefinitionTranslationsColumns holds the columns for the "form_definition_translations" table.
+	FormDefinitionTranslationsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "updated_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "tenant_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "locale", Type: field.TypeString, Size: 8},
+		{Name: "title", Type: field.TypeString},
+		{Name: "field_labels", Type: field.TypeJSON, Nullable: true},
+		{Name: "form_definition_id", Type: field.TypeInt},
+	}
+	// FormDefinitionTranslationsTable holds the schema information for the "form_definition_translations" table.
+	FormDefinitionTranslationsTable = &schema.Table{
+		Name:       "form_definition_translations",
+		Columns:    FormDefinitionTranslationsColumns,
+		PrimaryKey: []*schema.Column{FormDefinitionTranslationsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "form_definition_translations_form_definitions_translations",
+				Columns:    []*schema.Column{FormDefinitionTranslationsColumns[11]},
+				RefColumns: []*schema.Column{FormDefinitionsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "formdefinitiontranslation_form_definition_id_locale",
+				Unique:  true,
+				Columns: []*schema.Column{FormDefinitionTranslationsColumns[11], FormDefinitionTranslationsColumns[8]},
+			},
+		},
+	}
+	// InquiriesColumns holds the columns for the "inquiries" table.
+	InquiriesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "updated_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "tenant_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "customer_id", Type: field.TypeInt, Nullable: true},
+		{Name: "email", Type: field.TypeString},
+		{Name: "phone", Type: field.TypeString, Nullable: true, Default: ""},
+		{Name: "name", Type: field.TypeString, Default: ""},
+		{Name: "company", Type: field.TypeString, Nullable: true, Default: ""},
+		{Name: "payload", Type: field.TypeJSON, Nullable: true},
+		{Name: "product_id", Type: field.TypeInt, Nullable: true},
+		{Name: "status", Type: field.TypeEnum, Enums: []string{"new", "contacted", "qualified", "converted", "closed"}, Default: "new"},
+		{Name: "assigned_admin_id", Type: field.TypeInt, Nullable: true},
+		{Name: "converted_order_id", Type: field.TypeInt, Nullable: true},
+		{Name: "form_id", Type: field.TypeInt},
+	}
+	// InquiriesTable holds the schema information for the "inquiries" table.
+	InquiriesTable = &schema.Table{
+		Name:       "inquiries",
+		Columns:    InquiriesColumns,
+		PrimaryKey: []*schema.Column{InquiriesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "inquiries_form_definitions_inquiries",
+				Columns:    []*schema.Column{InquiriesColumns[18]},
+				RefColumns: []*schema.Column{FormDefinitionsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "inquiry_status",
+				Unique:  false,
+				Columns: []*schema.Column{InquiriesColumns[15]},
+			},
+			{
+				Name:    "inquiry_form_id",
+				Unique:  false,
+				Columns: []*schema.Column{InquiriesColumns[18]},
+			},
+			{
+				Name:    "inquiry_customer_id",
+				Unique:  false,
+				Columns: []*schema.Column{InquiriesColumns[8]},
+			},
+		},
+	}
 	// LocalesColumns holds the columns for the "locales" table.
 	LocalesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -1217,6 +1334,9 @@ var (
 		CustomersTable,
 		CustomerAddressesTable,
 		CustomerGroupsTable,
+		FormDefinitionsTable,
+		FormDefinitionTranslationsTable,
+		InquiriesTable,
 		LocalesTable,
 		MediaTable,
 		MediaTranslationsTable,
@@ -1251,6 +1371,8 @@ func init() {
 	CollectionTranslationsTable.ForeignKeys[0].RefTable = CollectionsTable
 	CustomerAddressesTable.ForeignKeys[0].RefTable = CustomersTable
 	CustomerGroupsTable.ForeignKeys[0].RefTable = CustomersTable
+	FormDefinitionTranslationsTable.ForeignKeys[0].RefTable = FormDefinitionsTable
+	InquiriesTable.ForeignKeys[0].RefTable = FormDefinitionsTable
 	MediaTranslationsTable.ForeignKeys[0].RefTable = MediaTable
 	MenuItemsTable.ForeignKeys[0].RefTable = MenusTable
 	MenuItemTranslationsTable.ForeignKeys[0].RefTable = MenuItemsTable

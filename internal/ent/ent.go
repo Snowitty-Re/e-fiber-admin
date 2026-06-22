@@ -23,6 +23,9 @@ import (
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/customer"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/customeraddress"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/customergroup"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/formdefinition"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/formdefinitiontranslation"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/inquiry"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/locale"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/media"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/mediatranslation"
@@ -106,40 +109,43 @@ var (
 func checkColumn(t, c string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			adminuser.Table:             adminuser.ValidColumn,
-			blogpost.Table:              blogpost.ValidColumn,
-			blogposttranslation.Table:   blogposttranslation.ValidColumn,
-			category.Table:              category.ValidColumn,
-			categorytranslation.Table:   categorytranslation.ValidColumn,
-			collection.Table:            collection.ValidColumn,
-			collectiontranslation.Table: collectiontranslation.ValidColumn,
-			currency.Table:              currency.ValidColumn,
-			customer.Table:              customer.ValidColumn,
-			customeraddress.Table:       customeraddress.ValidColumn,
-			customergroup.Table:         customergroup.ValidColumn,
-			locale.Table:                locale.ValidColumn,
-			media.Table:                 media.ValidColumn,
-			mediatranslation.Table:      mediatranslation.ValidColumn,
-			menu.Table:                  menu.ValidColumn,
-			menuitem.Table:              menuitem.ValidColumn,
-			menuitemtranslation.Table:   menuitemtranslation.ValidColumn,
-			page.Table:                  page.ValidColumn,
-			pagetranslation.Table:       pagetranslation.ValidColumn,
-			permission.Table:            permission.ValidColumn,
-			product.Table:               product.ValidColumn,
-			productmedia.Table:          productmedia.ValidColumn,
-			productoption.Table:         productoption.ValidColumn,
-			productoptionvalue.Table:    productoptionvalue.ValidColumn,
-			producttranslation.Table:    producttranslation.ValidColumn,
-			region.Table:                region.ValidColumn,
-			role.Table:                  role.ValidColumn,
-			store.Table:                 store.ValidColumn,
-			tag.Table:                   tag.ValidColumn,
-			tagtranslation.Table:        tagtranslation.ValidColumn,
-			taxrate.Table:               taxrate.ValidColumn,
-			variant.Table:               variant.ValidColumn,
-			variantoptionvalue.Table:    variantoptionvalue.ValidColumn,
-			variantprice.Table:          variantprice.ValidColumn,
+			adminuser.Table:                 adminuser.ValidColumn,
+			blogpost.Table:                  blogpost.ValidColumn,
+			blogposttranslation.Table:       blogposttranslation.ValidColumn,
+			category.Table:                  category.ValidColumn,
+			categorytranslation.Table:       categorytranslation.ValidColumn,
+			collection.Table:                collection.ValidColumn,
+			collectiontranslation.Table:     collectiontranslation.ValidColumn,
+			currency.Table:                  currency.ValidColumn,
+			customer.Table:                  customer.ValidColumn,
+			customeraddress.Table:           customeraddress.ValidColumn,
+			customergroup.Table:             customergroup.ValidColumn,
+			formdefinition.Table:            formdefinition.ValidColumn,
+			formdefinitiontranslation.Table: formdefinitiontranslation.ValidColumn,
+			inquiry.Table:                   inquiry.ValidColumn,
+			locale.Table:                    locale.ValidColumn,
+			media.Table:                     media.ValidColumn,
+			mediatranslation.Table:          mediatranslation.ValidColumn,
+			menu.Table:                      menu.ValidColumn,
+			menuitem.Table:                  menuitem.ValidColumn,
+			menuitemtranslation.Table:       menuitemtranslation.ValidColumn,
+			page.Table:                      page.ValidColumn,
+			pagetranslation.Table:           pagetranslation.ValidColumn,
+			permission.Table:                permission.ValidColumn,
+			product.Table:                   product.ValidColumn,
+			productmedia.Table:              productmedia.ValidColumn,
+			productoption.Table:             productoption.ValidColumn,
+			productoptionvalue.Table:        productoptionvalue.ValidColumn,
+			producttranslation.Table:        producttranslation.ValidColumn,
+			region.Table:                    region.ValidColumn,
+			role.Table:                      role.ValidColumn,
+			store.Table:                     store.ValidColumn,
+			tag.Table:                       tag.ValidColumn,
+			tagtranslation.Table:            tagtranslation.ValidColumn,
+			taxrate.Table:                   taxrate.ValidColumn,
+			variant.Table:                   variant.ValidColumn,
+			variantoptionvalue.Table:        variantoptionvalue.ValidColumn,
+			variantprice.Table:              variantprice.ValidColumn,
 		})
 	})
 	return columnCheck(t, c)

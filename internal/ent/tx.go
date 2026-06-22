@@ -34,6 +34,12 @@ type Tx struct {
 	CustomerAddress *CustomerAddressClient
 	// CustomerGroup is the client for interacting with the CustomerGroup builders.
 	CustomerGroup *CustomerGroupClient
+	// FormDefinition is the client for interacting with the FormDefinition builders.
+	FormDefinition *FormDefinitionClient
+	// FormDefinitionTranslation is the client for interacting with the FormDefinitionTranslation builders.
+	FormDefinitionTranslation *FormDefinitionTranslationClient
+	// Inquiry is the client for interacting with the Inquiry builders.
+	Inquiry *InquiryClient
 	// Locale is the client for interacting with the Locale builders.
 	Locale *LocaleClient
 	// Media is the client for interacting with the Media builders.
@@ -222,6 +228,9 @@ func (tx *Tx) init() {
 	tx.Customer = NewCustomerClient(tx.config)
 	tx.CustomerAddress = NewCustomerAddressClient(tx.config)
 	tx.CustomerGroup = NewCustomerGroupClient(tx.config)
+	tx.FormDefinition = NewFormDefinitionClient(tx.config)
+	tx.FormDefinitionTranslation = NewFormDefinitionTranslationClient(tx.config)
+	tx.Inquiry = NewInquiryClient(tx.config)
 	tx.Locale = NewLocaleClient(tx.config)
 	tx.Media = NewMediaClient(tx.config)
 	tx.MediaTranslation = NewMediaTranslationClient(tx.config)

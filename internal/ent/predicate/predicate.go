@@ -39,6 +39,15 @@ type CustomerAddress func(*sql.Selector)
 // CustomerGroup is the predicate function for customergroup builders.
 type CustomerGroup func(*sql.Selector)
 
+// FormDefinition is the predicate function for formdefinition builders.
+type FormDefinition func(*sql.Selector)
+
+// FormDefinitionTranslation is the predicate function for formdefinitiontranslation builders.
+type FormDefinitionTranslation func(*sql.Selector)
+
+// Inquiry is the predicate function for inquiry builders.
+type Inquiry func(*sql.Selector)
+
 // Locale is the predicate function for locale builders.
 type Locale func(*sql.Selector)
 

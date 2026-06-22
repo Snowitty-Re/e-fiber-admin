@@ -141,6 +141,42 @@ func (f CustomerGroupFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Valu
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CustomerGroupMutation", m)
 }
 
+// The FormDefinitionFunc type is an adapter to allow the use of ordinary
+// function as FormDefinition mutator.
+type FormDefinitionFunc func(context.Context, *ent.FormDefinitionMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f FormDefinitionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.FormDefinitionMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.FormDefinitionMutation", m)
+}
+
+// The FormDefinitionTranslationFunc type is an adapter to allow the use of ordinary
+// function as FormDefinitionTranslation mutator.
+type FormDefinitionTranslationFunc func(context.Context, *ent.FormDefinitionTranslationMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f FormDefinitionTranslationFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.FormDefinitionTranslationMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.FormDefinitionTranslationMutation", m)
+}
+
+// The InquiryFunc type is an adapter to allow the use of ordinary
+// function as Inquiry mutator.
+type InquiryFunc func(context.Context, *ent.InquiryMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f InquiryFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.InquiryMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.InquiryMutation", m)
+}
+
 // The LocaleFunc type is an adapter to allow the use of ordinary
 // function as Locale mutator.
 type LocaleFunc func(context.Context, *ent.LocaleMutation) (ent.Value, error)
