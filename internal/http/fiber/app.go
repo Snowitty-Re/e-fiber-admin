@@ -26,9 +26,11 @@ import (
 	"github.com/Snowitty-Re/e-fiber-admin/internal/domain/region"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/domain/settings"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/events"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/http/fiber/handler"
 	pkgmw "github.com/Snowitty-Re/e-fiber-admin/internal/http/fiber/middleware"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/http/fiber/router"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/jobs"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/pkg/auth"
 )
 
@@ -38,6 +40,8 @@ type Deps struct {
 	DB          *sql.DB
 	RedisClient *redis.Client
 	MinIOClient *minio.Client
+	EventBus    *events.Bus
+	JobsClient  *jobs.Client
 }
 
 func NewApp(deps Deps) *fiber.App {
@@ -88,7 +92,7 @@ func NewApp(deps Deps) *fiber.App {
 	settingsH := handler.NewSettingsHandler(settingsSvc)
 	customerSvc := customersvc.NewService(deps.EntClient, deps.RedisClient, tokenManager)
 	customerH := handler.NewCustomerHandler(customerSvc)
-	inquirySvc := inquiry.NewService(deps.EntClient)
+	inquirySvc := inquiry.NewService(deps.EntClient, deps.EventBus)
 	inquiryH := handler.NewInquiryHandler(inquirySvc)
 
 	router.Register(app, router.Deps{

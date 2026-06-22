@@ -10,7 +10,9 @@ import (
 
 	"github.com/Snowitty-Re/e-fiber-admin/internal/config"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/database"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/events"
 	fiberapp "github.com/Snowitty-Re/e-fiber-admin/internal/http/fiber"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/jobs"
 )
 
 func main() {
@@ -55,12 +57,17 @@ func main() {
 	}
 	cancel()
 
+	bus := events.NewBus(redisClient)
+	jobsClient := jobs.NewClient(cfg.Redis)
+
 	app := fiberapp.NewApp(fiberapp.Deps{
 		Config:      cfg,
 		EntClient:   entClient,
 		DB:          db,
 		RedisClient: redisClient,
 		MinIOClient: minioClient,
+		EventBus:    bus,
+		JobsClient:  jobsClient,
 	})
 
 	go func() {

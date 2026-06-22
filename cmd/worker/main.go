@@ -24,11 +24,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	_, db, err := database.NewEntClient(cfg.Postgres)
+	entClient, db, err := database.NewEntClient(cfg.Postgres)
 	if err != nil {
 		slog.Error("connect postgres failed", "err", err)
 		os.Exit(1)
 	}
+	defer entClient.Close()
 	defer db.Close()
 
 	redisClient, err := database.NewRedisClient(cfg.Redis)
@@ -50,12 +51,18 @@ func main() {
 	}
 	bcancel()
 
+	jobsClient := jobs.NewClient(cfg.Redis)
 	subscriber := events.NewSubscriber(redisClient)
-	handlers := RegisterEventHandlers(subscriber, cfg, redisClient)
-	_ = handlers
-
 	jobsServer := jobs.NewServer(cfg.Asynq, cfg.Redis)
-	RegisterJobHandlers(jobsServer, cfg, redisClient)
+
+	seedCtx, seedCancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer seedCancel()
+	if err := SeedNotifications(seedCtx, entClient); err != nil {
+		slog.Warn("seed notification templates skipped", "err", err)
+	}
+
+	RegisterEventHandlers(subscriber, entClient, jobsClient)
+	RegisterJobHandlers(jobsServer, entClient)
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()

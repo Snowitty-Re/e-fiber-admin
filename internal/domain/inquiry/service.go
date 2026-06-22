@@ -7,15 +7,17 @@ import (
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/formdefinition"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/inquiry"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/events"
 	pkgerr "github.com/Snowitty-Re/e-fiber-admin/internal/pkg/errors"
 )
 
 type Service struct {
 	entClient *ent.Client
+	bus       *events.Bus
 }
 
-func NewService(entClient *ent.Client) *Service {
-	return &Service{entClient: entClient}
+func NewService(entClient *ent.Client, bus *events.Bus) *Service {
+	return &Service{entClient: entClient, bus: bus}
 }
 
 type FormInput struct {
@@ -142,6 +144,13 @@ func (s *Service) SubmitInquiry(ctx context.Context, in InquirySubmitInput) (*en
 	if err != nil {
 		return nil, fmt.Errorf("create inquiry: %w", err)
 	}
+
+	if s.bus != nil {
+		_ = s.bus.PublishSimple(ctx, "inquiry.received", "inquiry", fmt.Sprintf("%d", inq.ID), map[string]any{
+			"inquiry_id": inq.ID, "email": inq.Email, "name": inq.Name,
+			"form_slug": in.FormSlug, "form_id": form.ID,
+		})
+	}
 	return inq, nil
 }
 
@@ -176,21 +185,45 @@ func (s *Service) GetInquiry(ctx context.Context, id int) (*ent.Inquiry, error) 
 }
 
 func (s *Service) AssignInquiry(ctx context.Context, id, adminID int) error {
-	return s.entClient.Inquiry.UpdateOneID(id).
+	if err := s.entClient.Inquiry.UpdateOneID(id).
 		SetAssignedAdminID(adminID).
 		SetStatus(inquiry.StatusContacted).
-		Exec(ctx)
+		Exec(ctx); err != nil {
+		return err
+	}
+	if s.bus != nil {
+		_ = s.bus.PublishSimple(ctx, "inquiry.assigned", "inquiry", fmt.Sprintf("%d", id), map[string]any{
+			"inquiry_id": id, "admin_id": adminID,
+		})
+	}
+	return nil
 }
 
 func (s *Service) UpdateStatus(ctx context.Context, id int, status string) error {
-	return s.entClient.Inquiry.UpdateOneID(id).
+	if err := s.entClient.Inquiry.UpdateOneID(id).
 		SetStatus(inquiry.Status(status)).
-		Exec(ctx)
+		Exec(ctx); err != nil {
+		return err
+	}
+	if s.bus != nil {
+		_ = s.bus.PublishSimple(ctx, "inquiry.updated", "inquiry", fmt.Sprintf("%d", id), map[string]any{
+			"inquiry_id": id, "status": status,
+		})
+	}
+	return nil
 }
 
 func (s *Service) ConvertToOrder(ctx context.Context, inquiryID, orderID int) error {
-	return s.entClient.Inquiry.UpdateOneID(inquiryID).
+	if err := s.entClient.Inquiry.UpdateOneID(inquiryID).
 		SetConvertedOrderID(orderID).
 		SetStatus(inquiry.StatusConverted).
-		Exec(ctx)
+		Exec(ctx); err != nil {
+		return err
+	}
+	if s.bus != nil {
+		_ = s.bus.PublishSimple(ctx, "inquiry.converted", "inquiry", fmt.Sprintf("%d", inquiryID), map[string]any{
+			"inquiry_id": inquiryID, "order_id": orderID,
+		})
+	}
+	return nil
 }
