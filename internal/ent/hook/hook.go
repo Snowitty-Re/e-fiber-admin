@@ -141,6 +141,30 @@ func (f CustomerGroupFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Valu
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CustomerGroupMutation", m)
 }
 
+// The EmailTemplateFunc type is an adapter to allow the use of ordinary
+// function as EmailTemplate mutator.
+type EmailTemplateFunc func(context.Context, *ent.EmailTemplateMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f EmailTemplateFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.EmailTemplateMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.EmailTemplateMutation", m)
+}
+
+// The EmailTemplateTranslationFunc type is an adapter to allow the use of ordinary
+// function as EmailTemplateTranslation mutator.
+type EmailTemplateTranslationFunc func(context.Context, *ent.EmailTemplateTranslationMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f EmailTemplateTranslationFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.EmailTemplateTranslationMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.EmailTemplateTranslationMutation", m)
+}
+
 // The FormDefinitionFunc type is an adapter to allow the use of ordinary
 // function as FormDefinition mutator.
 type FormDefinitionFunc func(context.Context, *ent.FormDefinitionMutation) (ent.Value, error)
@@ -247,6 +271,18 @@ func (f MenuItemTranslationFunc) Mutate(ctx context.Context, m ent.Mutation) (en
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.MenuItemTranslationMutation", m)
+}
+
+// The NotificationFunc type is an adapter to allow the use of ordinary
+// function as Notification mutator.
+type NotificationFunc func(context.Context, *ent.NotificationMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f NotificationFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.NotificationMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.NotificationMutation", m)
 }
 
 // The PageFunc type is an adapter to allow the use of ordinary

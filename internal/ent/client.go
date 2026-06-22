@@ -26,6 +26,8 @@ import (
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/customer"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/customeraddress"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/customergroup"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/emailtemplate"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/emailtemplatetranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/formdefinition"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/formdefinitiontranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/inquiry"
@@ -35,6 +37,7 @@ import (
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/menu"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/menuitem"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/menuitemtranslation"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/notification"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/page"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/pagetranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/permission"
@@ -81,6 +84,10 @@ type Client struct {
 	CustomerAddress *CustomerAddressClient
 	// CustomerGroup is the client for interacting with the CustomerGroup builders.
 	CustomerGroup *CustomerGroupClient
+	// EmailTemplate is the client for interacting with the EmailTemplate builders.
+	EmailTemplate *EmailTemplateClient
+	// EmailTemplateTranslation is the client for interacting with the EmailTemplateTranslation builders.
+	EmailTemplateTranslation *EmailTemplateTranslationClient
 	// FormDefinition is the client for interacting with the FormDefinition builders.
 	FormDefinition *FormDefinitionClient
 	// FormDefinitionTranslation is the client for interacting with the FormDefinitionTranslation builders.
@@ -99,6 +106,8 @@ type Client struct {
 	MenuItem *MenuItemClient
 	// MenuItemTranslation is the client for interacting with the MenuItemTranslation builders.
 	MenuItemTranslation *MenuItemTranslationClient
+	// Notification is the client for interacting with the Notification builders.
+	Notification *NotificationClient
 	// Page is the client for interacting with the Page builders.
 	Page *PageClient
 	// PageTranslation is the client for interacting with the PageTranslation builders.
@@ -155,6 +164,8 @@ func (c *Client) init() {
 	c.Customer = NewCustomerClient(c.config)
 	c.CustomerAddress = NewCustomerAddressClient(c.config)
 	c.CustomerGroup = NewCustomerGroupClient(c.config)
+	c.EmailTemplate = NewEmailTemplateClient(c.config)
+	c.EmailTemplateTranslation = NewEmailTemplateTranslationClient(c.config)
 	c.FormDefinition = NewFormDefinitionClient(c.config)
 	c.FormDefinitionTranslation = NewFormDefinitionTranslationClient(c.config)
 	c.Inquiry = NewInquiryClient(c.config)
@@ -164,6 +175,7 @@ func (c *Client) init() {
 	c.Menu = NewMenuClient(c.config)
 	c.MenuItem = NewMenuItemClient(c.config)
 	c.MenuItemTranslation = NewMenuItemTranslationClient(c.config)
+	c.Notification = NewNotificationClient(c.config)
 	c.Page = NewPageClient(c.config)
 	c.PageTranslation = NewPageTranslationClient(c.config)
 	c.Permission = NewPermissionClient(c.config)
@@ -284,6 +296,8 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Customer:                  NewCustomerClient(cfg),
 		CustomerAddress:           NewCustomerAddressClient(cfg),
 		CustomerGroup:             NewCustomerGroupClient(cfg),
+		EmailTemplate:             NewEmailTemplateClient(cfg),
+		EmailTemplateTranslation:  NewEmailTemplateTranslationClient(cfg),
 		FormDefinition:            NewFormDefinitionClient(cfg),
 		FormDefinitionTranslation: NewFormDefinitionTranslationClient(cfg),
 		Inquiry:                   NewInquiryClient(cfg),
@@ -293,6 +307,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Menu:                      NewMenuClient(cfg),
 		MenuItem:                  NewMenuItemClient(cfg),
 		MenuItemTranslation:       NewMenuItemTranslationClient(cfg),
+		Notification:              NewNotificationClient(cfg),
 		Page:                      NewPageClient(cfg),
 		PageTranslation:           NewPageTranslationClient(cfg),
 		Permission:                NewPermissionClient(cfg),
@@ -340,6 +355,8 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Customer:                  NewCustomerClient(cfg),
 		CustomerAddress:           NewCustomerAddressClient(cfg),
 		CustomerGroup:             NewCustomerGroupClient(cfg),
+		EmailTemplate:             NewEmailTemplateClient(cfg),
+		EmailTemplateTranslation:  NewEmailTemplateTranslationClient(cfg),
 		FormDefinition:            NewFormDefinitionClient(cfg),
 		FormDefinitionTranslation: NewFormDefinitionTranslationClient(cfg),
 		Inquiry:                   NewInquiryClient(cfg),
@@ -349,6 +366,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Menu:                      NewMenuClient(cfg),
 		MenuItem:                  NewMenuItemClient(cfg),
 		MenuItemTranslation:       NewMenuItemTranslationClient(cfg),
+		Notification:              NewNotificationClient(cfg),
 		Page:                      NewPageClient(cfg),
 		PageTranslation:           NewPageTranslationClient(cfg),
 		Permission:                NewPermissionClient(cfg),
@@ -397,10 +415,11 @@ func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.AdminUser, c.BlogPost, c.BlogPostTranslation, c.Category,
 		c.CategoryTranslation, c.Collection, c.CollectionTranslation, c.Currency,
-		c.Customer, c.CustomerAddress, c.CustomerGroup, c.FormDefinition,
-		c.FormDefinitionTranslation, c.Inquiry, c.Locale, c.Media, c.MediaTranslation,
-		c.Menu, c.MenuItem, c.MenuItemTranslation, c.Page, c.PageTranslation,
-		c.Permission, c.Product, c.ProductMedia, c.ProductOption, c.ProductOptionValue,
+		c.Customer, c.CustomerAddress, c.CustomerGroup, c.EmailTemplate,
+		c.EmailTemplateTranslation, c.FormDefinition, c.FormDefinitionTranslation,
+		c.Inquiry, c.Locale, c.Media, c.MediaTranslation, c.Menu, c.MenuItem,
+		c.MenuItemTranslation, c.Notification, c.Page, c.PageTranslation, c.Permission,
+		c.Product, c.ProductMedia, c.ProductOption, c.ProductOptionValue,
 		c.ProductTranslation, c.Region, c.Role, c.Store, c.Tag, c.TagTranslation,
 		c.TaxRate, c.Variant, c.VariantOptionValue, c.VariantPrice,
 	} {
@@ -414,10 +433,11 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.AdminUser, c.BlogPost, c.BlogPostTranslation, c.Category,
 		c.CategoryTranslation, c.Collection, c.CollectionTranslation, c.Currency,
-		c.Customer, c.CustomerAddress, c.CustomerGroup, c.FormDefinition,
-		c.FormDefinitionTranslation, c.Inquiry, c.Locale, c.Media, c.MediaTranslation,
-		c.Menu, c.MenuItem, c.MenuItemTranslation, c.Page, c.PageTranslation,
-		c.Permission, c.Product, c.ProductMedia, c.ProductOption, c.ProductOptionValue,
+		c.Customer, c.CustomerAddress, c.CustomerGroup, c.EmailTemplate,
+		c.EmailTemplateTranslation, c.FormDefinition, c.FormDefinitionTranslation,
+		c.Inquiry, c.Locale, c.Media, c.MediaTranslation, c.Menu, c.MenuItem,
+		c.MenuItemTranslation, c.Notification, c.Page, c.PageTranslation, c.Permission,
+		c.Product, c.ProductMedia, c.ProductOption, c.ProductOptionValue,
 		c.ProductTranslation, c.Region, c.Role, c.Store, c.Tag, c.TagTranslation,
 		c.TaxRate, c.Variant, c.VariantOptionValue, c.VariantPrice,
 	} {
@@ -450,6 +470,10 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.CustomerAddress.mutate(ctx, m)
 	case *CustomerGroupMutation:
 		return c.CustomerGroup.mutate(ctx, m)
+	case *EmailTemplateMutation:
+		return c.EmailTemplate.mutate(ctx, m)
+	case *EmailTemplateTranslationMutation:
+		return c.EmailTemplateTranslation.mutate(ctx, m)
 	case *FormDefinitionMutation:
 		return c.FormDefinition.mutate(ctx, m)
 	case *FormDefinitionTranslationMutation:
@@ -468,6 +492,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.MenuItem.mutate(ctx, m)
 	case *MenuItemTranslationMutation:
 		return c.MenuItemTranslation.mutate(ctx, m)
+	case *NotificationMutation:
+		return c.Notification.mutate(ctx, m)
 	case *PageMutation:
 		return c.Page.mutate(ctx, m)
 	case *PageTranslationMutation:
@@ -2146,6 +2172,304 @@ func (c *CustomerGroupClient) mutate(ctx context.Context, m *CustomerGroupMutati
 	}
 }
 
+// EmailTemplateClient is a client for the EmailTemplate schema.
+type EmailTemplateClient struct {
+	config
+}
+
+// NewEmailTemplateClient returns a client for the EmailTemplate from the given config.
+func NewEmailTemplateClient(c config) *EmailTemplateClient {
+	return &EmailTemplateClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `emailtemplate.Hooks(f(g(h())))`.
+func (c *EmailTemplateClient) Use(hooks ...Hook) {
+	c.hooks.EmailTemplate = append(c.hooks.EmailTemplate, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `emailtemplate.Intercept(f(g(h())))`.
+func (c *EmailTemplateClient) Intercept(interceptors ...Interceptor) {
+	c.inters.EmailTemplate = append(c.inters.EmailTemplate, interceptors...)
+}
+
+// Create returns a builder for creating a EmailTemplate entity.
+func (c *EmailTemplateClient) Create() *EmailTemplateCreate {
+	mutation := newEmailTemplateMutation(c.config, OpCreate)
+	return &EmailTemplateCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of EmailTemplate entities.
+func (c *EmailTemplateClient) CreateBulk(builders ...*EmailTemplateCreate) *EmailTemplateCreateBulk {
+	return &EmailTemplateCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *EmailTemplateClient) MapCreateBulk(slice any, setFunc func(*EmailTemplateCreate, int)) *EmailTemplateCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &EmailTemplateCreateBulk{err: fmt.Errorf("calling to EmailTemplateClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*EmailTemplateCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &EmailTemplateCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for EmailTemplate.
+func (c *EmailTemplateClient) Update() *EmailTemplateUpdate {
+	mutation := newEmailTemplateMutation(c.config, OpUpdate)
+	return &EmailTemplateUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *EmailTemplateClient) UpdateOne(_m *EmailTemplate) *EmailTemplateUpdateOne {
+	mutation := newEmailTemplateMutation(c.config, OpUpdateOne, withEmailTemplate(_m))
+	return &EmailTemplateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *EmailTemplateClient) UpdateOneID(id int) *EmailTemplateUpdateOne {
+	mutation := newEmailTemplateMutation(c.config, OpUpdateOne, withEmailTemplateID(id))
+	return &EmailTemplateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for EmailTemplate.
+func (c *EmailTemplateClient) Delete() *EmailTemplateDelete {
+	mutation := newEmailTemplateMutation(c.config, OpDelete)
+	return &EmailTemplateDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *EmailTemplateClient) DeleteOne(_m *EmailTemplate) *EmailTemplateDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *EmailTemplateClient) DeleteOneID(id int) *EmailTemplateDeleteOne {
+	builder := c.Delete().Where(emailtemplate.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &EmailTemplateDeleteOne{builder}
+}
+
+// Query returns a query builder for EmailTemplate.
+func (c *EmailTemplateClient) Query() *EmailTemplateQuery {
+	return &EmailTemplateQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeEmailTemplate},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a EmailTemplate entity by its id.
+func (c *EmailTemplateClient) Get(ctx context.Context, id int) (*EmailTemplate, error) {
+	return c.Query().Where(emailtemplate.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *EmailTemplateClient) GetX(ctx context.Context, id int) *EmailTemplate {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryTranslations queries the translations edge of a EmailTemplate.
+func (c *EmailTemplateClient) QueryTranslations(_m *EmailTemplate) *EmailTemplateTranslationQuery {
+	query := (&EmailTemplateTranslationClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(emailtemplate.Table, emailtemplate.FieldID, id),
+			sqlgraph.To(emailtemplatetranslation.Table, emailtemplatetranslation.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, emailtemplate.TranslationsTable, emailtemplate.TranslationsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *EmailTemplateClient) Hooks() []Hook {
+	return c.hooks.EmailTemplate
+}
+
+// Interceptors returns the client interceptors.
+func (c *EmailTemplateClient) Interceptors() []Interceptor {
+	return c.inters.EmailTemplate
+}
+
+func (c *EmailTemplateClient) mutate(ctx context.Context, m *EmailTemplateMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&EmailTemplateCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&EmailTemplateUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&EmailTemplateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&EmailTemplateDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown EmailTemplate mutation op: %q", m.Op())
+	}
+}
+
+// EmailTemplateTranslationClient is a client for the EmailTemplateTranslation schema.
+type EmailTemplateTranslationClient struct {
+	config
+}
+
+// NewEmailTemplateTranslationClient returns a client for the EmailTemplateTranslation from the given config.
+func NewEmailTemplateTranslationClient(c config) *EmailTemplateTranslationClient {
+	return &EmailTemplateTranslationClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `emailtemplatetranslation.Hooks(f(g(h())))`.
+func (c *EmailTemplateTranslationClient) Use(hooks ...Hook) {
+	c.hooks.EmailTemplateTranslation = append(c.hooks.EmailTemplateTranslation, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `emailtemplatetranslation.Intercept(f(g(h())))`.
+func (c *EmailTemplateTranslationClient) Intercept(interceptors ...Interceptor) {
+	c.inters.EmailTemplateTranslation = append(c.inters.EmailTemplateTranslation, interceptors...)
+}
+
+// Create returns a builder for creating a EmailTemplateTranslation entity.
+func (c *EmailTemplateTranslationClient) Create() *EmailTemplateTranslationCreate {
+	mutation := newEmailTemplateTranslationMutation(c.config, OpCreate)
+	return &EmailTemplateTranslationCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of EmailTemplateTranslation entities.
+func (c *EmailTemplateTranslationClient) CreateBulk(builders ...*EmailTemplateTranslationCreate) *EmailTemplateTranslationCreateBulk {
+	return &EmailTemplateTranslationCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *EmailTemplateTranslationClient) MapCreateBulk(slice any, setFunc func(*EmailTemplateTranslationCreate, int)) *EmailTemplateTranslationCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &EmailTemplateTranslationCreateBulk{err: fmt.Errorf("calling to EmailTemplateTranslationClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*EmailTemplateTranslationCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &EmailTemplateTranslationCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for EmailTemplateTranslation.
+func (c *EmailTemplateTranslationClient) Update() *EmailTemplateTranslationUpdate {
+	mutation := newEmailTemplateTranslationMutation(c.config, OpUpdate)
+	return &EmailTemplateTranslationUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *EmailTemplateTranslationClient) UpdateOne(_m *EmailTemplateTranslation) *EmailTemplateTranslationUpdateOne {
+	mutation := newEmailTemplateTranslationMutation(c.config, OpUpdateOne, withEmailTemplateTranslation(_m))
+	return &EmailTemplateTranslationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *EmailTemplateTranslationClient) UpdateOneID(id int) *EmailTemplateTranslationUpdateOne {
+	mutation := newEmailTemplateTranslationMutation(c.config, OpUpdateOne, withEmailTemplateTranslationID(id))
+	return &EmailTemplateTranslationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for EmailTemplateTranslation.
+func (c *EmailTemplateTranslationClient) Delete() *EmailTemplateTranslationDelete {
+	mutation := newEmailTemplateTranslationMutation(c.config, OpDelete)
+	return &EmailTemplateTranslationDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *EmailTemplateTranslationClient) DeleteOne(_m *EmailTemplateTranslation) *EmailTemplateTranslationDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *EmailTemplateTranslationClient) DeleteOneID(id int) *EmailTemplateTranslationDeleteOne {
+	builder := c.Delete().Where(emailtemplatetranslation.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &EmailTemplateTranslationDeleteOne{builder}
+}
+
+// Query returns a query builder for EmailTemplateTranslation.
+func (c *EmailTemplateTranslationClient) Query() *EmailTemplateTranslationQuery {
+	return &EmailTemplateTranslationQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeEmailTemplateTranslation},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a EmailTemplateTranslation entity by its id.
+func (c *EmailTemplateTranslationClient) Get(ctx context.Context, id int) (*EmailTemplateTranslation, error) {
+	return c.Query().Where(emailtemplatetranslation.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *EmailTemplateTranslationClient) GetX(ctx context.Context, id int) *EmailTemplateTranslation {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryEmailTemplate queries the email_template edge of a EmailTemplateTranslation.
+func (c *EmailTemplateTranslationClient) QueryEmailTemplate(_m *EmailTemplateTranslation) *EmailTemplateQuery {
+	query := (&EmailTemplateClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(emailtemplatetranslation.Table, emailtemplatetranslation.FieldID, id),
+			sqlgraph.To(emailtemplate.Table, emailtemplate.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, emailtemplatetranslation.EmailTemplateTable, emailtemplatetranslation.EmailTemplateColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *EmailTemplateTranslationClient) Hooks() []Hook {
+	return c.hooks.EmailTemplateTranslation
+}
+
+// Interceptors returns the client interceptors.
+func (c *EmailTemplateTranslationClient) Interceptors() []Interceptor {
+	return c.inters.EmailTemplateTranslation
+}
+
+func (c *EmailTemplateTranslationClient) mutate(ctx context.Context, m *EmailTemplateTranslationMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&EmailTemplateTranslationCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&EmailTemplateTranslationUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&EmailTemplateTranslationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&EmailTemplateTranslationDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown EmailTemplateTranslation mutation op: %q", m.Op())
+	}
+}
+
 // FormDefinitionClient is a client for the FormDefinition schema.
 type FormDefinitionClient struct {
 	config
@@ -3500,6 +3824,139 @@ func (c *MenuItemTranslationClient) mutate(ctx context.Context, m *MenuItemTrans
 		return (&MenuItemTranslationDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown MenuItemTranslation mutation op: %q", m.Op())
+	}
+}
+
+// NotificationClient is a client for the Notification schema.
+type NotificationClient struct {
+	config
+}
+
+// NewNotificationClient returns a client for the Notification from the given config.
+func NewNotificationClient(c config) *NotificationClient {
+	return &NotificationClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `notification.Hooks(f(g(h())))`.
+func (c *NotificationClient) Use(hooks ...Hook) {
+	c.hooks.Notification = append(c.hooks.Notification, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `notification.Intercept(f(g(h())))`.
+func (c *NotificationClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Notification = append(c.inters.Notification, interceptors...)
+}
+
+// Create returns a builder for creating a Notification entity.
+func (c *NotificationClient) Create() *NotificationCreate {
+	mutation := newNotificationMutation(c.config, OpCreate)
+	return &NotificationCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Notification entities.
+func (c *NotificationClient) CreateBulk(builders ...*NotificationCreate) *NotificationCreateBulk {
+	return &NotificationCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *NotificationClient) MapCreateBulk(slice any, setFunc func(*NotificationCreate, int)) *NotificationCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &NotificationCreateBulk{err: fmt.Errorf("calling to NotificationClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*NotificationCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &NotificationCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Notification.
+func (c *NotificationClient) Update() *NotificationUpdate {
+	mutation := newNotificationMutation(c.config, OpUpdate)
+	return &NotificationUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *NotificationClient) UpdateOne(_m *Notification) *NotificationUpdateOne {
+	mutation := newNotificationMutation(c.config, OpUpdateOne, withNotification(_m))
+	return &NotificationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *NotificationClient) UpdateOneID(id int) *NotificationUpdateOne {
+	mutation := newNotificationMutation(c.config, OpUpdateOne, withNotificationID(id))
+	return &NotificationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Notification.
+func (c *NotificationClient) Delete() *NotificationDelete {
+	mutation := newNotificationMutation(c.config, OpDelete)
+	return &NotificationDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *NotificationClient) DeleteOne(_m *Notification) *NotificationDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *NotificationClient) DeleteOneID(id int) *NotificationDeleteOne {
+	builder := c.Delete().Where(notification.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &NotificationDeleteOne{builder}
+}
+
+// Query returns a query builder for Notification.
+func (c *NotificationClient) Query() *NotificationQuery {
+	return &NotificationQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeNotification},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Notification entity by its id.
+func (c *NotificationClient) Get(ctx context.Context, id int) (*Notification, error) {
+	return c.Query().Where(notification.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *NotificationClient) GetX(ctx context.Context, id int) *Notification {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *NotificationClient) Hooks() []Hook {
+	return c.hooks.Notification
+}
+
+// Interceptors returns the client interceptors.
+func (c *NotificationClient) Interceptors() []Interceptor {
+	return c.inters.Notification
+}
+
+func (c *NotificationClient) mutate(ctx context.Context, m *NotificationMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&NotificationCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&NotificationUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&NotificationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&NotificationDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Notification mutation op: %q", m.Op())
 	}
 }
 
@@ -6121,20 +6578,21 @@ type (
 	hooks struct {
 		AdminUser, BlogPost, BlogPostTranslation, Category, CategoryTranslation,
 		Collection, CollectionTranslation, Currency, Customer, CustomerAddress,
-		CustomerGroup, FormDefinition, FormDefinitionTranslation, Inquiry, Locale,
-		Media, MediaTranslation, Menu, MenuItem, MenuItemTranslation, Page,
-		PageTranslation, Permission, Product, ProductMedia, ProductOption,
-		ProductOptionValue, ProductTranslation, Region, Role, Store, Tag,
-		TagTranslation, TaxRate, Variant, VariantOptionValue, VariantPrice []ent.Hook
+		CustomerGroup, EmailTemplate, EmailTemplateTranslation, FormDefinition,
+		FormDefinitionTranslation, Inquiry, Locale, Media, MediaTranslation, Menu,
+		MenuItem, MenuItemTranslation, Notification, Page, PageTranslation, Permission,
+		Product, ProductMedia, ProductOption, ProductOptionValue, ProductTranslation,
+		Region, Role, Store, Tag, TagTranslation, TaxRate, Variant, VariantOptionValue,
+		VariantPrice []ent.Hook
 	}
 	inters struct {
 		AdminUser, BlogPost, BlogPostTranslation, Category, CategoryTranslation,
 		Collection, CollectionTranslation, Currency, Customer, CustomerAddress,
-		CustomerGroup, FormDefinition, FormDefinitionTranslation, Inquiry, Locale,
-		Media, MediaTranslation, Menu, MenuItem, MenuItemTranslation, Page,
-		PageTranslation, Permission, Product, ProductMedia, ProductOption,
-		ProductOptionValue, ProductTranslation, Region, Role, Store, Tag,
-		TagTranslation, TaxRate, Variant, VariantOptionValue,
+		CustomerGroup, EmailTemplate, EmailTemplateTranslation, FormDefinition,
+		FormDefinitionTranslation, Inquiry, Locale, Media, MediaTranslation, Menu,
+		MenuItem, MenuItemTranslation, Notification, Page, PageTranslation, Permission,
+		Product, ProductMedia, ProductOption, ProductOptionValue, ProductTranslation,
+		Region, Role, Store, Tag, TagTranslation, TaxRate, Variant, VariantOptionValue,
 		VariantPrice []ent.Interceptor
 	}
 )

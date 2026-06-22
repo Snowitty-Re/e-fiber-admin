@@ -369,6 +369,61 @@ var (
 			},
 		},
 	}
+	// EmailTemplatesColumns holds the columns for the "email_templates" table.
+	EmailTemplatesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "updated_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "tenant_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "code", Type: field.TypeString, Unique: true},
+		{Name: "variables", Type: field.TypeJSON, Nullable: true},
+	}
+	// EmailTemplatesTable holds the schema information for the "email_templates" table.
+	EmailTemplatesTable = &schema.Table{
+		Name:       "email_templates",
+		Columns:    EmailTemplatesColumns,
+		PrimaryKey: []*schema.Column{EmailTemplatesColumns[0]},
+	}
+	// EmailTemplateTranslationsColumns holds the columns for the "email_template_translations" table.
+	EmailTemplateTranslationsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "updated_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "tenant_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "locale", Type: field.TypeString, Size: 8},
+		{Name: "subject", Type: field.TypeString},
+		{Name: "body_html", Type: field.TypeString, Size: 2147483647},
+		{Name: "email_template_id", Type: field.TypeInt},
+	}
+	// EmailTemplateTranslationsTable holds the schema information for the "email_template_translations" table.
+	EmailTemplateTranslationsTable = &schema.Table{
+		Name:       "email_template_translations",
+		Columns:    EmailTemplateTranslationsColumns,
+		PrimaryKey: []*schema.Column{EmailTemplateTranslationsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "email_template_translations_email_templates_translations",
+				Columns:    []*schema.Column{EmailTemplateTranslationsColumns[11]},
+				RefColumns: []*schema.Column{EmailTemplatesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "emailtemplatetranslation_email_template_id_locale",
+				Unique:  true,
+				Columns: []*schema.Column{EmailTemplateTranslationsColumns[11], EmailTemplateTranslationsColumns[8]},
+			},
+		},
+	}
 	// FormDefinitionsColumns holds the columns for the "form_definitions" table.
 	FormDefinitionsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -680,6 +735,42 @@ var (
 				Name:    "menuitemtranslation_menu_item_id_locale",
 				Unique:  true,
 				Columns: []*schema.Column{MenuItemTranslationsColumns[10], MenuItemTranslationsColumns[8]},
+			},
+		},
+	}
+	// NotificationsColumns holds the columns for the "notifications" table.
+	NotificationsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "updated_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "tenant_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "channel", Type: field.TypeEnum, Enums: []string{"email", "webhook", "inapp"}, Default: "email"},
+		{Name: "recipient", Type: field.TypeString},
+		{Name: "template_code", Type: field.TypeString, Default: ""},
+		{Name: "payload", Type: field.TypeJSON, Nullable: true},
+		{Name: "status", Type: field.TypeEnum, Enums: []string{"pending", "sent", "failed"}, Default: "pending"},
+		{Name: "attempts", Type: field.TypeInt, Default: 0},
+		{Name: "sent_at", Type: field.TypeTime, Nullable: true},
+	}
+	// NotificationsTable holds the schema information for the "notifications" table.
+	NotificationsTable = &schema.Table{
+		Name:       "notifications",
+		Columns:    NotificationsColumns,
+		PrimaryKey: []*schema.Column{NotificationsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "notification_status",
+				Unique:  false,
+				Columns: []*schema.Column{NotificationsColumns[12]},
+			},
+			{
+				Name:    "notification_template_code",
+				Unique:  false,
+				Columns: []*schema.Column{NotificationsColumns[10]},
 			},
 		},
 	}
@@ -1334,6 +1425,8 @@ var (
 		CustomersTable,
 		CustomerAddressesTable,
 		CustomerGroupsTable,
+		EmailTemplatesTable,
+		EmailTemplateTranslationsTable,
 		FormDefinitionsTable,
 		FormDefinitionTranslationsTable,
 		InquiriesTable,
@@ -1343,6 +1436,7 @@ var (
 		MenusTable,
 		MenuItemsTable,
 		MenuItemTranslationsTable,
+		NotificationsTable,
 		PagesTable,
 		PageTranslationsTable,
 		PermissionsTable,
@@ -1371,6 +1465,7 @@ func init() {
 	CollectionTranslationsTable.ForeignKeys[0].RefTable = CollectionsTable
 	CustomerAddressesTable.ForeignKeys[0].RefTable = CustomersTable
 	CustomerGroupsTable.ForeignKeys[0].RefTable = CustomersTable
+	EmailTemplateTranslationsTable.ForeignKeys[0].RefTable = EmailTemplatesTable
 	FormDefinitionTranslationsTable.ForeignKeys[0].RefTable = FormDefinitionsTable
 	InquiriesTable.ForeignKeys[0].RefTable = FormDefinitionsTable
 	MediaTranslationsTable.ForeignKeys[0].RefTable = MediaTable

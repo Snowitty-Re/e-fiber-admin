@@ -16,6 +16,8 @@ import (
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/customer"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/customeraddress"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/customergroup"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/emailtemplate"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/emailtemplatetranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/formdefinition"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/formdefinitiontranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/inquiry"
@@ -25,6 +27,7 @@ import (
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/menu"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/menuitem"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/menuitemtranslation"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/notification"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/page"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/pagetranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/permission"
@@ -430,6 +433,56 @@ func init() {
 	customergroupDescName := customergroupFields[1].Descriptor()
 	// customergroup.NameValidator is a validator for the "name" field. It is called by the builders before save.
 	customergroup.NameValidator = customergroupDescName.Validators[0].(func(string) error)
+	emailtemplateMixin := schema.EmailTemplate{}.Mixin()
+	emailtemplateMixinFields0 := emailtemplateMixin[0].Fields()
+	_ = emailtemplateMixinFields0
+	emailtemplateFields := schema.EmailTemplate{}.Fields()
+	_ = emailtemplateFields
+	// emailtemplateDescVersion is the schema descriptor for version field.
+	emailtemplateDescVersion := emailtemplateMixinFields0[3].Descriptor()
+	// emailtemplate.DefaultVersion holds the default value on creation for the version field.
+	emailtemplate.DefaultVersion = emailtemplateDescVersion.Default.(int)
+	// emailtemplateDescCreatedAt is the schema descriptor for created_at field.
+	emailtemplateDescCreatedAt := emailtemplateMixinFields0[4].Descriptor()
+	// emailtemplate.DefaultCreatedAt holds the default value on creation for the created_at field.
+	emailtemplate.DefaultCreatedAt = emailtemplateDescCreatedAt.Default.(func() time.Time)
+	// emailtemplateDescUpdatedAt is the schema descriptor for updated_at field.
+	emailtemplateDescUpdatedAt := emailtemplateMixinFields0[5].Descriptor()
+	// emailtemplate.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	emailtemplate.DefaultUpdatedAt = emailtemplateDescUpdatedAt.Default.(func() time.Time)
+	// emailtemplate.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	emailtemplate.UpdateDefaultUpdatedAt = emailtemplateDescUpdatedAt.UpdateDefault.(func() time.Time)
+	emailtemplatetranslationMixin := schema.EmailTemplateTranslation{}.Mixin()
+	emailtemplatetranslationMixinFields0 := emailtemplatetranslationMixin[0].Fields()
+	_ = emailtemplatetranslationMixinFields0
+	emailtemplatetranslationFields := schema.EmailTemplateTranslation{}.Fields()
+	_ = emailtemplatetranslationFields
+	// emailtemplatetranslationDescVersion is the schema descriptor for version field.
+	emailtemplatetranslationDescVersion := emailtemplatetranslationMixinFields0[3].Descriptor()
+	// emailtemplatetranslation.DefaultVersion holds the default value on creation for the version field.
+	emailtemplatetranslation.DefaultVersion = emailtemplatetranslationDescVersion.Default.(int)
+	// emailtemplatetranslationDescCreatedAt is the schema descriptor for created_at field.
+	emailtemplatetranslationDescCreatedAt := emailtemplatetranslationMixinFields0[4].Descriptor()
+	// emailtemplatetranslation.DefaultCreatedAt holds the default value on creation for the created_at field.
+	emailtemplatetranslation.DefaultCreatedAt = emailtemplatetranslationDescCreatedAt.Default.(func() time.Time)
+	// emailtemplatetranslationDescUpdatedAt is the schema descriptor for updated_at field.
+	emailtemplatetranslationDescUpdatedAt := emailtemplatetranslationMixinFields0[5].Descriptor()
+	// emailtemplatetranslation.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	emailtemplatetranslation.DefaultUpdatedAt = emailtemplatetranslationDescUpdatedAt.Default.(func() time.Time)
+	// emailtemplatetranslation.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	emailtemplatetranslation.UpdateDefaultUpdatedAt = emailtemplatetranslationDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// emailtemplatetranslationDescLocale is the schema descriptor for locale field.
+	emailtemplatetranslationDescLocale := emailtemplatetranslationFields[1].Descriptor()
+	// emailtemplatetranslation.LocaleValidator is a validator for the "locale" field. It is called by the builders before save.
+	emailtemplatetranslation.LocaleValidator = emailtemplatetranslationDescLocale.Validators[0].(func(string) error)
+	// emailtemplatetranslationDescSubject is the schema descriptor for subject field.
+	emailtemplatetranslationDescSubject := emailtemplatetranslationFields[2].Descriptor()
+	// emailtemplatetranslation.SubjectValidator is a validator for the "subject" field. It is called by the builders before save.
+	emailtemplatetranslation.SubjectValidator = emailtemplatetranslationDescSubject.Validators[0].(func(string) error)
+	// emailtemplatetranslationDescBodyHTML is the schema descriptor for body_html field.
+	emailtemplatetranslationDescBodyHTML := emailtemplatetranslationFields[3].Descriptor()
+	// emailtemplatetranslation.BodyHTMLValidator is a validator for the "body_html" field. It is called by the builders before save.
+	emailtemplatetranslation.BodyHTMLValidator = emailtemplatetranslationDescBodyHTML.Validators[0].(func(string) error)
 	formdefinitionMixin := schema.FormDefinition{}.Mixin()
 	formdefinitionMixinFields0 := formdefinitionMixin[0].Fields()
 	_ = formdefinitionMixinFields0
@@ -681,6 +734,37 @@ func init() {
 	menuitemtranslationDescTitle := menuitemtranslationFields[2].Descriptor()
 	// menuitemtranslation.TitleValidator is a validator for the "title" field. It is called by the builders before save.
 	menuitemtranslation.TitleValidator = menuitemtranslationDescTitle.Validators[0].(func(string) error)
+	notificationMixin := schema.Notification{}.Mixin()
+	notificationMixinFields0 := notificationMixin[0].Fields()
+	_ = notificationMixinFields0
+	notificationFields := schema.Notification{}.Fields()
+	_ = notificationFields
+	// notificationDescVersion is the schema descriptor for version field.
+	notificationDescVersion := notificationMixinFields0[3].Descriptor()
+	// notification.DefaultVersion holds the default value on creation for the version field.
+	notification.DefaultVersion = notificationDescVersion.Default.(int)
+	// notificationDescCreatedAt is the schema descriptor for created_at field.
+	notificationDescCreatedAt := notificationMixinFields0[4].Descriptor()
+	// notification.DefaultCreatedAt holds the default value on creation for the created_at field.
+	notification.DefaultCreatedAt = notificationDescCreatedAt.Default.(func() time.Time)
+	// notificationDescUpdatedAt is the schema descriptor for updated_at field.
+	notificationDescUpdatedAt := notificationMixinFields0[5].Descriptor()
+	// notification.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	notification.DefaultUpdatedAt = notificationDescUpdatedAt.Default.(func() time.Time)
+	// notification.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	notification.UpdateDefaultUpdatedAt = notificationDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// notificationDescRecipient is the schema descriptor for recipient field.
+	notificationDescRecipient := notificationFields[1].Descriptor()
+	// notification.RecipientValidator is a validator for the "recipient" field. It is called by the builders before save.
+	notification.RecipientValidator = notificationDescRecipient.Validators[0].(func(string) error)
+	// notificationDescTemplateCode is the schema descriptor for template_code field.
+	notificationDescTemplateCode := notificationFields[2].Descriptor()
+	// notification.DefaultTemplateCode holds the default value on creation for the template_code field.
+	notification.DefaultTemplateCode = notificationDescTemplateCode.Default.(string)
+	// notificationDescAttempts is the schema descriptor for attempts field.
+	notificationDescAttempts := notificationFields[5].Descriptor()
+	// notification.DefaultAttempts holds the default value on creation for the attempts field.
+	notification.DefaultAttempts = notificationDescAttempts.Default.(int)
 	pageMixin := schema.Page{}.Mixin()
 	pageMixinFields0 := pageMixin[0].Fields()
 	_ = pageMixinFields0

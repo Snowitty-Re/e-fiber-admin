@@ -39,6 +39,12 @@ type CustomerAddress func(*sql.Selector)
 // CustomerGroup is the predicate function for customergroup builders.
 type CustomerGroup func(*sql.Selector)
 
+// EmailTemplate is the predicate function for emailtemplate builders.
+type EmailTemplate func(*sql.Selector)
+
+// EmailTemplateTranslation is the predicate function for emailtemplatetranslation builders.
+type EmailTemplateTranslation func(*sql.Selector)
+
 // FormDefinition is the predicate function for formdefinition builders.
 type FormDefinition func(*sql.Selector)
 
@@ -65,6 +71,9 @@ type MenuItem func(*sql.Selector)
 
 // MenuItemTranslation is the predicate function for menuitemtranslation builders.
 type MenuItemTranslation func(*sql.Selector)
+
+// Notification is the predicate function for notification builders.
+type Notification func(*sql.Selector)
 
 // Page is the predicate function for page builders.
 type Page func(*sql.Selector)

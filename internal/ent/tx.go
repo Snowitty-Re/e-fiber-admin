@@ -34,6 +34,10 @@ type Tx struct {
 	CustomerAddress *CustomerAddressClient
 	// CustomerGroup is the client for interacting with the CustomerGroup builders.
 	CustomerGroup *CustomerGroupClient
+	// EmailTemplate is the client for interacting with the EmailTemplate builders.
+	EmailTemplate *EmailTemplateClient
+	// EmailTemplateTranslation is the client for interacting with the EmailTemplateTranslation builders.
+	EmailTemplateTranslation *EmailTemplateTranslationClient
 	// FormDefinition is the client for interacting with the FormDefinition builders.
 	FormDefinition *FormDefinitionClient
 	// FormDefinitionTranslation is the client for interacting with the FormDefinitionTranslation builders.
@@ -52,6 +56,8 @@ type Tx struct {
 	MenuItem *MenuItemClient
 	// MenuItemTranslation is the client for interacting with the MenuItemTranslation builders.
 	MenuItemTranslation *MenuItemTranslationClient
+	// Notification is the client for interacting with the Notification builders.
+	Notification *NotificationClient
 	// Page is the client for interacting with the Page builders.
 	Page *PageClient
 	// PageTranslation is the client for interacting with the PageTranslation builders.
@@ -228,6 +234,8 @@ func (tx *Tx) init() {
 	tx.Customer = NewCustomerClient(tx.config)
 	tx.CustomerAddress = NewCustomerAddressClient(tx.config)
 	tx.CustomerGroup = NewCustomerGroupClient(tx.config)
+	tx.EmailTemplate = NewEmailTemplateClient(tx.config)
+	tx.EmailTemplateTranslation = NewEmailTemplateTranslationClient(tx.config)
 	tx.FormDefinition = NewFormDefinitionClient(tx.config)
 	tx.FormDefinitionTranslation = NewFormDefinitionTranslationClient(tx.config)
 	tx.Inquiry = NewInquiryClient(tx.config)
@@ -237,6 +245,7 @@ func (tx *Tx) init() {
 	tx.Menu = NewMenuClient(tx.config)
 	tx.MenuItem = NewMenuItemClient(tx.config)
 	tx.MenuItemTranslation = NewMenuItemTranslationClient(tx.config)
+	tx.Notification = NewNotificationClient(tx.config)
 	tx.Page = NewPageClient(tx.config)
 	tx.PageTranslation = NewPageTranslationClient(tx.config)
 	tx.Permission = NewPermissionClient(tx.config)

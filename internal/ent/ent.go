@@ -23,6 +23,8 @@ import (
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/customer"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/customeraddress"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/customergroup"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/emailtemplate"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/emailtemplatetranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/formdefinition"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/formdefinitiontranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/inquiry"
@@ -32,6 +34,7 @@ import (
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/menu"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/menuitem"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/menuitemtranslation"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/notification"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/page"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/pagetranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/permission"
@@ -120,6 +123,8 @@ func checkColumn(t, c string) error {
 			customer.Table:                  customer.ValidColumn,
 			customeraddress.Table:           customeraddress.ValidColumn,
 			customergroup.Table:             customergroup.ValidColumn,
+			emailtemplate.Table:             emailtemplate.ValidColumn,
+			emailtemplatetranslation.Table:  emailtemplatetranslation.ValidColumn,
 			formdefinition.Table:            formdefinition.ValidColumn,
 			formdefinitiontranslation.Table: formdefinitiontranslation.ValidColumn,
 			inquiry.Table:                   inquiry.ValidColumn,
@@ -129,6 +134,7 @@ func checkColumn(t, c string) error {
 			menu.Table:                      menu.ValidColumn,
 			menuitem.Table:                  menuitem.ValidColumn,
 			menuitemtranslation.Table:       menuitemtranslation.ValidColumn,
+			notification.Table:              notification.ValidColumn,
 			page.Table:                      page.ValidColumn,
 			pagetranslation.Table:           pagetranslation.ValidColumn,
 			permission.Table:                permission.ValidColumn,
