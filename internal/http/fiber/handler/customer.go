@@ -140,7 +140,7 @@ func (h *CustomerHandler) AdminGet(c fiber.Ctx) error {
 	return c.JSON(fiber.Map{"customer": fiber.Map{
 		"id": cust.ID, "email": cust.Email, "status": string(cust.Status),
 		"first_name": cust.FirstName, "last_name": cust.LastName,
-		"phone": cust.Phone,
+		"phone":            cust.Phone,
 		"default_currency": cust.DefaultCurrency, "default_locale": cust.DefaultLocale,
 	}})
 }

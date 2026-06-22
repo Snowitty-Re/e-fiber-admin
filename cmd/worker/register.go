@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"log/slog"
 
+	"github.com/Snowitty-Re/e-fiber-admin/internal/domain/notification"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/events"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/jobs"
-	"github.com/Snowitty-Re/e-fiber-admin/internal/domain/notification"
 )
 
 type InquiryReceivedPayload struct {

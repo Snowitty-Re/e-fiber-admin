@@ -17,7 +17,7 @@ const (
 	QueueLow      = "low"
 
 	TaskSendEmail     = "notification:send_email"
-	TaskNotifyInquiry  = "notification:notify_inquiry"
+	TaskNotifyInquiry = "notification:notify_inquiry"
 )
 
 type Client struct {
@@ -51,8 +51,8 @@ func (c *Client) Enqueue(ctx context.Context, taskType string, payload []byte, q
 }
 
 type Server struct {
-	asynqServer  *asynq.Server
-	mux          *asynq.ServeMux
+	asynqServer *asynq.Server
+	mux         *asynq.ServeMux
 }
 
 func NewServer(cfg config.AsynqConfig, redisCfg config.RedisConfig) *Server {

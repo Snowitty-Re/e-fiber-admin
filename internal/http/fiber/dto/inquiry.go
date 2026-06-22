@@ -14,20 +14,20 @@ type FormTranslationRequest struct {
 }
 
 type CreateFormRequest struct {
-	Slug         string                  `json:"slug"`
-	Fields       []map[string]any        `json:"fields,omitempty"`
-	NotifyEmails []string               `json:"notify_emails,omitempty"`
-	IsActive     bool                   `json:"is_active"`
+	Slug         string                   `json:"slug"`
+	Fields       []map[string]any         `json:"fields,omitempty"`
+	NotifyEmails []string                 `json:"notify_emails,omitempty"`
+	IsActive     bool                     `json:"is_active"`
 	Translations []FormTranslationRequest `json:"translations"`
 }
 
 type FormResponse struct {
-	ID           int                    `json:"id"`
-	Slug         string                 `json:"slug"`
-	IsActive     bool                   `json:"is_active"`
-	Fields       []map[string]any       `json:"fields,omitempty"`
-	NotifyEmails []string               `json:"notify_emails,omitempty"`
-	Translations []FormTranslationResp  `json:"translations"`
+	ID           int                   `json:"id"`
+	Slug         string                `json:"slug"`
+	IsActive     bool                  `json:"is_active"`
+	Fields       []map[string]any      `json:"fields,omitempty"`
+	NotifyEmails []string              `json:"notify_emails,omitempty"`
+	Translations []FormTranslationResp `json:"translations"`
 }
 
 type FormTranslationResp struct {
@@ -47,16 +47,16 @@ type SubmitInquiryRequest struct {
 }
 
 type InquiryResponse struct {
-	ID        int            `json:"id"`
-	FormID    int            `json:"form_id"`
-	Email     string         `json:"email"`
-	Phone     string         `json:"phone,omitempty"`
-	Name      string         `json:"name,omitempty"`
-	Company   string         `json:"company,omitempty"`
-	Payload   map[string]any `json:"payload,omitempty"`
-	Status    string         `json:"status"`
-	ProductID int            `json:"product_id,omitempty"`
-	AssignedAdminID int      `json:"assigned_admin_id,omitempty"`
+	ID              int            `json:"id"`
+	FormID          int            `json:"form_id"`
+	Email           string         `json:"email"`
+	Phone           string         `json:"phone,omitempty"`
+	Name            string         `json:"name,omitempty"`
+	Company         string         `json:"company,omitempty"`
+	Payload         map[string]any `json:"payload,omitempty"`
+	Status          string         `json:"status"`
+	ProductID       int            `json:"product_id,omitempty"`
+	AssignedAdminID int            `json:"assigned_admin_id,omitempty"`
 }
 
 type AssignInquiryRequest struct {

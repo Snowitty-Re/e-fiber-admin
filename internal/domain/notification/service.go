@@ -19,9 +19,9 @@ func NewService(entClient *ent.Client) *Service {
 }
 
 type RenderedEmail struct {
-	Subject string
+	Subject  string
 	BodyHTML string
-	Locale  string
+	Locale   string
 }
 
 func (s *Service) Render(ctx context.Context, code, locale, recipient string, payload map[string]any) (*RenderedEmail, error) {

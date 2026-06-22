@@ -13,8 +13,8 @@ func SeedNotifications(ctx context.Context, entClient *ent.Client) error {
 	templates := []struct {
 		Code      string
 		Variables []string
-		En       notification.TemplateTranslationInput
-		Zh       notification.TemplateTranslationInput
+		En        notification.TemplateTranslationInput
+		Zh        notification.TemplateTranslationInput
 	}{
 		{
 			Code:      "inquiry_received",

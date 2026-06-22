@@ -28,15 +28,15 @@ type CustomerProfile struct {
 }
 
 type CustomerTokenResponse struct {
-	AccessToken  string `json:"access_token"`
-	RefreshToken string `json:"refresh_token"`
-	ExpiresIn    int64  `json:"expires_in"`
+	AccessToken  string          `json:"access_token"`
+	RefreshToken string          `json:"refresh_token"`
+	ExpiresIn    int64           `json:"expires_in"`
 	Customer     CustomerProfile `json:"customer"`
 }
 
 type CustomerListResponse struct {
 	Data       []CustomerAdminResponse `json:"data"`
-	Pagination Pagination             `json:"pagination"`
+	Pagination Pagination              `json:"pagination"`
 }
 
 type CustomerAdminResponse struct {

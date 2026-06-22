@@ -12,15 +12,15 @@ import (
 )
 
 type Event struct {
-	ID         string    `json:"id"`
-	Name       string    `json:"name"`
-	OccurredAt time.Time `json:"occurred_at"`
-	Aggregate  string    `json:"aggregate"`
-	AggregateID string   `json:"aggregate_id"`
-	ActorType  string    `json:"actor_type,omitempty"`
-	ActorID    string    `json:"actor_id,omitempty"`
-	Data       any       `json:"data,omitempty"`
-	Version    int       `json:"version"`
+	ID          string    `json:"id"`
+	Name        string    `json:"name"`
+	OccurredAt  time.Time `json:"occurred_at"`
+	Aggregate   string    `json:"aggregate"`
+	AggregateID string    `json:"aggregate_id"`
+	ActorType   string    `json:"actor_type,omitempty"`
+	ActorID     string    `json:"actor_id,omitempty"`
+	Data        any       `json:"data,omitempty"`
+	Version     int       `json:"version"`
 }
 
 type Handler func(ctx context.Context, event *Event) error
