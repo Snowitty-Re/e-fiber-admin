@@ -110,6 +110,86 @@ var (
 			},
 		},
 	}
+	// CartsColumns holds the columns for the "carts" table.
+	CartsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "updated_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "tenant_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "customer_id", Type: field.TypeInt, Nullable: true},
+		{Name: "email", Type: field.TypeString, Nullable: true, Default: ""},
+		{Name: "currency_code", Type: field.TypeString, Size: 3, Default: "USD"},
+		{Name: "locale", Type: field.TypeString, Size: 8, Default: "en"},
+		{Name: "status", Type: field.TypeEnum, Enums: []string{"active", "converted", "abandoned"}, Default: "active"},
+		{Name: "expires_at", Type: field.TypeTime, Nullable: true},
+	}
+	// CartsTable holds the schema information for the "carts" table.
+	CartsTable = &schema.Table{
+		Name:       "carts",
+		Columns:    CartsColumns,
+		PrimaryKey: []*schema.Column{CartsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "cart_customer_id",
+				Unique:  false,
+				Columns: []*schema.Column{CartsColumns[8]},
+			},
+			{
+				Name:    "cart_status",
+				Unique:  false,
+				Columns: []*schema.Column{CartsColumns[12]},
+			},
+		},
+	}
+	// CartItemsColumns holds the columns for the "cart_items" table.
+	CartItemsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "updated_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "tenant_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "variant_id", Type: field.TypeInt},
+		{Name: "product_id", Type: field.TypeInt},
+		{Name: "quantity", Type: field.TypeInt, Default: 1},
+		{Name: "unit_amount", Type: field.TypeInt64, Default: 0},
+		{Name: "currency_code", Type: field.TypeString, Size: 3, Default: "USD"},
+		{Name: "sku", Type: field.TypeString, Default: ""},
+		{Name: "metadata", Type: field.TypeJSON, Nullable: true},
+		{Name: "cart_id", Type: field.TypeInt},
+	}
+	// CartItemsTable holds the schema information for the "cart_items" table.
+	CartItemsTable = &schema.Table{
+		Name:       "cart_items",
+		Columns:    CartItemsColumns,
+		PrimaryKey: []*schema.Column{CartItemsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "cart_items_carts_items",
+				Columns:    []*schema.Column{CartItemsColumns[15]},
+				RefColumns: []*schema.Column{CartsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "cartitem_cart_id",
+				Unique:  false,
+				Columns: []*schema.Column{CartItemsColumns[15]},
+			},
+			{
+				Name:    "cartitem_variant_id",
+				Unique:  false,
+				Columns: []*schema.Column{CartItemsColumns[8]},
+			},
+		},
+	}
 	// CategoriesColumns holds the columns for the "categories" table.
 	CategoriesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -488,6 +568,83 @@ var (
 			},
 		},
 	}
+	// FulfillmentsColumns holds the columns for the "fulfillments" table.
+	FulfillmentsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "updated_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "tenant_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "shipping_option_id", Type: field.TypeInt, Nullable: true},
+		{Name: "tracking_number", Type: field.TypeString, Nullable: true, Default: ""},
+		{Name: "status", Type: field.TypeEnum, Enums: []string{"pending", "fulfilled", "canceled"}, Default: "pending"},
+		{Name: "metadata", Type: field.TypeJSON, Nullable: true},
+		{Name: "order_id", Type: field.TypeInt},
+	}
+	// FulfillmentsTable holds the schema information for the "fulfillments" table.
+	FulfillmentsTable = &schema.Table{
+		Name:       "fulfillments",
+		Columns:    FulfillmentsColumns,
+		PrimaryKey: []*schema.Column{FulfillmentsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "fulfillments_orders_fulfillments",
+				Columns:    []*schema.Column{FulfillmentsColumns[12]},
+				RefColumns: []*schema.Column{OrdersColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "fulfillment_order_id",
+				Unique:  false,
+				Columns: []*schema.Column{FulfillmentsColumns[12]},
+			},
+		},
+	}
+	// FulfillmentItemsColumns holds the columns for the "fulfillment_items" table.
+	FulfillmentItemsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "updated_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "tenant_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "order_item_id", Type: field.TypeInt},
+		{Name: "quantity", Type: field.TypeInt, Default: 1},
+		{Name: "fulfillment_id", Type: field.TypeInt},
+	}
+	// FulfillmentItemsTable holds the schema information for the "fulfillment_items" table.
+	FulfillmentItemsTable = &schema.Table{
+		Name:       "fulfillment_items",
+		Columns:    FulfillmentItemsColumns,
+		PrimaryKey: []*schema.Column{FulfillmentItemsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "fulfillment_items_fulfillments_items",
+				Columns:    []*schema.Column{FulfillmentItemsColumns[10]},
+				RefColumns: []*schema.Column{FulfillmentsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "fulfillmentitem_fulfillment_id",
+				Unique:  false,
+				Columns: []*schema.Column{FulfillmentItemsColumns[10]},
+			},
+			{
+				Name:    "fulfillmentitem_order_item_id",
+				Unique:  false,
+				Columns: []*schema.Column{FulfillmentItemsColumns[8]},
+			},
+		},
+	}
 	// InquiriesColumns holds the columns for the "inquiries" table.
 	InquiriesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -771,6 +928,137 @@ var (
 				Name:    "notification_template_code",
 				Unique:  false,
 				Columns: []*schema.Column{NotificationsColumns[10]},
+			},
+		},
+	}
+	// OrdersColumns holds the columns for the "orders" table.
+	OrdersColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "updated_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "tenant_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "number", Type: field.TypeString, Unique: true},
+		{Name: "customer_id", Type: field.TypeInt, Nullable: true},
+		{Name: "email", Type: field.TypeString},
+		{Name: "currency_code", Type: field.TypeString, Size: 3, Default: "USD"},
+		{Name: "locale", Type: field.TypeString, Size: 8, Default: "en"},
+		{Name: "status", Type: field.TypeEnum, Enums: []string{"pending", "paid", "fulfilled", "cancelled", "refunded"}, Default: "pending"},
+		{Name: "fulfillment_status", Type: field.TypeEnum, Enums: []string{"not_fulfilled", "partial", "fulfilled"}, Default: "not_fulfilled"},
+		{Name: "payment_status", Type: field.TypeEnum, Enums: []string{"awaiting", "paid", "partial", "refunded"}, Default: "awaiting"},
+		{Name: "shipping_address", Type: field.TypeJSON, Nullable: true},
+		{Name: "billing_address", Type: field.TypeJSON, Nullable: true},
+		{Name: "totals", Type: field.TypeJSON, Nullable: true},
+		{Name: "shipping_option_id", Type: field.TypeInt, Nullable: true},
+		{Name: "placed_at", Type: field.TypeTime, Nullable: true},
+		{Name: "cancelled_at", Type: field.TypeTime, Nullable: true},
+	}
+	// OrdersTable holds the schema information for the "orders" table.
+	OrdersTable = &schema.Table{
+		Name:       "orders",
+		Columns:    OrdersColumns,
+		PrimaryKey: []*schema.Column{OrdersColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "order_customer_id",
+				Unique:  false,
+				Columns: []*schema.Column{OrdersColumns[9]},
+			},
+			{
+				Name:    "order_status",
+				Unique:  false,
+				Columns: []*schema.Column{OrdersColumns[13]},
+			},
+			{
+				Name:    "order_email",
+				Unique:  false,
+				Columns: []*schema.Column{OrdersColumns[10]},
+			},
+		},
+	}
+	// OrderItemsColumns holds the columns for the "order_items" table.
+	OrderItemsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "updated_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "tenant_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "variant_id", Type: field.TypeInt, Nullable: true},
+		{Name: "sku", Type: field.TypeString, Default: ""},
+		{Name: "title", Type: field.TypeString},
+		{Name: "quantity", Type: field.TypeInt, Default: 1},
+		{Name: "unit_amount", Type: field.TypeInt64, Default: 0},
+		{Name: "total_amount", Type: field.TypeInt64, Default: 0},
+		{Name: "metadata", Type: field.TypeJSON, Nullable: true},
+		{Name: "order_id", Type: field.TypeInt},
+	}
+	// OrderItemsTable holds the schema information for the "order_items" table.
+	OrderItemsTable = &schema.Table{
+		Name:       "order_items",
+		Columns:    OrderItemsColumns,
+		PrimaryKey: []*schema.Column{OrderItemsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "order_items_orders_items",
+				Columns:    []*schema.Column{OrderItemsColumns[15]},
+				RefColumns: []*schema.Column{OrdersColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "orderitem_order_id",
+				Unique:  false,
+				Columns: []*schema.Column{OrderItemsColumns[15]},
+			},
+		},
+	}
+	// OrderReturnsColumns holds the columns for the "order_returns" table.
+	OrderReturnsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "updated_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "tenant_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "status", Type: field.TypeEnum, Enums: []string{"pending", "approved", "rejected", "completed"}, Default: "pending"},
+		{Name: "reason", Type: field.TypeString, Nullable: true, Default: ""},
+		{Name: "refund_amount", Type: field.TypeInt64, Default: 0},
+		{Name: "currency_code", Type: field.TypeString, Size: 3, Default: "USD"},
+		{Name: "totals", Type: field.TypeJSON, Nullable: true},
+		{Name: "order_id", Type: field.TypeInt},
+	}
+	// OrderReturnsTable holds the schema information for the "order_returns" table.
+	OrderReturnsTable = &schema.Table{
+		Name:       "order_returns",
+		Columns:    OrderReturnsColumns,
+		PrimaryKey: []*schema.Column{OrderReturnsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "order_returns_orders_returns",
+				Columns:    []*schema.Column{OrderReturnsColumns[13]},
+				RefColumns: []*schema.Column{OrdersColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "orderreturn_order_id",
+				Unique:  false,
+				Columns: []*schema.Column{OrderReturnsColumns[13]},
+			},
+			{
+				Name:    "orderreturn_status",
+				Unique:  false,
+				Columns: []*schema.Column{OrderReturnsColumns[8]},
 			},
 		},
 	}
@@ -1100,6 +1388,42 @@ var (
 			},
 		},
 	}
+	// ReturnItemsColumns holds the columns for the "return_items" table.
+	ReturnItemsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "updated_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "tenant_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "order_item_id", Type: field.TypeInt},
+		{Name: "quantity", Type: field.TypeInt, Default: 1},
+		{Name: "reason", Type: field.TypeString, Nullable: true, Default: ""},
+		{Name: "return_id", Type: field.TypeInt},
+	}
+	// ReturnItemsTable holds the schema information for the "return_items" table.
+	ReturnItemsTable = &schema.Table{
+		Name:       "return_items",
+		Columns:    ReturnItemsColumns,
+		PrimaryKey: []*schema.Column{ReturnItemsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "return_items_order_returns_items",
+				Columns:    []*schema.Column{ReturnItemsColumns[11]},
+				RefColumns: []*schema.Column{OrderReturnsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "returnitem_return_id",
+				Unique:  false,
+				Columns: []*schema.Column{ReturnItemsColumns[11]},
+			},
+		},
+	}
 	// RolesColumns holds the columns for the "roles" table.
 	RolesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -1417,6 +1741,8 @@ var (
 		AdminUsersTable,
 		BlogPostsTable,
 		BlogPostTranslationsTable,
+		CartsTable,
+		CartItemsTable,
 		CategoriesTable,
 		CategoryTranslationsTable,
 		CollectionsTable,
@@ -1429,6 +1755,8 @@ var (
 		EmailTemplateTranslationsTable,
 		FormDefinitionsTable,
 		FormDefinitionTranslationsTable,
+		FulfillmentsTable,
+		FulfillmentItemsTable,
 		InquiriesTable,
 		LocalesTable,
 		MediaTable,
@@ -1437,6 +1765,9 @@ var (
 		MenuItemsTable,
 		MenuItemTranslationsTable,
 		NotificationsTable,
+		OrdersTable,
+		OrderItemsTable,
+		OrderReturnsTable,
 		PagesTable,
 		PageTranslationsTable,
 		PermissionsTable,
@@ -1446,6 +1777,7 @@ var (
 		ProductOptionValuesTable,
 		ProductTranslationsTable,
 		RegionsTable,
+		ReturnItemsTable,
 		RolesTable,
 		StoresTable,
 		TagsTable,
@@ -1461,22 +1793,28 @@ var (
 
 func init() {
 	BlogPostTranslationsTable.ForeignKeys[0].RefTable = BlogPostsTable
+	CartItemsTable.ForeignKeys[0].RefTable = CartsTable
 	CategoryTranslationsTable.ForeignKeys[0].RefTable = CategoriesTable
 	CollectionTranslationsTable.ForeignKeys[0].RefTable = CollectionsTable
 	CustomerAddressesTable.ForeignKeys[0].RefTable = CustomersTable
 	CustomerGroupsTable.ForeignKeys[0].RefTable = CustomersTable
 	EmailTemplateTranslationsTable.ForeignKeys[0].RefTable = EmailTemplatesTable
 	FormDefinitionTranslationsTable.ForeignKeys[0].RefTable = FormDefinitionsTable
+	FulfillmentsTable.ForeignKeys[0].RefTable = OrdersTable
+	FulfillmentItemsTable.ForeignKeys[0].RefTable = FulfillmentsTable
 	InquiriesTable.ForeignKeys[0].RefTable = FormDefinitionsTable
 	MediaTranslationsTable.ForeignKeys[0].RefTable = MediaTable
 	MenuItemsTable.ForeignKeys[0].RefTable = MenusTable
 	MenuItemTranslationsTable.ForeignKeys[0].RefTable = MenuItemsTable
+	OrderItemsTable.ForeignKeys[0].RefTable = OrdersTable
+	OrderReturnsTable.ForeignKeys[0].RefTable = OrdersTable
 	PageTranslationsTable.ForeignKeys[0].RefTable = PagesTable
 	ProductsTable.ForeignKeys[0].RefTable = CollectionsTable
 	ProductsTable.ForeignKeys[1].RefTable = TagsTable
 	ProductOptionsTable.ForeignKeys[0].RefTable = ProductsTable
 	ProductOptionValuesTable.ForeignKeys[0].RefTable = ProductOptionsTable
 	ProductTranslationsTable.ForeignKeys[0].RefTable = ProductsTable
+	ReturnItemsTable.ForeignKeys[0].RefTable = OrderReturnsTable
 	TagTranslationsTable.ForeignKeys[0].RefTable = TagsTable
 	TaxRatesTable.ForeignKeys[0].RefTable = RegionsTable
 	VariantsTable.ForeignKeys[0].RefTable = ProductsTable

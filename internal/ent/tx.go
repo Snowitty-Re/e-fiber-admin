@@ -18,6 +18,10 @@ type Tx struct {
 	BlogPost *BlogPostClient
 	// BlogPostTranslation is the client for interacting with the BlogPostTranslation builders.
 	BlogPostTranslation *BlogPostTranslationClient
+	// Cart is the client for interacting with the Cart builders.
+	Cart *CartClient
+	// CartItem is the client for interacting with the CartItem builders.
+	CartItem *CartItemClient
 	// Category is the client for interacting with the Category builders.
 	Category *CategoryClient
 	// CategoryTranslation is the client for interacting with the CategoryTranslation builders.
@@ -42,6 +46,10 @@ type Tx struct {
 	FormDefinition *FormDefinitionClient
 	// FormDefinitionTranslation is the client for interacting with the FormDefinitionTranslation builders.
 	FormDefinitionTranslation *FormDefinitionTranslationClient
+	// Fulfillment is the client for interacting with the Fulfillment builders.
+	Fulfillment *FulfillmentClient
+	// FulfillmentItem is the client for interacting with the FulfillmentItem builders.
+	FulfillmentItem *FulfillmentItemClient
 	// Inquiry is the client for interacting with the Inquiry builders.
 	Inquiry *InquiryClient
 	// Locale is the client for interacting with the Locale builders.
@@ -58,6 +66,12 @@ type Tx struct {
 	MenuItemTranslation *MenuItemTranslationClient
 	// Notification is the client for interacting with the Notification builders.
 	Notification *NotificationClient
+	// Order is the client for interacting with the Order builders.
+	Order *OrderClient
+	// OrderItem is the client for interacting with the OrderItem builders.
+	OrderItem *OrderItemClient
+	// OrderReturn is the client for interacting with the OrderReturn builders.
+	OrderReturn *OrderReturnClient
 	// Page is the client for interacting with the Page builders.
 	Page *PageClient
 	// PageTranslation is the client for interacting with the PageTranslation builders.
@@ -76,6 +90,8 @@ type Tx struct {
 	ProductTranslation *ProductTranslationClient
 	// Region is the client for interacting with the Region builders.
 	Region *RegionClient
+	// ReturnItem is the client for interacting with the ReturnItem builders.
+	ReturnItem *ReturnItemClient
 	// Role is the client for interacting with the Role builders.
 	Role *RoleClient
 	// Store is the client for interacting with the Store builders.
@@ -226,6 +242,8 @@ func (tx *Tx) init() {
 	tx.AdminUser = NewAdminUserClient(tx.config)
 	tx.BlogPost = NewBlogPostClient(tx.config)
 	tx.BlogPostTranslation = NewBlogPostTranslationClient(tx.config)
+	tx.Cart = NewCartClient(tx.config)
+	tx.CartItem = NewCartItemClient(tx.config)
 	tx.Category = NewCategoryClient(tx.config)
 	tx.CategoryTranslation = NewCategoryTranslationClient(tx.config)
 	tx.Collection = NewCollectionClient(tx.config)
@@ -238,6 +256,8 @@ func (tx *Tx) init() {
 	tx.EmailTemplateTranslation = NewEmailTemplateTranslationClient(tx.config)
 	tx.FormDefinition = NewFormDefinitionClient(tx.config)
 	tx.FormDefinitionTranslation = NewFormDefinitionTranslationClient(tx.config)
+	tx.Fulfillment = NewFulfillmentClient(tx.config)
+	tx.FulfillmentItem = NewFulfillmentItemClient(tx.config)
 	tx.Inquiry = NewInquiryClient(tx.config)
 	tx.Locale = NewLocaleClient(tx.config)
 	tx.Media = NewMediaClient(tx.config)
@@ -246,6 +266,9 @@ func (tx *Tx) init() {
 	tx.MenuItem = NewMenuItemClient(tx.config)
 	tx.MenuItemTranslation = NewMenuItemTranslationClient(tx.config)
 	tx.Notification = NewNotificationClient(tx.config)
+	tx.Order = NewOrderClient(tx.config)
+	tx.OrderItem = NewOrderItemClient(tx.config)
+	tx.OrderReturn = NewOrderReturnClient(tx.config)
 	tx.Page = NewPageClient(tx.config)
 	tx.PageTranslation = NewPageTranslationClient(tx.config)
 	tx.Permission = NewPermissionClient(tx.config)
@@ -255,6 +278,7 @@ func (tx *Tx) init() {
 	tx.ProductOptionValue = NewProductOptionValueClient(tx.config)
 	tx.ProductTranslation = NewProductTranslationClient(tx.config)
 	tx.Region = NewRegionClient(tx.config)
+	tx.ReturnItem = NewReturnItemClient(tx.config)
 	tx.Role = NewRoleClient(tx.config)
 	tx.Store = NewStoreClient(tx.config)
 	tx.Tag = NewTagClient(tx.config)

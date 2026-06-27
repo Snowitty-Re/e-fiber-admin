@@ -15,6 +15,12 @@ type BlogPost func(*sql.Selector)
 // BlogPostTranslation is the predicate function for blogposttranslation builders.
 type BlogPostTranslation func(*sql.Selector)
 
+// Cart is the predicate function for cart builders.
+type Cart func(*sql.Selector)
+
+// CartItem is the predicate function for cartitem builders.
+type CartItem func(*sql.Selector)
+
 // Category is the predicate function for category builders.
 type Category func(*sql.Selector)
 
@@ -51,6 +57,12 @@ type FormDefinition func(*sql.Selector)
 // FormDefinitionTranslation is the predicate function for formdefinitiontranslation builders.
 type FormDefinitionTranslation func(*sql.Selector)
 
+// Fulfillment is the predicate function for fulfillment builders.
+type Fulfillment func(*sql.Selector)
+
+// FulfillmentItem is the predicate function for fulfillmentitem builders.
+type FulfillmentItem func(*sql.Selector)
+
 // Inquiry is the predicate function for inquiry builders.
 type Inquiry func(*sql.Selector)
 
@@ -74,6 +86,15 @@ type MenuItemTranslation func(*sql.Selector)
 
 // Notification is the predicate function for notification builders.
 type Notification func(*sql.Selector)
+
+// Order is the predicate function for order builders.
+type Order func(*sql.Selector)
+
+// OrderItem is the predicate function for orderitem builders.
+type OrderItem func(*sql.Selector)
+
+// OrderReturn is the predicate function for orderreturn builders.
+type OrderReturn func(*sql.Selector)
 
 // Page is the predicate function for page builders.
 type Page func(*sql.Selector)
@@ -101,6 +122,9 @@ type ProductTranslation func(*sql.Selector)
 
 // Region is the predicate function for region builders.
 type Region func(*sql.Selector)
+
+// ReturnItem is the predicate function for returnitem builders.
+type ReturnItem func(*sql.Selector)
 
 // Role is the predicate function for role builders.
 type Role func(*sql.Selector)

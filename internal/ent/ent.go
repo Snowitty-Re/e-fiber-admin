@@ -15,6 +15,8 @@ import (
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/adminuser"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/blogpost"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/blogposttranslation"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/cart"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/cartitem"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/category"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/categorytranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/collection"
@@ -27,6 +29,8 @@ import (
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/emailtemplatetranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/formdefinition"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/formdefinitiontranslation"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/fulfillment"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/fulfillmentitem"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/inquiry"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/locale"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/media"
@@ -35,6 +39,9 @@ import (
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/menuitem"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/menuitemtranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/notification"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/order"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/orderitem"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/orderreturn"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/page"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/pagetranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/permission"
@@ -44,6 +51,7 @@ import (
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/productoptionvalue"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/producttranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/region"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/returnitem"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/role"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/store"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/tag"
@@ -115,6 +123,8 @@ func checkColumn(t, c string) error {
 			adminuser.Table:                 adminuser.ValidColumn,
 			blogpost.Table:                  blogpost.ValidColumn,
 			blogposttranslation.Table:       blogposttranslation.ValidColumn,
+			cart.Table:                      cart.ValidColumn,
+			cartitem.Table:                  cartitem.ValidColumn,
 			category.Table:                  category.ValidColumn,
 			categorytranslation.Table:       categorytranslation.ValidColumn,
 			collection.Table:                collection.ValidColumn,
@@ -127,6 +137,8 @@ func checkColumn(t, c string) error {
 			emailtemplatetranslation.Table:  emailtemplatetranslation.ValidColumn,
 			formdefinition.Table:            formdefinition.ValidColumn,
 			formdefinitiontranslation.Table: formdefinitiontranslation.ValidColumn,
+			fulfillment.Table:               fulfillment.ValidColumn,
+			fulfillmentitem.Table:           fulfillmentitem.ValidColumn,
 			inquiry.Table:                   inquiry.ValidColumn,
 			locale.Table:                    locale.ValidColumn,
 			media.Table:                     media.ValidColumn,
@@ -135,6 +147,9 @@ func checkColumn(t, c string) error {
 			menuitem.Table:                  menuitem.ValidColumn,
 			menuitemtranslation.Table:       menuitemtranslation.ValidColumn,
 			notification.Table:              notification.ValidColumn,
+			order.Table:                     order.ValidColumn,
+			orderitem.Table:                 orderitem.ValidColumn,
+			orderreturn.Table:               orderreturn.ValidColumn,
 			page.Table:                      page.ValidColumn,
 			pagetranslation.Table:           pagetranslation.ValidColumn,
 			permission.Table:                permission.ValidColumn,
@@ -144,6 +159,7 @@ func checkColumn(t, c string) error {
 			productoptionvalue.Table:        productoptionvalue.ValidColumn,
 			producttranslation.Table:        producttranslation.ValidColumn,
 			region.Table:                    region.ValidColumn,
+			returnitem.Table:                returnitem.ValidColumn,
 			role.Table:                      role.ValidColumn,
 			store.Table:                     store.ValidColumn,
 			tag.Table:                       tag.ValidColumn,

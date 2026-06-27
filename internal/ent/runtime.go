@@ -8,6 +8,8 @@ import (
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/adminuser"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/blogpost"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/blogposttranslation"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/cart"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/cartitem"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/category"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/categorytranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/collection"
@@ -20,6 +22,8 @@ import (
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/emailtemplatetranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/formdefinition"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/formdefinitiontranslation"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/fulfillment"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/fulfillmentitem"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/inquiry"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/locale"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/media"
@@ -28,6 +32,9 @@ import (
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/menuitem"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/menuitemtranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/notification"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/order"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/orderitem"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/orderreturn"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/page"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/pagetranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/permission"
@@ -37,6 +44,7 @@ import (
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/productoptionvalue"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/producttranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/region"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/returnitem"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/role"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/schema"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/store"
@@ -149,6 +157,78 @@ func init() {
 	blogposttranslationDescSeoDesc := blogposttranslationFields[6].Descriptor()
 	// blogposttranslation.DefaultSeoDesc holds the default value on creation for the seo_desc field.
 	blogposttranslation.DefaultSeoDesc = blogposttranslationDescSeoDesc.Default.(string)
+	cartMixin := schema.Cart{}.Mixin()
+	cartMixinFields0 := cartMixin[0].Fields()
+	_ = cartMixinFields0
+	cartFields := schema.Cart{}.Fields()
+	_ = cartFields
+	// cartDescVersion is the schema descriptor for version field.
+	cartDescVersion := cartMixinFields0[3].Descriptor()
+	// cart.DefaultVersion holds the default value on creation for the version field.
+	cart.DefaultVersion = cartDescVersion.Default.(int)
+	// cartDescCreatedAt is the schema descriptor for created_at field.
+	cartDescCreatedAt := cartMixinFields0[4].Descriptor()
+	// cart.DefaultCreatedAt holds the default value on creation for the created_at field.
+	cart.DefaultCreatedAt = cartDescCreatedAt.Default.(func() time.Time)
+	// cartDescUpdatedAt is the schema descriptor for updated_at field.
+	cartDescUpdatedAt := cartMixinFields0[5].Descriptor()
+	// cart.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	cart.DefaultUpdatedAt = cartDescUpdatedAt.Default.(func() time.Time)
+	// cart.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	cart.UpdateDefaultUpdatedAt = cartDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// cartDescEmail is the schema descriptor for email field.
+	cartDescEmail := cartFields[1].Descriptor()
+	// cart.DefaultEmail holds the default value on creation for the email field.
+	cart.DefaultEmail = cartDescEmail.Default.(string)
+	// cartDescCurrencyCode is the schema descriptor for currency_code field.
+	cartDescCurrencyCode := cartFields[2].Descriptor()
+	// cart.DefaultCurrencyCode holds the default value on creation for the currency_code field.
+	cart.DefaultCurrencyCode = cartDescCurrencyCode.Default.(string)
+	// cart.CurrencyCodeValidator is a validator for the "currency_code" field. It is called by the builders before save.
+	cart.CurrencyCodeValidator = cartDescCurrencyCode.Validators[0].(func(string) error)
+	// cartDescLocale is the schema descriptor for locale field.
+	cartDescLocale := cartFields[3].Descriptor()
+	// cart.DefaultLocale holds the default value on creation for the locale field.
+	cart.DefaultLocale = cartDescLocale.Default.(string)
+	// cart.LocaleValidator is a validator for the "locale" field. It is called by the builders before save.
+	cart.LocaleValidator = cartDescLocale.Validators[0].(func(string) error)
+	cartitemMixin := schema.CartItem{}.Mixin()
+	cartitemMixinFields0 := cartitemMixin[0].Fields()
+	_ = cartitemMixinFields0
+	cartitemFields := schema.CartItem{}.Fields()
+	_ = cartitemFields
+	// cartitemDescVersion is the schema descriptor for version field.
+	cartitemDescVersion := cartitemMixinFields0[3].Descriptor()
+	// cartitem.DefaultVersion holds the default value on creation for the version field.
+	cartitem.DefaultVersion = cartitemDescVersion.Default.(int)
+	// cartitemDescCreatedAt is the schema descriptor for created_at field.
+	cartitemDescCreatedAt := cartitemMixinFields0[4].Descriptor()
+	// cartitem.DefaultCreatedAt holds the default value on creation for the created_at field.
+	cartitem.DefaultCreatedAt = cartitemDescCreatedAt.Default.(func() time.Time)
+	// cartitemDescUpdatedAt is the schema descriptor for updated_at field.
+	cartitemDescUpdatedAt := cartitemMixinFields0[5].Descriptor()
+	// cartitem.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	cartitem.DefaultUpdatedAt = cartitemDescUpdatedAt.Default.(func() time.Time)
+	// cartitem.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	cartitem.UpdateDefaultUpdatedAt = cartitemDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// cartitemDescQuantity is the schema descriptor for quantity field.
+	cartitemDescQuantity := cartitemFields[3].Descriptor()
+	// cartitem.DefaultQuantity holds the default value on creation for the quantity field.
+	cartitem.DefaultQuantity = cartitemDescQuantity.Default.(int)
+	// cartitemDescUnitAmount is the schema descriptor for unit_amount field.
+	cartitemDescUnitAmount := cartitemFields[4].Descriptor()
+	// cartitem.DefaultUnitAmount holds the default value on creation for the unit_amount field.
+	cartitem.DefaultUnitAmount = cartitemDescUnitAmount.Default.(int64)
+	// cartitemDescCurrencyCode is the schema descriptor for currency_code field.
+	cartitemDescCurrencyCode := cartitemFields[5].Descriptor()
+	// cartitem.DefaultCurrencyCode holds the default value on creation for the currency_code field.
+	cartitem.DefaultCurrencyCode = cartitemDescCurrencyCode.Default.(string)
+	// cartitem.CurrencyCodeValidator is a validator for the "currency_code" field. It is called by the builders before save.
+	cartitem.CurrencyCodeValidator = cartitemDescCurrencyCode.Validators[0].(func(string) error)
+	// cartitemDescSku is the schema descriptor for sku field.
+	cartitemDescSku := cartitemFields[6].Descriptor()
+	// cartitem.DefaultSku holds the default value on creation for the sku field.
+	cartitem.DefaultSku = cartitemDescSku.Default.(string)
 	categoryMixin := schema.Category{}.Mixin()
 	categoryMixinFields0 := categoryMixin[0].Fields()
 	_ = categoryMixinFields0
@@ -533,6 +613,52 @@ func init() {
 	formdefinitiontranslationDescTitle := formdefinitiontranslationFields[2].Descriptor()
 	// formdefinitiontranslation.TitleValidator is a validator for the "title" field. It is called by the builders before save.
 	formdefinitiontranslation.TitleValidator = formdefinitiontranslationDescTitle.Validators[0].(func(string) error)
+	fulfillmentMixin := schema.Fulfillment{}.Mixin()
+	fulfillmentMixinFields0 := fulfillmentMixin[0].Fields()
+	_ = fulfillmentMixinFields0
+	fulfillmentFields := schema.Fulfillment{}.Fields()
+	_ = fulfillmentFields
+	// fulfillmentDescVersion is the schema descriptor for version field.
+	fulfillmentDescVersion := fulfillmentMixinFields0[3].Descriptor()
+	// fulfillment.DefaultVersion holds the default value on creation for the version field.
+	fulfillment.DefaultVersion = fulfillmentDescVersion.Default.(int)
+	// fulfillmentDescCreatedAt is the schema descriptor for created_at field.
+	fulfillmentDescCreatedAt := fulfillmentMixinFields0[4].Descriptor()
+	// fulfillment.DefaultCreatedAt holds the default value on creation for the created_at field.
+	fulfillment.DefaultCreatedAt = fulfillmentDescCreatedAt.Default.(func() time.Time)
+	// fulfillmentDescUpdatedAt is the schema descriptor for updated_at field.
+	fulfillmentDescUpdatedAt := fulfillmentMixinFields0[5].Descriptor()
+	// fulfillment.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	fulfillment.DefaultUpdatedAt = fulfillmentDescUpdatedAt.Default.(func() time.Time)
+	// fulfillment.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	fulfillment.UpdateDefaultUpdatedAt = fulfillmentDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// fulfillmentDescTrackingNumber is the schema descriptor for tracking_number field.
+	fulfillmentDescTrackingNumber := fulfillmentFields[2].Descriptor()
+	// fulfillment.DefaultTrackingNumber holds the default value on creation for the tracking_number field.
+	fulfillment.DefaultTrackingNumber = fulfillmentDescTrackingNumber.Default.(string)
+	fulfillmentitemMixin := schema.FulfillmentItem{}.Mixin()
+	fulfillmentitemMixinFields0 := fulfillmentitemMixin[0].Fields()
+	_ = fulfillmentitemMixinFields0
+	fulfillmentitemFields := schema.FulfillmentItem{}.Fields()
+	_ = fulfillmentitemFields
+	// fulfillmentitemDescVersion is the schema descriptor for version field.
+	fulfillmentitemDescVersion := fulfillmentitemMixinFields0[3].Descriptor()
+	// fulfillmentitem.DefaultVersion holds the default value on creation for the version field.
+	fulfillmentitem.DefaultVersion = fulfillmentitemDescVersion.Default.(int)
+	// fulfillmentitemDescCreatedAt is the schema descriptor for created_at field.
+	fulfillmentitemDescCreatedAt := fulfillmentitemMixinFields0[4].Descriptor()
+	// fulfillmentitem.DefaultCreatedAt holds the default value on creation for the created_at field.
+	fulfillmentitem.DefaultCreatedAt = fulfillmentitemDescCreatedAt.Default.(func() time.Time)
+	// fulfillmentitemDescUpdatedAt is the schema descriptor for updated_at field.
+	fulfillmentitemDescUpdatedAt := fulfillmentitemMixinFields0[5].Descriptor()
+	// fulfillmentitem.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	fulfillmentitem.DefaultUpdatedAt = fulfillmentitemDescUpdatedAt.Default.(func() time.Time)
+	// fulfillmentitem.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	fulfillmentitem.UpdateDefaultUpdatedAt = fulfillmentitemDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// fulfillmentitemDescQuantity is the schema descriptor for quantity field.
+	fulfillmentitemDescQuantity := fulfillmentitemFields[2].Descriptor()
+	// fulfillmentitem.DefaultQuantity holds the default value on creation for the quantity field.
+	fulfillmentitem.DefaultQuantity = fulfillmentitemDescQuantity.Default.(int)
 	inquiryMixin := schema.Inquiry{}.Mixin()
 	inquiryMixinFields0 := inquiryMixin[0].Fields()
 	_ = inquiryMixinFields0
@@ -765,6 +891,113 @@ func init() {
 	notificationDescAttempts := notificationFields[5].Descriptor()
 	// notification.DefaultAttempts holds the default value on creation for the attempts field.
 	notification.DefaultAttempts = notificationDescAttempts.Default.(int)
+	orderMixin := schema.Order{}.Mixin()
+	orderMixinFields0 := orderMixin[0].Fields()
+	_ = orderMixinFields0
+	orderFields := schema.Order{}.Fields()
+	_ = orderFields
+	// orderDescVersion is the schema descriptor for version field.
+	orderDescVersion := orderMixinFields0[3].Descriptor()
+	// order.DefaultVersion holds the default value on creation for the version field.
+	order.DefaultVersion = orderDescVersion.Default.(int)
+	// orderDescCreatedAt is the schema descriptor for created_at field.
+	orderDescCreatedAt := orderMixinFields0[4].Descriptor()
+	// order.DefaultCreatedAt holds the default value on creation for the created_at field.
+	order.DefaultCreatedAt = orderDescCreatedAt.Default.(func() time.Time)
+	// orderDescUpdatedAt is the schema descriptor for updated_at field.
+	orderDescUpdatedAt := orderMixinFields0[5].Descriptor()
+	// order.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	order.DefaultUpdatedAt = orderDescUpdatedAt.Default.(func() time.Time)
+	// order.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	order.UpdateDefaultUpdatedAt = orderDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// orderDescEmail is the schema descriptor for email field.
+	orderDescEmail := orderFields[2].Descriptor()
+	// order.EmailValidator is a validator for the "email" field. It is called by the builders before save.
+	order.EmailValidator = orderDescEmail.Validators[0].(func(string) error)
+	// orderDescCurrencyCode is the schema descriptor for currency_code field.
+	orderDescCurrencyCode := orderFields[3].Descriptor()
+	// order.DefaultCurrencyCode holds the default value on creation for the currency_code field.
+	order.DefaultCurrencyCode = orderDescCurrencyCode.Default.(string)
+	// order.CurrencyCodeValidator is a validator for the "currency_code" field. It is called by the builders before save.
+	order.CurrencyCodeValidator = orderDescCurrencyCode.Validators[0].(func(string) error)
+	// orderDescLocale is the schema descriptor for locale field.
+	orderDescLocale := orderFields[4].Descriptor()
+	// order.DefaultLocale holds the default value on creation for the locale field.
+	order.DefaultLocale = orderDescLocale.Default.(string)
+	// order.LocaleValidator is a validator for the "locale" field. It is called by the builders before save.
+	order.LocaleValidator = orderDescLocale.Validators[0].(func(string) error)
+	orderitemMixin := schema.OrderItem{}.Mixin()
+	orderitemMixinFields0 := orderitemMixin[0].Fields()
+	_ = orderitemMixinFields0
+	orderitemFields := schema.OrderItem{}.Fields()
+	_ = orderitemFields
+	// orderitemDescVersion is the schema descriptor for version field.
+	orderitemDescVersion := orderitemMixinFields0[3].Descriptor()
+	// orderitem.DefaultVersion holds the default value on creation for the version field.
+	orderitem.DefaultVersion = orderitemDescVersion.Default.(int)
+	// orderitemDescCreatedAt is the schema descriptor for created_at field.
+	orderitemDescCreatedAt := orderitemMixinFields0[4].Descriptor()
+	// orderitem.DefaultCreatedAt holds the default value on creation for the created_at field.
+	orderitem.DefaultCreatedAt = orderitemDescCreatedAt.Default.(func() time.Time)
+	// orderitemDescUpdatedAt is the schema descriptor for updated_at field.
+	orderitemDescUpdatedAt := orderitemMixinFields0[5].Descriptor()
+	// orderitem.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	orderitem.DefaultUpdatedAt = orderitemDescUpdatedAt.Default.(func() time.Time)
+	// orderitem.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	orderitem.UpdateDefaultUpdatedAt = orderitemDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// orderitemDescSku is the schema descriptor for sku field.
+	orderitemDescSku := orderitemFields[2].Descriptor()
+	// orderitem.DefaultSku holds the default value on creation for the sku field.
+	orderitem.DefaultSku = orderitemDescSku.Default.(string)
+	// orderitemDescTitle is the schema descriptor for title field.
+	orderitemDescTitle := orderitemFields[3].Descriptor()
+	// orderitem.TitleValidator is a validator for the "title" field. It is called by the builders before save.
+	orderitem.TitleValidator = orderitemDescTitle.Validators[0].(func(string) error)
+	// orderitemDescQuantity is the schema descriptor for quantity field.
+	orderitemDescQuantity := orderitemFields[4].Descriptor()
+	// orderitem.DefaultQuantity holds the default value on creation for the quantity field.
+	orderitem.DefaultQuantity = orderitemDescQuantity.Default.(int)
+	// orderitemDescUnitAmount is the schema descriptor for unit_amount field.
+	orderitemDescUnitAmount := orderitemFields[5].Descriptor()
+	// orderitem.DefaultUnitAmount holds the default value on creation for the unit_amount field.
+	orderitem.DefaultUnitAmount = orderitemDescUnitAmount.Default.(int64)
+	// orderitemDescTotalAmount is the schema descriptor for total_amount field.
+	orderitemDescTotalAmount := orderitemFields[6].Descriptor()
+	// orderitem.DefaultTotalAmount holds the default value on creation for the total_amount field.
+	orderitem.DefaultTotalAmount = orderitemDescTotalAmount.Default.(int64)
+	orderreturnMixin := schema.OrderReturn{}.Mixin()
+	orderreturnMixinFields0 := orderreturnMixin[0].Fields()
+	_ = orderreturnMixinFields0
+	orderreturnFields := schema.OrderReturn{}.Fields()
+	_ = orderreturnFields
+	// orderreturnDescVersion is the schema descriptor for version field.
+	orderreturnDescVersion := orderreturnMixinFields0[3].Descriptor()
+	// orderreturn.DefaultVersion holds the default value on creation for the version field.
+	orderreturn.DefaultVersion = orderreturnDescVersion.Default.(int)
+	// orderreturnDescCreatedAt is the schema descriptor for created_at field.
+	orderreturnDescCreatedAt := orderreturnMixinFields0[4].Descriptor()
+	// orderreturn.DefaultCreatedAt holds the default value on creation for the created_at field.
+	orderreturn.DefaultCreatedAt = orderreturnDescCreatedAt.Default.(func() time.Time)
+	// orderreturnDescUpdatedAt is the schema descriptor for updated_at field.
+	orderreturnDescUpdatedAt := orderreturnMixinFields0[5].Descriptor()
+	// orderreturn.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	orderreturn.DefaultUpdatedAt = orderreturnDescUpdatedAt.Default.(func() time.Time)
+	// orderreturn.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	orderreturn.UpdateDefaultUpdatedAt = orderreturnDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// orderreturnDescReason is the schema descriptor for reason field.
+	orderreturnDescReason := orderreturnFields[2].Descriptor()
+	// orderreturn.DefaultReason holds the default value on creation for the reason field.
+	orderreturn.DefaultReason = orderreturnDescReason.Default.(string)
+	// orderreturnDescRefundAmount is the schema descriptor for refund_amount field.
+	orderreturnDescRefundAmount := orderreturnFields[3].Descriptor()
+	// orderreturn.DefaultRefundAmount holds the default value on creation for the refund_amount field.
+	orderreturn.DefaultRefundAmount = orderreturnDescRefundAmount.Default.(int64)
+	// orderreturnDescCurrencyCode is the schema descriptor for currency_code field.
+	orderreturnDescCurrencyCode := orderreturnFields[4].Descriptor()
+	// orderreturn.DefaultCurrencyCode holds the default value on creation for the currency_code field.
+	orderreturn.DefaultCurrencyCode = orderreturnDescCurrencyCode.Default.(string)
+	// orderreturn.CurrencyCodeValidator is a validator for the "currency_code" field. It is called by the builders before save.
+	orderreturn.CurrencyCodeValidator = orderreturnDescCurrencyCode.Validators[0].(func(string) error)
 	pageMixin := schema.Page{}.Mixin()
 	pageMixinFields0 := pageMixin[0].Fields()
 	_ = pageMixinFields0
@@ -1048,6 +1281,33 @@ func init() {
 	regionDescTaxInclusive := regionFields[3].Descriptor()
 	// region.DefaultTaxInclusive holds the default value on creation for the tax_inclusive field.
 	region.DefaultTaxInclusive = regionDescTaxInclusive.Default.(bool)
+	returnitemMixin := schema.ReturnItem{}.Mixin()
+	returnitemMixinFields0 := returnitemMixin[0].Fields()
+	_ = returnitemMixinFields0
+	returnitemFields := schema.ReturnItem{}.Fields()
+	_ = returnitemFields
+	// returnitemDescVersion is the schema descriptor for version field.
+	returnitemDescVersion := returnitemMixinFields0[3].Descriptor()
+	// returnitem.DefaultVersion holds the default value on creation for the version field.
+	returnitem.DefaultVersion = returnitemDescVersion.Default.(int)
+	// returnitemDescCreatedAt is the schema descriptor for created_at field.
+	returnitemDescCreatedAt := returnitemMixinFields0[4].Descriptor()
+	// returnitem.DefaultCreatedAt holds the default value on creation for the created_at field.
+	returnitem.DefaultCreatedAt = returnitemDescCreatedAt.Default.(func() time.Time)
+	// returnitemDescUpdatedAt is the schema descriptor for updated_at field.
+	returnitemDescUpdatedAt := returnitemMixinFields0[5].Descriptor()
+	// returnitem.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	returnitem.DefaultUpdatedAt = returnitemDescUpdatedAt.Default.(func() time.Time)
+	// returnitem.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	returnitem.UpdateDefaultUpdatedAt = returnitemDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// returnitemDescQuantity is the schema descriptor for quantity field.
+	returnitemDescQuantity := returnitemFields[2].Descriptor()
+	// returnitem.DefaultQuantity holds the default value on creation for the quantity field.
+	returnitem.DefaultQuantity = returnitemDescQuantity.Default.(int)
+	// returnitemDescReason is the schema descriptor for reason field.
+	returnitemDescReason := returnitemFields[3].Descriptor()
+	// returnitem.DefaultReason holds the default value on creation for the reason field.
+	returnitem.DefaultReason = returnitemDescReason.Default.(string)
 	roleMixin := schema.Role{}.Mixin()
 	roleMixinFields0 := roleMixin[0].Fields()
 	_ = roleMixinFields0
