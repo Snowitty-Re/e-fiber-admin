@@ -35,8 +35,8 @@ type CheckoutInput struct {
 }
 
 type OrderResult struct {
-	Order     *ent.Order
-	OrderID   int
+	Order       *ent.Order
+	OrderID     int
 	OrderNumber string
 }
 
@@ -242,7 +242,7 @@ func (s *Service) Cancel(ctx context.Context, id int) error {
 
 	if s.bus != nil {
 		_ = s.bus.PublishSimple(ctx, "order.cancelled", "order", fmt.Sprintf("%d", id), map[string]any{
-			"order_id": id,
+			"order_id": id, "email": o.Email,
 		})
 	}
 	return nil
@@ -273,10 +273,10 @@ type FulfillmentItemInput struct {
 }
 
 type FulfillmentInput struct {
-	OrderID         int
-	TrackingNumber  string
+	OrderID          int
+	TrackingNumber   string
 	ShippingOptionID int
-	Items           []FulfillmentItemInput
+	Items            []FulfillmentItemInput
 }
 
 func (s *Service) CreateFulfillment(ctx context.Context, in FulfillmentInput) (*ent.Fulfillment, error) {
@@ -358,8 +358,8 @@ type ReturnItemInput struct {
 }
 
 type ReturnInput struct {
-	OrderID     int
-	Reason      string
+	OrderID      int
+	Reason       string
 	RefundAmount int64
 	CurrencyCode string
 	Items        []ReturnItemInput

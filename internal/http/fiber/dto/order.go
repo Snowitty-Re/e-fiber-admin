@@ -23,7 +23,7 @@ type FulfillmentItemRequest struct {
 }
 
 type CreateFulfillmentRequest struct {
-	TrackingNumber string                  `json:"tracking_number,omitempty"`
+	TrackingNumber string                   `json:"tracking_number,omitempty"`
 	Items          []FulfillmentItemRequest `json:"items"`
 }
 
@@ -34,23 +34,23 @@ type ReturnItemRequest struct {
 }
 
 type CreateReturnRequest struct {
-	Reason       string               `json:"reason"`
-	RefundAmount int64                `json:"refund_amount"`
-	CurrencyCode string               `json:"currency_code,omitempty"`
-	Items        []ReturnItemRequest  `json:"items"`
+	Reason       string              `json:"reason"`
+	RefundAmount int64               `json:"refund_amount"`
+	CurrencyCode string              `json:"currency_code,omitempty"`
+	Items        []ReturnItemRequest `json:"items"`
 }
 
 type OrderResponse struct {
-	ID               int                `json:"id"`
-	Number           string             `json:"number"`
-	Email            string             `json:"email"`
-	CustomerID       int                `json:"customer_id,omitempty"`
-	CurrencyCode     string             `json:"currency_code"`
-	Status           string             `json:"status"`
-	FulfillmentStatus string             `json:"fulfillment_status"`
-	PaymentStatus    string             `json:"payment_status"`
-	Totals           map[string]any     `json:"totals,omitempty"`
-	ShippingAddress  map[string]any     `json:"shipping_address,omitempty"`
-	PlacedAt         *string            `json:"placed_at,omitempty"`
-	Items            []OrderItemResponse `json:"items"`
+	ID                int                 `json:"id"`
+	Number            string              `json:"number"`
+	Email             string              `json:"email"`
+	CustomerID        int                 `json:"customer_id,omitempty"`
+	CurrencyCode      string              `json:"currency_code"`
+	Status            string              `json:"status"`
+	FulfillmentStatus string              `json:"fulfillment_status"`
+	PaymentStatus     string              `json:"payment_status"`
+	Totals            map[string]any      `json:"totals,omitempty"`
+	ShippingAddress   map[string]any      `json:"shipping_address,omitempty"`
+	PlacedAt          *string             `json:"placed_at,omitempty"`
+	Items             []OrderItemResponse `json:"items"`
 }
