@@ -21,6 +21,7 @@ type Deps struct {
 	CustomerH                *handler.CustomerHandler
 	InquiryH                 *handler.InquiryHandler
 	CartH                    *handler.CartHandler
+	OrderH                   *handler.OrderHandler
 	JWTAuthFunc              fiber.Handler
 	CustomerJWTAuthFunc      fiber.Handler
 	CustomerOptionalAuthFunc fiber.Handler
@@ -147,4 +148,16 @@ func Register(app *fiber.App, deps Deps) {
 	storeCarts.Post("/:id/items", deps.CustomerOptionalAuthFunc, deps.CartH.AddItem)
 	storeCarts.Patch("/:id/items/:variantId", deps.CustomerOptionalAuthFunc, deps.CartH.UpdateItem)
 	storeCarts.Delete("/:id/items/:variantId", deps.CustomerOptionalAuthFunc, deps.CartH.RemoveItem)
+
+	storeCheckout := store.Group("/checkout")
+	storeCheckout.Post("/", deps.CustomerOptionalAuthFunc, deps.OrderH.StoreCheckout)
+
+	storeOrders := store.Group("/orders", deps.CustomerJWTAuthFunc)
+	storeOrders.Get("/", deps.OrderH.StoreListOrders)
+	storeOrders.Get("/:id", deps.OrderH.StoreGetOrder)
+
+	orders := adminProtected.Group("/orders")
+	orders.Get("/", middleware.RBAC("order:read"), deps.OrderH.AdminList)
+	orders.Get("/:id", middleware.RBAC("order:read"), deps.OrderH.AdminGet)
+	orders.Post("/:id/cancel", middleware.RBAC("order:cancel"), deps.OrderH.AdminCancel)
 }
