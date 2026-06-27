@@ -50,3 +50,39 @@ func SeedNotifications(ctx context.Context, entClient *ent.Client) error {
 	slog.Info("notification templates seeded", "count", len(templates))
 	return nil
 }
+
+func SeedOrderTemplates(ctx context.Context, entClient *ent.Client) error {
+	ns := notification.NewService(entClient)
+	templates := []struct {
+		Code      string
+		Variables []string
+		En        notification.TemplateTranslationInput
+	}{
+		{
+			Code:      "order_placed",
+			Variables: []string{"order_number", "order_id", "total", "currency"},
+			En: notification.TemplateTranslationInput{
+				Locale: "en", Subject: "Order confirmation: {{order_number}}",
+				BodyHTML: `<p>Thank you for your order <strong>{{order_number}}</strong>.</p><p>Total: {{currency}} {{total}}</p><p>We'll notify you when it ships.</p>`,
+			},
+		},
+		{
+			Code:      "order_cancelled",
+			Variables: []string{"order_id"},
+			En: notification.TemplateTranslationInput{
+				Locale: "en", Subject: "Your order has been cancelled",
+				BodyHTML: `<p>Your order (ID: {{order_id}}) has been cancelled.</p><p>Any payment will be refunded.</p>`,
+			},
+		},
+	}
+	seeded := 0
+	for _, t := range templates {
+		if err := ns.SeedTemplate(ctx, t.Code, t.Variables, []notification.TemplateTranslationInput{t.En}); err != nil {
+			slog.Warn("seed order template skipped", "code", t.Code, "err", err)
+			continue
+		}
+		seeded++
+	}
+	slog.Info("order templates seeded", "count", seeded)
+	return nil
+}

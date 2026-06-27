@@ -60,6 +60,9 @@ func main() {
 	if err := SeedNotifications(seedCtx, entClient); err != nil {
 		slog.Warn("seed notification templates skipped", "err", err)
 	}
+	if err := SeedOrderTemplates(seedCtx, entClient); err != nil {
+		slog.Warn("seed order templates skipped", "err", err)
+	}
 
 	RegisterEventHandlers(subscriber, entClient, jobsClient)
 	RegisterJobHandlers(jobsServer, entClient)

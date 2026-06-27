@@ -34,7 +34,22 @@ func RegisterEventHandlers(sub *events.Subscriber, entClient *ent.Client, jobsCl
 	sub.Subscribe([]string{"customer.registered"},
 		handleCustomerRegistered(jobsClient),
 	)
-	slog.Info("event handlers registered", "events", []string{"inquiry.received", "customer.registered"})
+	sub.Subscribe([]string{"order.placed"},
+		handleOrderPlaced(jobsClient),
+	)
+	sub.Subscribe([]string{"order.cancelled"},
+		handleOrderCancelled(jobsClient),
+	)
+	sub.Subscribe([]string{"order.paid"},
+		handleOrderPaid(jobsClient),
+	)
+	sub.Subscribe([]string{"order.fulfilled"},
+		handleOrderFulfilled(jobsClient),
+	)
+	slog.Info("event handlers registered", "events", []string{
+		"inquiry.received", "customer.registered",
+		"order.placed", "order.cancelled", "order.paid", "order.fulfilled",
+	})
 }
 
 func RegisterJobHandlers(s *jobs.Server, entClient *ent.Client) {
@@ -88,6 +103,61 @@ func handleInquiryReceived(entClient *ent.Client, jobsClient *jobs.Client) event
 func handleCustomerRegistered(jobsClient *jobs.Client) events.Handler {
 	return func(ctx context.Context, event *events.Event) error {
 		slog.Info("customer.registered event", "data", event.Data)
+		return nil
+	}
+}
+
+func handleOrderPlaced(jobsClient *jobs.Client) events.Handler {
+	return func(ctx context.Context, event *events.Event) error {
+		slog.Info("order.placed event", "data", event.Data)
+		p, ok := event.Data.(map[string]any)
+		if !ok {
+			return fmt.Errorf("invalid event data")
+		}
+		vars := map[string]any{
+			"order_number": p["order_number"],
+			"order_id":     p["order_id"],
+			"total":        p["total"],
+			"currency":     p["currency"],
+		}
+		payload := jobs.MustMarshal(SendEmailPayload{
+			TemplateCode: "order_placed",
+			Locale:       "en",
+			Recipient:    fmt.Sprintf("%v", p["email"]),
+			Vars:         vars,
+		})
+		return jobsClient.Enqueue(ctx, jobs.TaskSendEmail, payload, jobs.QueueCritical)
+	}
+}
+
+func handleOrderCancelled(jobsClient *jobs.Client) events.Handler {
+	return func(ctx context.Context, event *events.Event) error {
+		slog.Info("order.cancelled event", "data", event.Data)
+		p, ok := event.Data.(map[string]any)
+		if !ok {
+			return fmt.Errorf("invalid event data")
+		}
+		vars := map[string]any{"order_id": p["order_id"]}
+		payload := jobs.MustMarshal(SendEmailPayload{
+			TemplateCode: "order_cancelled",
+			Locale:       "en",
+			Recipient:    fmt.Sprintf("%v", p["email"]),
+			Vars:         vars,
+		})
+		return jobsClient.Enqueue(ctx, jobs.TaskSendEmail, payload, jobs.QueueDefault)
+	}
+}
+
+func handleOrderPaid(jobsClient *jobs.Client) events.Handler {
+	return func(ctx context.Context, event *events.Event) error {
+		slog.Info("order.paid event", "data", event.Data)
+		return nil
+	}
+}
+
+func handleOrderFulfilled(jobsClient *jobs.Client) events.Handler {
+	return func(ctx context.Context, event *events.Event) error {
+		slog.Info("order.fulfilled event", "data", event.Data)
 		return nil
 	}
 }
