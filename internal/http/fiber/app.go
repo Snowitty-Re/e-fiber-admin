@@ -18,6 +18,7 @@ import (
 
 	"github.com/Snowitty-Re/e-fiber-admin/internal/config"
 	authsvc "github.com/Snowitty-Re/e-fiber-admin/internal/domain/auth"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/domain/cart"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/domain/cms"
 	customersvc "github.com/Snowitty-Re/e-fiber-admin/internal/domain/customer"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/domain/inquiry"
@@ -94,6 +95,8 @@ func NewApp(deps Deps) *fiber.App {
 	customerH := handler.NewCustomerHandler(customerSvc)
 	inquirySvc := inquiry.NewService(deps.EntClient, deps.EventBus)
 	inquiryH := handler.NewInquiryHandler(inquirySvc)
+	cartSvc := cart.NewService(deps.EntClient, deps.EventBus)
+	cartH := handler.NewCartHandler(cartSvc, deps.EntClient)
 
 	router.Register(app, router.Deps{
 		HealthH:                  healthH,
@@ -106,6 +109,7 @@ func NewApp(deps Deps) *fiber.App {
 		StorefrontH:              storefrontH,
 		CustomerH:                customerH,
 		InquiryH:                 inquiryH,
+		CartH:                    cartH,
 		JWTAuthFunc:              pkgmw.JWTAuth(authService),
 		CustomerJWTAuthFunc:      pkgmw.CustomerJWTAuth(customerSvc),
 		CustomerOptionalAuthFunc: pkgmw.OptionalCustomerJWTAuth(customerSvc),

@@ -20,6 +20,7 @@ type Deps struct {
 	StorefrontH              *handler.StorefrontHandler
 	CustomerH                *handler.CustomerHandler
 	InquiryH                 *handler.InquiryHandler
+	CartH                    *handler.CartHandler
 	JWTAuthFunc              fiber.Handler
 	CustomerJWTAuthFunc      fiber.Handler
 	CustomerOptionalAuthFunc fiber.Handler
@@ -139,4 +140,11 @@ func Register(app *fiber.App, deps Deps) {
 
 	storeInquiries := store.Group("/inquiries")
 	storeInquiries.Post("/", deps.CustomerOptionalAuthFunc, deps.InquiryH.StoreSubmitInquiry)
+
+	storeCarts := store.Group("/cart")
+	storeCarts.Post("/", deps.CustomerOptionalAuthFunc, deps.CartH.CreateCart)
+	storeCarts.Get("/:id", deps.CartH.GetCart)
+	storeCarts.Post("/:id/items", deps.CustomerOptionalAuthFunc, deps.CartH.AddItem)
+	storeCarts.Patch("/:id/items/:variantId", deps.CustomerOptionalAuthFunc, deps.CartH.UpdateItem)
+	storeCarts.Delete("/:id/items/:variantId", deps.CustomerOptionalAuthFunc, deps.CartH.RemoveItem)
 }
