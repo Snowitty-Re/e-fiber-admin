@@ -17,6 +17,29 @@ type OrderItemResponse struct {
 	TotalAmount int64  `json:"total_amount"`
 }
 
+type FulfillmentItemRequest struct {
+	OrderItemID int `json:"order_item_id"`
+	Quantity    int `json:"quantity"`
+}
+
+type CreateFulfillmentRequest struct {
+	TrackingNumber string                  `json:"tracking_number,omitempty"`
+	Items          []FulfillmentItemRequest `json:"items"`
+}
+
+type ReturnItemRequest struct {
+	OrderItemID int    `json:"order_item_id"`
+	Quantity    int    `json:"quantity"`
+	Reason      string `json:"reason,omitempty"`
+}
+
+type CreateReturnRequest struct {
+	Reason       string               `json:"reason"`
+	RefundAmount int64                `json:"refund_amount"`
+	CurrencyCode string               `json:"currency_code,omitempty"`
+	Items        []ReturnItemRequest  `json:"items"`
+}
+
 type OrderResponse struct {
 	ID               int                `json:"id"`
 	Number           string             `json:"number"`

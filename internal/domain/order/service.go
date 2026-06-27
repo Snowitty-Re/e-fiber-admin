@@ -7,7 +7,9 @@ import (
 
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/cart"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/fulfillment"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/order"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/orderreturn"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/variant"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/events"
 	pkgerr "github.com/Snowitty-Re/e-fiber-admin/internal/pkg/errors"
@@ -263,4 +265,168 @@ func (s *Service) MarkPaid(ctx context.Context, id int) error {
 
 func generateOrderNumber() string {
 	return fmt.Sprintf("EFA-%s-%d", time.Now().UTC().Format("20060102"), time.Now().UnixNano()%10000)
+}
+
+type FulfillmentItemInput struct {
+	OrderItemID int
+	Quantity    int
+}
+
+type FulfillmentInput struct {
+	OrderID         int
+	TrackingNumber  string
+	ShippingOptionID int
+	Items           []FulfillmentItemInput
+}
+
+func (s *Service) CreateFulfillment(ctx context.Context, in FulfillmentInput) (*ent.Fulfillment, error) {
+	o, err := s.Get(ctx, in.OrderID)
+	if err != nil {
+		return nil, err
+	}
+	if o.Status == order.StatusCancelled {
+		return nil, pkgerr.New("ORDER_INVALID_STATE", 409, "cannot fulfill cancelled order")
+	}
+
+	tx, err := s.entClient.Tx(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("begin tx: %w", err)
+	}
+	defer func() {
+		if err != nil {
+			_ = tx.Rollback()
+		}
+	}()
+
+	fb := tx.Fulfillment.Create().
+		SetOrderID(in.OrderID).
+		SetTrackingNumber(in.TrackingNumber).
+		SetStatus("fulfilled")
+	if in.ShippingOptionID > 0 {
+		fb.SetShippingOptionID(in.ShippingOptionID)
+	}
+	f, err := fb.Save(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("create fulfillment: %w", err)
+	}
+	for _, item := range in.Items {
+		_, err = tx.FulfillmentItem.Create().
+			SetFulfillmentID(f.ID).
+			SetOrderItemID(item.OrderItemID).
+			SetQuantity(item.Quantity).
+			Save(ctx)
+		if err != nil {
+			return nil, fmt.Errorf("create fulfillment item: %w", err)
+		}
+	}
+	if err = tx.Commit(); err != nil {
+		return nil, fmt.Errorf("commit: %w", err)
+	}
+
+	_ = s.entClient.Order.UpdateOneID(in.OrderID).
+		SetFulfillmentStatus("fulfilled").
+		SetStatus(order.StatusFulfilled).
+		Exec(ctx)
+
+	if s.bus != nil {
+		_ = s.bus.PublishSimple(ctx, "order.fulfilled", "order", fmt.Sprintf("%d", in.OrderID), map[string]any{
+			"order_id": in.OrderID, "fulfillment_id": f.ID,
+			"tracking": in.TrackingNumber,
+		})
+	}
+	return s.entClient.Fulfillment.Query().
+		Where(fulfillment.IDEQ(f.ID)).
+		WithItems().
+		Only(ctx)
+}
+
+func (s *Service) ListFulfillments(ctx context.Context, orderID int) ([]*ent.Fulfillment, error) {
+	o, err := s.entClient.Order.Query().
+		Where(order.IDEQ(orderID)).
+		WithFulfillments(func(q *ent.FulfillmentQuery) { q.WithItems().Order(ent.Asc("id")) }).
+		Only(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return o.Edges.Fulfillments, nil
+}
+
+type ReturnItemInput struct {
+	OrderItemID int
+	Quantity    int
+	Reason      string
+}
+
+type ReturnInput struct {
+	OrderID     int
+	Reason      string
+	RefundAmount int64
+	CurrencyCode string
+	Items        []ReturnItemInput
+}
+
+func (s *Service) CreateReturn(ctx context.Context, in ReturnInput) (*ent.OrderReturn, error) {
+	o, err := s.Get(ctx, in.OrderID)
+	if err != nil {
+		return nil, err
+	}
+	if o.Status != order.StatusPaid && o.Status != order.StatusFulfilled {
+		return nil, pkgerr.New("ORDER_INVALID_STATE", 409, "can only return paid or fulfilled orders")
+	}
+
+	tx, err := s.entClient.Tx(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("begin tx: %w", err)
+	}
+	defer func() {
+		if err != nil {
+			_ = tx.Rollback()
+		}
+	}()
+
+	rb := tx.OrderReturn.Create().
+		SetOrderID(in.OrderID).
+		SetStatus("pending").
+		SetReason(in.Reason).
+		SetRefundAmount(in.RefundAmount).
+		SetCurrencyCode(in.CurrencyCode)
+	r, err := rb.Save(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("create return: %w", err)
+	}
+	for _, item := range in.Items {
+		_, err = tx.ReturnItem.Create().
+			SetReturnID(r.ID).
+			SetOrderItemID(item.OrderItemID).
+			SetQuantity(item.Quantity).
+			SetReason(item.Reason).
+			Save(ctx)
+		if err != nil {
+			return nil, fmt.Errorf("create return item: %w", err)
+		}
+	}
+	if err = tx.Commit(); err != nil {
+		return nil, fmt.Errorf("commit: %w", err)
+	}
+
+	if s.bus != nil {
+		_ = s.bus.PublishSimple(ctx, "order.returned", "order", fmt.Sprintf("%d", in.OrderID), map[string]any{
+			"order_id": in.OrderID, "return_id": r.ID,
+		})
+	}
+	return s.entClient.OrderReturn.Query().
+		Where(orderreturn.IDEQ(r.ID)).
+		WithItems().
+		Only(ctx)
+}
+
+func (s *Service) ListReturns(ctx context.Context, orderID int) ([]*ent.OrderReturn, error) {
+	o, err := s.entClient.Order.Query().
+		Where(order.IDEQ(orderID)).
+		WithReturns(func(q *ent.OrderReturnQuery) { q.WithItems().Order(ent.Asc("id")) }).
+		Only(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return o.Edges.Returns, nil
 }

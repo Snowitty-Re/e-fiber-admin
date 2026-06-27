@@ -160,4 +160,8 @@ func Register(app *fiber.App, deps Deps) {
 	orders.Get("/", middleware.RBAC("order:read"), deps.OrderH.AdminList)
 	orders.Get("/:id", middleware.RBAC("order:read"), deps.OrderH.AdminGet)
 	orders.Post("/:id/cancel", middleware.RBAC("order:cancel"), deps.OrderH.AdminCancel)
+	orders.Post("/:id/pay", middleware.RBAC("order:approve"), deps.OrderH.AdminMarkPaid)
+	orders.Get("/:id/fulfillments", middleware.RBAC("order:read"), deps.OrderH.AdminListFulfillments)
+	orders.Post("/:id/fulfillments", middleware.RBAC("order:fulfill"), deps.OrderH.AdminCreateFulfillment)
+	orders.Post("/:id/returns", middleware.RBAC("order:refund"), deps.OrderH.AdminCreateReturn)
 }

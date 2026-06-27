@@ -142,11 +142,100 @@ func toOrderResponse(o *ent.Order) dto.OrderResponse {
 		resp.PlacedAt = &[]string{o.PlacedAt.Format("2006-01-02T15:04:05Z")}[0]
 	}
 	for _, item := range o.Edges.Items {
+		vID := 0
+		if item.VariantID > 0 {
+			vID = item.VariantID
+		}
 		resp.Items = append(resp.Items, dto.OrderItemResponse{
-			ID: item.ID, SKU: item.Sku, Title: item.Title,
+			ID: item.ID, VariantID: vID, SKU: item.Sku, Title: item.Title,
 			Quantity: item.Quantity, UnitAmount: item.UnitAmount,
 			TotalAmount: item.TotalAmount,
 		})
 	}
 	return resp
+}
+
+func (h *OrderHandler) AdminCreateFulfillment(c fiber.Ctx) error {
+	orderID, err := strconv.Atoi(c.Params("id"))
+	if err != nil {
+		return pkgerr.ErrBadRequest.WithCause(err)
+	}
+	var req dto.CreateFulfillmentRequest
+	if err := c.Bind().Body(&req); err != nil {
+		return pkgerr.ErrBadRequest.WithCause(err)
+	}
+	in := ordersvc.FulfillmentInput{
+		OrderID: orderID, TrackingNumber: req.TrackingNumber,
+	}
+	for _, item := range req.Items {
+		in.Items = append(in.Items, ordersvc.FulfillmentItemInput{
+			OrderItemID: item.OrderItemID, Quantity: item.Quantity,
+		})
+	}
+	f, err := h.orderService.CreateFulfillment(c.Context(), in)
+	if err != nil {
+		return err
+	}
+	return c.Status(fiber.StatusCreated).JSON(fiber.Map{"fulfillment": fiber.Map{
+		"id": f.ID, "order_id": f.OrderID, "tracking_number": f.TrackingNumber,
+		"status": string(f.Status), "items": len(f.Edges.Items),
+	}})
+}
+
+func (h *OrderHandler) AdminListFulfillments(c fiber.Ctx) error {
+	orderID, err := strconv.Atoi(c.Params("id"))
+	if err != nil {
+		return pkgerr.ErrBadRequest.WithCause(err)
+	}
+	fulfillments, err := h.orderService.ListFulfillments(c.Context(), orderID)
+	if err != nil {
+		return err
+	}
+	var data []map[string]any
+	for _, f := range fulfillments {
+		data = append(data, map[string]any{
+			"id": f.ID, "order_id": f.OrderID, "tracking_number": f.TrackingNumber,
+			"status": string(f.Status), "items": len(f.Edges.Items),
+		})
+	}
+	return c.JSON(fiber.Map{"data": data})
+}
+
+func (h *OrderHandler) AdminMarkPaid(c fiber.Ctx) error {
+	id, err := strconv.Atoi(c.Params("id"))
+	if err != nil {
+		return pkgerr.ErrBadRequest.WithCause(err)
+	}
+	if err := h.orderService.MarkPaid(c.Context(), id); err != nil {
+		return err
+	}
+	return c.SendStatus(fiber.StatusNoContent)
+}
+
+func (h *OrderHandler) AdminCreateReturn(c fiber.Ctx) error {
+	orderID, err := strconv.Atoi(c.Params("id"))
+	if err != nil {
+		return pkgerr.ErrBadRequest.WithCause(err)
+	}
+	var req dto.CreateReturnRequest
+	if err := c.Bind().Body(&req); err != nil {
+		return pkgerr.ErrBadRequest.WithCause(err)
+	}
+	in := ordersvc.ReturnInput{
+		OrderID: orderID, Reason: req.Reason,
+		RefundAmount: req.RefundAmount, CurrencyCode: req.CurrencyCode,
+	}
+	for _, item := range req.Items {
+		in.Items = append(in.Items, ordersvc.ReturnItemInput{
+			OrderItemID: item.OrderItemID, Quantity: item.Quantity, Reason: item.Reason,
+		})
+	}
+	r, err := h.orderService.CreateReturn(c.Context(), in)
+	if err != nil {
+		return err
+	}
+	return c.Status(fiber.StatusCreated).JSON(fiber.Map{"return": fiber.Map{
+		"id": r.ID, "order_id": r.OrderID, "status": string(r.Status),
+		"refund_amount": r.RefundAmount, "items": len(r.Edges.Items),
+	}})
 }
