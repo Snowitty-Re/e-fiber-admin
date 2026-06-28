@@ -7,9 +7,12 @@ import (
 
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/cart"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/discount"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/discountrule"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/fulfillment"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/order"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/orderreturn"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/shippingoption"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/variant"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/events"
 	pkgerr "github.com/Snowitty-Re/e-fiber-admin/internal/pkg/errors"
@@ -25,13 +28,25 @@ func NewService(entClient *ent.Client, bus *events.Bus) *Service {
 }
 
 type CheckoutInput struct {
-	CartID          int
-	Email           string
-	CustomerID      int
-	CurrencyCode    string
-	Locale          string
-	ShippingAddress map[string]any
-	BillingAddress  map[string]any
+	CartID           int
+	Email            string
+	CustomerID       int
+	CurrencyCode     string
+	Locale           string
+	ShippingAddress  map[string]any
+	BillingAddress   map[string]any
+	ShippingOptionID int
+	DiscountCode     string
+}
+
+type Totals struct {
+	Subtotal         int64
+	Discount         int64
+	Shipping         int64
+	Total            int64
+	Currency         string
+	DiscountCode     string
+	ShippingOptionID int
 }
 
 type OrderResult struct {
@@ -65,9 +80,9 @@ func (s *Service) CompleteCheckout(ctx context.Context, in CheckoutInput) (*Orde
 		return nil, pkgerr.New("CART_EMPTY", 409, "cart is empty")
 	}
 
-	var total int64
+	var subtotal int64
 	for _, item := range c.Edges.Items {
-		total += item.UnitAmount * int64(item.Quantity)
+		subtotal += item.UnitAmount * int64(item.Quantity)
 		v, err := tx.Variant.Query().Where(variant.IDEQ(item.VariantID)).Only(ctx)
 		if err != nil {
 			return nil, fmt.Errorf("query variant %d: %w", item.VariantID, err)
@@ -82,6 +97,57 @@ func (s *Service) CompleteCheckout(ctx context.Context, in CheckoutInput) (*Orde
 		}
 	}
 
+	totals := Totals{Subtotal: subtotal, Currency: in.CurrencyCode, ShippingOptionID: in.ShippingOptionID}
+
+	if in.ShippingOptionID > 0 {
+		opt, err := tx.ShippingOption.Query().
+			Where(shippingoption.IDEQ(in.ShippingOptionID)).
+			Only(ctx)
+		if err == nil && opt.PriceCurrency == in.CurrencyCode {
+			totals.Shipping = opt.PriceAmount
+		}
+	}
+
+	if in.DiscountCode != "" {
+		d, err := s.entClient.Discount.Query().
+			Where(discount.CodeEQ(in.DiscountCode), discount.StatusEQ(discount.StatusActive)).
+			WithRules().
+			Only(ctx)
+		if err == nil && d != nil {
+			now := time.Now()
+			valid := true
+			if d.StartsAt != nil && now.Before(*d.StartsAt) {
+				valid = false
+			}
+			if d.EndsAt != nil && now.After(*d.EndsAt) {
+				valid = false
+			}
+			if d.UsageLimit > 0 && d.UsageCount >= d.UsageLimit {
+				valid = false
+			}
+			if valid {
+				totals.DiscountCode = in.DiscountCode
+				for _, r := range d.Edges.Rules {
+					switch r.Type {
+					case discountrule.TypePercentage:
+						totals.Discount = subtotal * r.Value / 100
+					case discountrule.TypeFixed:
+						if r.Value > subtotal {
+							totals.Discount = subtotal
+						} else {
+							totals.Discount = r.Value
+						}
+					case discountrule.TypeShipping:
+						totals.Shipping = 0
+					}
+				}
+				_, _ = d.Update().SetUsageCount(d.UsageCount + 1).Save(ctx)
+			}
+		}
+	}
+
+	total := subtotal - totals.Discount + totals.Shipping
+
 	orderNumber := generateOrderNumber()
 	o, err := tx.Order.Create().
 		SetNumber(orderNumber).
@@ -93,7 +159,12 @@ func (s *Service) CompleteCheckout(ctx context.Context, in CheckoutInput) (*Orde
 		SetPaymentStatus(order.PaymentStatusAwaiting).
 		SetShippingAddress(in.ShippingAddress).
 		SetBillingAddress(in.BillingAddress).
-		SetTotals(map[string]any{"subtotal": total, "total": total, "currency": in.CurrencyCode}).
+		SetTotals(map[string]any{
+			"subtotal": totals.Subtotal, "discount": totals.Discount,
+			"shipping": totals.Shipping, "total": total, "currency": in.CurrencyCode,
+			"discount_code": totals.DiscountCode,
+		}).
+		SetShippingOptionID(in.ShippingOptionID).
 		SetPlacedAt(time.Now()).
 		Save(ctx)
 	if err != nil {
