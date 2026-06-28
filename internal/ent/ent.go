@@ -25,6 +25,9 @@ import (
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/customer"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/customeraddress"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/customergroup"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/discount"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/discountcondition"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/discountrule"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/emailtemplate"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/emailtemplatetranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/formdefinition"
@@ -44,19 +47,25 @@ import (
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/orderreturn"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/page"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/pagetranslation"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/paymentprovider"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/paymentsession"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/permission"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/product"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/productmedia"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/productoption"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/productoptionvalue"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/productshippingprofile"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/producttranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/region"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/returnitem"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/role"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/shippingoption"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/shippingprofile"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/store"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/tag"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/tagtranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/taxrate"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/transaction"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/variant"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/variantoptionvalue"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/variantprice"
@@ -133,6 +142,9 @@ func checkColumn(t, c string) error {
 			customer.Table:                  customer.ValidColumn,
 			customeraddress.Table:           customeraddress.ValidColumn,
 			customergroup.Table:             customergroup.ValidColumn,
+			discount.Table:                  discount.ValidColumn,
+			discountcondition.Table:         discountcondition.ValidColumn,
+			discountrule.Table:              discountrule.ValidColumn,
 			emailtemplate.Table:             emailtemplate.ValidColumn,
 			emailtemplatetranslation.Table:  emailtemplatetranslation.ValidColumn,
 			formdefinition.Table:            formdefinition.ValidColumn,
@@ -152,19 +164,25 @@ func checkColumn(t, c string) error {
 			orderreturn.Table:               orderreturn.ValidColumn,
 			page.Table:                      page.ValidColumn,
 			pagetranslation.Table:           pagetranslation.ValidColumn,
+			paymentprovider.Table:           paymentprovider.ValidColumn,
+			paymentsession.Table:            paymentsession.ValidColumn,
 			permission.Table:                permission.ValidColumn,
 			product.Table:                   product.ValidColumn,
 			productmedia.Table:              productmedia.ValidColumn,
 			productoption.Table:             productoption.ValidColumn,
 			productoptionvalue.Table:        productoptionvalue.ValidColumn,
+			productshippingprofile.Table:    productshippingprofile.ValidColumn,
 			producttranslation.Table:        producttranslation.ValidColumn,
 			region.Table:                    region.ValidColumn,
 			returnitem.Table:                returnitem.ValidColumn,
 			role.Table:                      role.ValidColumn,
+			shippingoption.Table:            shippingoption.ValidColumn,
+			shippingprofile.Table:           shippingprofile.ValidColumn,
 			store.Table:                     store.ValidColumn,
 			tag.Table:                       tag.ValidColumn,
 			tagtranslation.Table:            tagtranslation.ValidColumn,
 			taxrate.Table:                   taxrate.ValidColumn,
+			transaction.Table:               transaction.ValidColumn,
 			variant.Table:                   variant.ValidColumn,
 			variantoptionvalue.Table:        variantoptionvalue.ValidColumn,
 			variantprice.Table:              variantprice.ValidColumn,

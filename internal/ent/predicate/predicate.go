@@ -45,6 +45,15 @@ type CustomerAddress func(*sql.Selector)
 // CustomerGroup is the predicate function for customergroup builders.
 type CustomerGroup func(*sql.Selector)
 
+// Discount is the predicate function for discount builders.
+type Discount func(*sql.Selector)
+
+// DiscountCondition is the predicate function for discountcondition builders.
+type DiscountCondition func(*sql.Selector)
+
+// DiscountRule is the predicate function for discountrule builders.
+type DiscountRule func(*sql.Selector)
+
 // EmailTemplate is the predicate function for emailtemplate builders.
 type EmailTemplate func(*sql.Selector)
 
@@ -102,6 +111,12 @@ type Page func(*sql.Selector)
 // PageTranslation is the predicate function for pagetranslation builders.
 type PageTranslation func(*sql.Selector)
 
+// PaymentProvider is the predicate function for paymentprovider builders.
+type PaymentProvider func(*sql.Selector)
+
+// PaymentSession is the predicate function for paymentsession builders.
+type PaymentSession func(*sql.Selector)
+
 // Permission is the predicate function for permission builders.
 type Permission func(*sql.Selector)
 
@@ -117,6 +132,9 @@ type ProductOption func(*sql.Selector)
 // ProductOptionValue is the predicate function for productoptionvalue builders.
 type ProductOptionValue func(*sql.Selector)
 
+// ProductShippingProfile is the predicate function for productshippingprofile builders.
+type ProductShippingProfile func(*sql.Selector)
+
 // ProductTranslation is the predicate function for producttranslation builders.
 type ProductTranslation func(*sql.Selector)
 
@@ -129,6 +147,12 @@ type ReturnItem func(*sql.Selector)
 // Role is the predicate function for role builders.
 type Role func(*sql.Selector)
 
+// ShippingOption is the predicate function for shippingoption builders.
+type ShippingOption func(*sql.Selector)
+
+// ShippingProfile is the predicate function for shippingprofile builders.
+type ShippingProfile func(*sql.Selector)
+
 // Store is the predicate function for store builders.
 type Store func(*sql.Selector)
 
@@ -140,6 +164,9 @@ type TagTranslation func(*sql.Selector)
 
 // TaxRate is the predicate function for taxrate builders.
 type TaxRate func(*sql.Selector)
+
+// Transaction is the predicate function for transaction builders.
+type Transaction func(*sql.Selector)
 
 // Variant is the predicate function for variant builders.
 type Variant func(*sql.Selector)

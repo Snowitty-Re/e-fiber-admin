@@ -38,6 +38,12 @@ type Tx struct {
 	CustomerAddress *CustomerAddressClient
 	// CustomerGroup is the client for interacting with the CustomerGroup builders.
 	CustomerGroup *CustomerGroupClient
+	// Discount is the client for interacting with the Discount builders.
+	Discount *DiscountClient
+	// DiscountCondition is the client for interacting with the DiscountCondition builders.
+	DiscountCondition *DiscountConditionClient
+	// DiscountRule is the client for interacting with the DiscountRule builders.
+	DiscountRule *DiscountRuleClient
 	// EmailTemplate is the client for interacting with the EmailTemplate builders.
 	EmailTemplate *EmailTemplateClient
 	// EmailTemplateTranslation is the client for interacting with the EmailTemplateTranslation builders.
@@ -76,6 +82,10 @@ type Tx struct {
 	Page *PageClient
 	// PageTranslation is the client for interacting with the PageTranslation builders.
 	PageTranslation *PageTranslationClient
+	// PaymentProvider is the client for interacting with the PaymentProvider builders.
+	PaymentProvider *PaymentProviderClient
+	// PaymentSession is the client for interacting with the PaymentSession builders.
+	PaymentSession *PaymentSessionClient
 	// Permission is the client for interacting with the Permission builders.
 	Permission *PermissionClient
 	// Product is the client for interacting with the Product builders.
@@ -86,6 +96,8 @@ type Tx struct {
 	ProductOption *ProductOptionClient
 	// ProductOptionValue is the client for interacting with the ProductOptionValue builders.
 	ProductOptionValue *ProductOptionValueClient
+	// ProductShippingProfile is the client for interacting with the ProductShippingProfile builders.
+	ProductShippingProfile *ProductShippingProfileClient
 	// ProductTranslation is the client for interacting with the ProductTranslation builders.
 	ProductTranslation *ProductTranslationClient
 	// Region is the client for interacting with the Region builders.
@@ -94,6 +106,10 @@ type Tx struct {
 	ReturnItem *ReturnItemClient
 	// Role is the client for interacting with the Role builders.
 	Role *RoleClient
+	// ShippingOption is the client for interacting with the ShippingOption builders.
+	ShippingOption *ShippingOptionClient
+	// ShippingProfile is the client for interacting with the ShippingProfile builders.
+	ShippingProfile *ShippingProfileClient
 	// Store is the client for interacting with the Store builders.
 	Store *StoreClient
 	// Tag is the client for interacting with the Tag builders.
@@ -102,6 +118,8 @@ type Tx struct {
 	TagTranslation *TagTranslationClient
 	// TaxRate is the client for interacting with the TaxRate builders.
 	TaxRate *TaxRateClient
+	// Transaction is the client for interacting with the Transaction builders.
+	Transaction *TransactionClient
 	// Variant is the client for interacting with the Variant builders.
 	Variant *VariantClient
 	// VariantOptionValue is the client for interacting with the VariantOptionValue builders.
@@ -252,6 +270,9 @@ func (tx *Tx) init() {
 	tx.Customer = NewCustomerClient(tx.config)
 	tx.CustomerAddress = NewCustomerAddressClient(tx.config)
 	tx.CustomerGroup = NewCustomerGroupClient(tx.config)
+	tx.Discount = NewDiscountClient(tx.config)
+	tx.DiscountCondition = NewDiscountConditionClient(tx.config)
+	tx.DiscountRule = NewDiscountRuleClient(tx.config)
 	tx.EmailTemplate = NewEmailTemplateClient(tx.config)
 	tx.EmailTemplateTranslation = NewEmailTemplateTranslationClient(tx.config)
 	tx.FormDefinition = NewFormDefinitionClient(tx.config)
@@ -271,19 +292,25 @@ func (tx *Tx) init() {
 	tx.OrderReturn = NewOrderReturnClient(tx.config)
 	tx.Page = NewPageClient(tx.config)
 	tx.PageTranslation = NewPageTranslationClient(tx.config)
+	tx.PaymentProvider = NewPaymentProviderClient(tx.config)
+	tx.PaymentSession = NewPaymentSessionClient(tx.config)
 	tx.Permission = NewPermissionClient(tx.config)
 	tx.Product = NewProductClient(tx.config)
 	tx.ProductMedia = NewProductMediaClient(tx.config)
 	tx.ProductOption = NewProductOptionClient(tx.config)
 	tx.ProductOptionValue = NewProductOptionValueClient(tx.config)
+	tx.ProductShippingProfile = NewProductShippingProfileClient(tx.config)
 	tx.ProductTranslation = NewProductTranslationClient(tx.config)
 	tx.Region = NewRegionClient(tx.config)
 	tx.ReturnItem = NewReturnItemClient(tx.config)
 	tx.Role = NewRoleClient(tx.config)
+	tx.ShippingOption = NewShippingOptionClient(tx.config)
+	tx.ShippingProfile = NewShippingProfileClient(tx.config)
 	tx.Store = NewStoreClient(tx.config)
 	tx.Tag = NewTagClient(tx.config)
 	tx.TagTranslation = NewTagTranslationClient(tx.config)
 	tx.TaxRate = NewTaxRateClient(tx.config)
+	tx.Transaction = NewTransactionClient(tx.config)
 	tx.Variant = NewVariantClient(tx.config)
 	tx.VariantOptionValue = NewVariantOptionValueClient(tx.config)
 	tx.VariantPrice = NewVariantPriceClient(tx.config)

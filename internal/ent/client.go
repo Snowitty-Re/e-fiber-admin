@@ -28,6 +28,9 @@ import (
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/customer"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/customeraddress"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/customergroup"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/discount"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/discountcondition"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/discountrule"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/emailtemplate"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/emailtemplatetranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/formdefinition"
@@ -47,19 +50,25 @@ import (
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/orderreturn"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/page"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/pagetranslation"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/paymentprovider"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/paymentsession"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/permission"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/product"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/productmedia"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/productoption"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/productoptionvalue"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/productshippingprofile"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/producttranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/region"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/returnitem"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/role"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/shippingoption"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/shippingprofile"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/store"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/tag"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/tagtranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/taxrate"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/transaction"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/variant"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/variantoptionvalue"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/variantprice"
@@ -96,6 +105,12 @@ type Client struct {
 	CustomerAddress *CustomerAddressClient
 	// CustomerGroup is the client for interacting with the CustomerGroup builders.
 	CustomerGroup *CustomerGroupClient
+	// Discount is the client for interacting with the Discount builders.
+	Discount *DiscountClient
+	// DiscountCondition is the client for interacting with the DiscountCondition builders.
+	DiscountCondition *DiscountConditionClient
+	// DiscountRule is the client for interacting with the DiscountRule builders.
+	DiscountRule *DiscountRuleClient
 	// EmailTemplate is the client for interacting with the EmailTemplate builders.
 	EmailTemplate *EmailTemplateClient
 	// EmailTemplateTranslation is the client for interacting with the EmailTemplateTranslation builders.
@@ -134,6 +149,10 @@ type Client struct {
 	Page *PageClient
 	// PageTranslation is the client for interacting with the PageTranslation builders.
 	PageTranslation *PageTranslationClient
+	// PaymentProvider is the client for interacting with the PaymentProvider builders.
+	PaymentProvider *PaymentProviderClient
+	// PaymentSession is the client for interacting with the PaymentSession builders.
+	PaymentSession *PaymentSessionClient
 	// Permission is the client for interacting with the Permission builders.
 	Permission *PermissionClient
 	// Product is the client for interacting with the Product builders.
@@ -144,6 +163,8 @@ type Client struct {
 	ProductOption *ProductOptionClient
 	// ProductOptionValue is the client for interacting with the ProductOptionValue builders.
 	ProductOptionValue *ProductOptionValueClient
+	// ProductShippingProfile is the client for interacting with the ProductShippingProfile builders.
+	ProductShippingProfile *ProductShippingProfileClient
 	// ProductTranslation is the client for interacting with the ProductTranslation builders.
 	ProductTranslation *ProductTranslationClient
 	// Region is the client for interacting with the Region builders.
@@ -152,6 +173,10 @@ type Client struct {
 	ReturnItem *ReturnItemClient
 	// Role is the client for interacting with the Role builders.
 	Role *RoleClient
+	// ShippingOption is the client for interacting with the ShippingOption builders.
+	ShippingOption *ShippingOptionClient
+	// ShippingProfile is the client for interacting with the ShippingProfile builders.
+	ShippingProfile *ShippingProfileClient
 	// Store is the client for interacting with the Store builders.
 	Store *StoreClient
 	// Tag is the client for interacting with the Tag builders.
@@ -160,6 +185,8 @@ type Client struct {
 	TagTranslation *TagTranslationClient
 	// TaxRate is the client for interacting with the TaxRate builders.
 	TaxRate *TaxRateClient
+	// Transaction is the client for interacting with the Transaction builders.
+	Transaction *TransactionClient
 	// Variant is the client for interacting with the Variant builders.
 	Variant *VariantClient
 	// VariantOptionValue is the client for interacting with the VariantOptionValue builders.
@@ -190,6 +217,9 @@ func (c *Client) init() {
 	c.Customer = NewCustomerClient(c.config)
 	c.CustomerAddress = NewCustomerAddressClient(c.config)
 	c.CustomerGroup = NewCustomerGroupClient(c.config)
+	c.Discount = NewDiscountClient(c.config)
+	c.DiscountCondition = NewDiscountConditionClient(c.config)
+	c.DiscountRule = NewDiscountRuleClient(c.config)
 	c.EmailTemplate = NewEmailTemplateClient(c.config)
 	c.EmailTemplateTranslation = NewEmailTemplateTranslationClient(c.config)
 	c.FormDefinition = NewFormDefinitionClient(c.config)
@@ -209,19 +239,25 @@ func (c *Client) init() {
 	c.OrderReturn = NewOrderReturnClient(c.config)
 	c.Page = NewPageClient(c.config)
 	c.PageTranslation = NewPageTranslationClient(c.config)
+	c.PaymentProvider = NewPaymentProviderClient(c.config)
+	c.PaymentSession = NewPaymentSessionClient(c.config)
 	c.Permission = NewPermissionClient(c.config)
 	c.Product = NewProductClient(c.config)
 	c.ProductMedia = NewProductMediaClient(c.config)
 	c.ProductOption = NewProductOptionClient(c.config)
 	c.ProductOptionValue = NewProductOptionValueClient(c.config)
+	c.ProductShippingProfile = NewProductShippingProfileClient(c.config)
 	c.ProductTranslation = NewProductTranslationClient(c.config)
 	c.Region = NewRegionClient(c.config)
 	c.ReturnItem = NewReturnItemClient(c.config)
 	c.Role = NewRoleClient(c.config)
+	c.ShippingOption = NewShippingOptionClient(c.config)
+	c.ShippingProfile = NewShippingProfileClient(c.config)
 	c.Store = NewStoreClient(c.config)
 	c.Tag = NewTagClient(c.config)
 	c.TagTranslation = NewTagTranslationClient(c.config)
 	c.TaxRate = NewTaxRateClient(c.config)
+	c.Transaction = NewTransactionClient(c.config)
 	c.Variant = NewVariantClient(c.config)
 	c.VariantOptionValue = NewVariantOptionValueClient(c.config)
 	c.VariantPrice = NewVariantPriceClient(c.config)
@@ -330,6 +366,9 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Customer:                  NewCustomerClient(cfg),
 		CustomerAddress:           NewCustomerAddressClient(cfg),
 		CustomerGroup:             NewCustomerGroupClient(cfg),
+		Discount:                  NewDiscountClient(cfg),
+		DiscountCondition:         NewDiscountConditionClient(cfg),
+		DiscountRule:              NewDiscountRuleClient(cfg),
 		EmailTemplate:             NewEmailTemplateClient(cfg),
 		EmailTemplateTranslation:  NewEmailTemplateTranslationClient(cfg),
 		FormDefinition:            NewFormDefinitionClient(cfg),
@@ -349,19 +388,25 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		OrderReturn:               NewOrderReturnClient(cfg),
 		Page:                      NewPageClient(cfg),
 		PageTranslation:           NewPageTranslationClient(cfg),
+		PaymentProvider:           NewPaymentProviderClient(cfg),
+		PaymentSession:            NewPaymentSessionClient(cfg),
 		Permission:                NewPermissionClient(cfg),
 		Product:                   NewProductClient(cfg),
 		ProductMedia:              NewProductMediaClient(cfg),
 		ProductOption:             NewProductOptionClient(cfg),
 		ProductOptionValue:        NewProductOptionValueClient(cfg),
+		ProductShippingProfile:    NewProductShippingProfileClient(cfg),
 		ProductTranslation:        NewProductTranslationClient(cfg),
 		Region:                    NewRegionClient(cfg),
 		ReturnItem:                NewReturnItemClient(cfg),
 		Role:                      NewRoleClient(cfg),
+		ShippingOption:            NewShippingOptionClient(cfg),
+		ShippingProfile:           NewShippingProfileClient(cfg),
 		Store:                     NewStoreClient(cfg),
 		Tag:                       NewTagClient(cfg),
 		TagTranslation:            NewTagTranslationClient(cfg),
 		TaxRate:                   NewTaxRateClient(cfg),
+		Transaction:               NewTransactionClient(cfg),
 		Variant:                   NewVariantClient(cfg),
 		VariantOptionValue:        NewVariantOptionValueClient(cfg),
 		VariantPrice:              NewVariantPriceClient(cfg),
@@ -397,6 +442,9 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Customer:                  NewCustomerClient(cfg),
 		CustomerAddress:           NewCustomerAddressClient(cfg),
 		CustomerGroup:             NewCustomerGroupClient(cfg),
+		Discount:                  NewDiscountClient(cfg),
+		DiscountCondition:         NewDiscountConditionClient(cfg),
+		DiscountRule:              NewDiscountRuleClient(cfg),
 		EmailTemplate:             NewEmailTemplateClient(cfg),
 		EmailTemplateTranslation:  NewEmailTemplateTranslationClient(cfg),
 		FormDefinition:            NewFormDefinitionClient(cfg),
@@ -416,19 +464,25 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		OrderReturn:               NewOrderReturnClient(cfg),
 		Page:                      NewPageClient(cfg),
 		PageTranslation:           NewPageTranslationClient(cfg),
+		PaymentProvider:           NewPaymentProviderClient(cfg),
+		PaymentSession:            NewPaymentSessionClient(cfg),
 		Permission:                NewPermissionClient(cfg),
 		Product:                   NewProductClient(cfg),
 		ProductMedia:              NewProductMediaClient(cfg),
 		ProductOption:             NewProductOptionClient(cfg),
 		ProductOptionValue:        NewProductOptionValueClient(cfg),
+		ProductShippingProfile:    NewProductShippingProfileClient(cfg),
 		ProductTranslation:        NewProductTranslationClient(cfg),
 		Region:                    NewRegionClient(cfg),
 		ReturnItem:                NewReturnItemClient(cfg),
 		Role:                      NewRoleClient(cfg),
+		ShippingOption:            NewShippingOptionClient(cfg),
+		ShippingProfile:           NewShippingProfileClient(cfg),
 		Store:                     NewStoreClient(cfg),
 		Tag:                       NewTagClient(cfg),
 		TagTranslation:            NewTagTranslationClient(cfg),
 		TaxRate:                   NewTaxRateClient(cfg),
+		Transaction:               NewTransactionClient(cfg),
 		Variant:                   NewVariantClient(cfg),
 		VariantOptionValue:        NewVariantOptionValueClient(cfg),
 		VariantPrice:              NewVariantPriceClient(cfg),
@@ -463,14 +517,17 @@ func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.AdminUser, c.BlogPost, c.BlogPostTranslation, c.Cart, c.CartItem, c.Category,
 		c.CategoryTranslation, c.Collection, c.CollectionTranslation, c.Currency,
-		c.Customer, c.CustomerAddress, c.CustomerGroup, c.EmailTemplate,
+		c.Customer, c.CustomerAddress, c.CustomerGroup, c.Discount,
+		c.DiscountCondition, c.DiscountRule, c.EmailTemplate,
 		c.EmailTemplateTranslation, c.FormDefinition, c.FormDefinitionTranslation,
 		c.Fulfillment, c.FulfillmentItem, c.Inquiry, c.Locale, c.Media,
 		c.MediaTranslation, c.Menu, c.MenuItem, c.MenuItemTranslation, c.Notification,
-		c.Order, c.OrderItem, c.OrderReturn, c.Page, c.PageTranslation, c.Permission,
-		c.Product, c.ProductMedia, c.ProductOption, c.ProductOptionValue,
-		c.ProductTranslation, c.Region, c.ReturnItem, c.Role, c.Store, c.Tag,
-		c.TagTranslation, c.TaxRate, c.Variant, c.VariantOptionValue, c.VariantPrice,
+		c.Order, c.OrderItem, c.OrderReturn, c.Page, c.PageTranslation,
+		c.PaymentProvider, c.PaymentSession, c.Permission, c.Product, c.ProductMedia,
+		c.ProductOption, c.ProductOptionValue, c.ProductShippingProfile,
+		c.ProductTranslation, c.Region, c.ReturnItem, c.Role, c.ShippingOption,
+		c.ShippingProfile, c.Store, c.Tag, c.TagTranslation, c.TaxRate, c.Transaction,
+		c.Variant, c.VariantOptionValue, c.VariantPrice,
 	} {
 		n.Use(hooks...)
 	}
@@ -482,14 +539,17 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.AdminUser, c.BlogPost, c.BlogPostTranslation, c.Cart, c.CartItem, c.Category,
 		c.CategoryTranslation, c.Collection, c.CollectionTranslation, c.Currency,
-		c.Customer, c.CustomerAddress, c.CustomerGroup, c.EmailTemplate,
+		c.Customer, c.CustomerAddress, c.CustomerGroup, c.Discount,
+		c.DiscountCondition, c.DiscountRule, c.EmailTemplate,
 		c.EmailTemplateTranslation, c.FormDefinition, c.FormDefinitionTranslation,
 		c.Fulfillment, c.FulfillmentItem, c.Inquiry, c.Locale, c.Media,
 		c.MediaTranslation, c.Menu, c.MenuItem, c.MenuItemTranslation, c.Notification,
-		c.Order, c.OrderItem, c.OrderReturn, c.Page, c.PageTranslation, c.Permission,
-		c.Product, c.ProductMedia, c.ProductOption, c.ProductOptionValue,
-		c.ProductTranslation, c.Region, c.ReturnItem, c.Role, c.Store, c.Tag,
-		c.TagTranslation, c.TaxRate, c.Variant, c.VariantOptionValue, c.VariantPrice,
+		c.Order, c.OrderItem, c.OrderReturn, c.Page, c.PageTranslation,
+		c.PaymentProvider, c.PaymentSession, c.Permission, c.Product, c.ProductMedia,
+		c.ProductOption, c.ProductOptionValue, c.ProductShippingProfile,
+		c.ProductTranslation, c.Region, c.ReturnItem, c.Role, c.ShippingOption,
+		c.ShippingProfile, c.Store, c.Tag, c.TagTranslation, c.TaxRate, c.Transaction,
+		c.Variant, c.VariantOptionValue, c.VariantPrice,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -524,6 +584,12 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.CustomerAddress.mutate(ctx, m)
 	case *CustomerGroupMutation:
 		return c.CustomerGroup.mutate(ctx, m)
+	case *DiscountMutation:
+		return c.Discount.mutate(ctx, m)
+	case *DiscountConditionMutation:
+		return c.DiscountCondition.mutate(ctx, m)
+	case *DiscountRuleMutation:
+		return c.DiscountRule.mutate(ctx, m)
 	case *EmailTemplateMutation:
 		return c.EmailTemplate.mutate(ctx, m)
 	case *EmailTemplateTranslationMutation:
@@ -562,6 +628,10 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Page.mutate(ctx, m)
 	case *PageTranslationMutation:
 		return c.PageTranslation.mutate(ctx, m)
+	case *PaymentProviderMutation:
+		return c.PaymentProvider.mutate(ctx, m)
+	case *PaymentSessionMutation:
+		return c.PaymentSession.mutate(ctx, m)
 	case *PermissionMutation:
 		return c.Permission.mutate(ctx, m)
 	case *ProductMutation:
@@ -572,6 +642,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.ProductOption.mutate(ctx, m)
 	case *ProductOptionValueMutation:
 		return c.ProductOptionValue.mutate(ctx, m)
+	case *ProductShippingProfileMutation:
+		return c.ProductShippingProfile.mutate(ctx, m)
 	case *ProductTranslationMutation:
 		return c.ProductTranslation.mutate(ctx, m)
 	case *RegionMutation:
@@ -580,6 +652,10 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.ReturnItem.mutate(ctx, m)
 	case *RoleMutation:
 		return c.Role.mutate(ctx, m)
+	case *ShippingOptionMutation:
+		return c.ShippingOption.mutate(ctx, m)
+	case *ShippingProfileMutation:
+		return c.ShippingProfile.mutate(ctx, m)
 	case *StoreMutation:
 		return c.Store.mutate(ctx, m)
 	case *TagMutation:
@@ -588,6 +664,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.TagTranslation.mutate(ctx, m)
 	case *TaxRateMutation:
 		return c.TaxRate.mutate(ctx, m)
+	case *TransactionMutation:
+		return c.Transaction.mutate(ctx, m)
 	case *VariantMutation:
 		return c.Variant.mutate(ctx, m)
 	case *VariantOptionValueMutation:
@@ -2533,6 +2611,469 @@ func (c *CustomerGroupClient) mutate(ctx context.Context, m *CustomerGroupMutati
 		return (&CustomerGroupDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown CustomerGroup mutation op: %q", m.Op())
+	}
+}
+
+// DiscountClient is a client for the Discount schema.
+type DiscountClient struct {
+	config
+}
+
+// NewDiscountClient returns a client for the Discount from the given config.
+func NewDiscountClient(c config) *DiscountClient {
+	return &DiscountClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `discount.Hooks(f(g(h())))`.
+func (c *DiscountClient) Use(hooks ...Hook) {
+	c.hooks.Discount = append(c.hooks.Discount, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `discount.Intercept(f(g(h())))`.
+func (c *DiscountClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Discount = append(c.inters.Discount, interceptors...)
+}
+
+// Create returns a builder for creating a Discount entity.
+func (c *DiscountClient) Create() *DiscountCreate {
+	mutation := newDiscountMutation(c.config, OpCreate)
+	return &DiscountCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Discount entities.
+func (c *DiscountClient) CreateBulk(builders ...*DiscountCreate) *DiscountCreateBulk {
+	return &DiscountCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *DiscountClient) MapCreateBulk(slice any, setFunc func(*DiscountCreate, int)) *DiscountCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &DiscountCreateBulk{err: fmt.Errorf("calling to DiscountClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*DiscountCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &DiscountCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Discount.
+func (c *DiscountClient) Update() *DiscountUpdate {
+	mutation := newDiscountMutation(c.config, OpUpdate)
+	return &DiscountUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *DiscountClient) UpdateOne(_m *Discount) *DiscountUpdateOne {
+	mutation := newDiscountMutation(c.config, OpUpdateOne, withDiscount(_m))
+	return &DiscountUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *DiscountClient) UpdateOneID(id int) *DiscountUpdateOne {
+	mutation := newDiscountMutation(c.config, OpUpdateOne, withDiscountID(id))
+	return &DiscountUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Discount.
+func (c *DiscountClient) Delete() *DiscountDelete {
+	mutation := newDiscountMutation(c.config, OpDelete)
+	return &DiscountDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *DiscountClient) DeleteOne(_m *Discount) *DiscountDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *DiscountClient) DeleteOneID(id int) *DiscountDeleteOne {
+	builder := c.Delete().Where(discount.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &DiscountDeleteOne{builder}
+}
+
+// Query returns a query builder for Discount.
+func (c *DiscountClient) Query() *DiscountQuery {
+	return &DiscountQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeDiscount},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Discount entity by its id.
+func (c *DiscountClient) Get(ctx context.Context, id int) (*Discount, error) {
+	return c.Query().Where(discount.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *DiscountClient) GetX(ctx context.Context, id int) *Discount {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryRules queries the rules edge of a Discount.
+func (c *DiscountClient) QueryRules(_m *Discount) *DiscountRuleQuery {
+	query := (&DiscountRuleClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(discount.Table, discount.FieldID, id),
+			sqlgraph.To(discountrule.Table, discountrule.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, discount.RulesTable, discount.RulesColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryConditions queries the conditions edge of a Discount.
+func (c *DiscountClient) QueryConditions(_m *Discount) *DiscountConditionQuery {
+	query := (&DiscountConditionClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(discount.Table, discount.FieldID, id),
+			sqlgraph.To(discountcondition.Table, discountcondition.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, discount.ConditionsTable, discount.ConditionsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *DiscountClient) Hooks() []Hook {
+	return c.hooks.Discount
+}
+
+// Interceptors returns the client interceptors.
+func (c *DiscountClient) Interceptors() []Interceptor {
+	return c.inters.Discount
+}
+
+func (c *DiscountClient) mutate(ctx context.Context, m *DiscountMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&DiscountCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&DiscountUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&DiscountUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&DiscountDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Discount mutation op: %q", m.Op())
+	}
+}
+
+// DiscountConditionClient is a client for the DiscountCondition schema.
+type DiscountConditionClient struct {
+	config
+}
+
+// NewDiscountConditionClient returns a client for the DiscountCondition from the given config.
+func NewDiscountConditionClient(c config) *DiscountConditionClient {
+	return &DiscountConditionClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `discountcondition.Hooks(f(g(h())))`.
+func (c *DiscountConditionClient) Use(hooks ...Hook) {
+	c.hooks.DiscountCondition = append(c.hooks.DiscountCondition, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `discountcondition.Intercept(f(g(h())))`.
+func (c *DiscountConditionClient) Intercept(interceptors ...Interceptor) {
+	c.inters.DiscountCondition = append(c.inters.DiscountCondition, interceptors...)
+}
+
+// Create returns a builder for creating a DiscountCondition entity.
+func (c *DiscountConditionClient) Create() *DiscountConditionCreate {
+	mutation := newDiscountConditionMutation(c.config, OpCreate)
+	return &DiscountConditionCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of DiscountCondition entities.
+func (c *DiscountConditionClient) CreateBulk(builders ...*DiscountConditionCreate) *DiscountConditionCreateBulk {
+	return &DiscountConditionCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *DiscountConditionClient) MapCreateBulk(slice any, setFunc func(*DiscountConditionCreate, int)) *DiscountConditionCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &DiscountConditionCreateBulk{err: fmt.Errorf("calling to DiscountConditionClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*DiscountConditionCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &DiscountConditionCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for DiscountCondition.
+func (c *DiscountConditionClient) Update() *DiscountConditionUpdate {
+	mutation := newDiscountConditionMutation(c.config, OpUpdate)
+	return &DiscountConditionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *DiscountConditionClient) UpdateOne(_m *DiscountCondition) *DiscountConditionUpdateOne {
+	mutation := newDiscountConditionMutation(c.config, OpUpdateOne, withDiscountCondition(_m))
+	return &DiscountConditionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *DiscountConditionClient) UpdateOneID(id int) *DiscountConditionUpdateOne {
+	mutation := newDiscountConditionMutation(c.config, OpUpdateOne, withDiscountConditionID(id))
+	return &DiscountConditionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for DiscountCondition.
+func (c *DiscountConditionClient) Delete() *DiscountConditionDelete {
+	mutation := newDiscountConditionMutation(c.config, OpDelete)
+	return &DiscountConditionDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *DiscountConditionClient) DeleteOne(_m *DiscountCondition) *DiscountConditionDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *DiscountConditionClient) DeleteOneID(id int) *DiscountConditionDeleteOne {
+	builder := c.Delete().Where(discountcondition.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &DiscountConditionDeleteOne{builder}
+}
+
+// Query returns a query builder for DiscountCondition.
+func (c *DiscountConditionClient) Query() *DiscountConditionQuery {
+	return &DiscountConditionQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeDiscountCondition},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a DiscountCondition entity by its id.
+func (c *DiscountConditionClient) Get(ctx context.Context, id int) (*DiscountCondition, error) {
+	return c.Query().Where(discountcondition.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *DiscountConditionClient) GetX(ctx context.Context, id int) *DiscountCondition {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryDiscount queries the discount edge of a DiscountCondition.
+func (c *DiscountConditionClient) QueryDiscount(_m *DiscountCondition) *DiscountQuery {
+	query := (&DiscountClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(discountcondition.Table, discountcondition.FieldID, id),
+			sqlgraph.To(discount.Table, discount.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, discountcondition.DiscountTable, discountcondition.DiscountColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *DiscountConditionClient) Hooks() []Hook {
+	return c.hooks.DiscountCondition
+}
+
+// Interceptors returns the client interceptors.
+func (c *DiscountConditionClient) Interceptors() []Interceptor {
+	return c.inters.DiscountCondition
+}
+
+func (c *DiscountConditionClient) mutate(ctx context.Context, m *DiscountConditionMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&DiscountConditionCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&DiscountConditionUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&DiscountConditionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&DiscountConditionDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown DiscountCondition mutation op: %q", m.Op())
+	}
+}
+
+// DiscountRuleClient is a client for the DiscountRule schema.
+type DiscountRuleClient struct {
+	config
+}
+
+// NewDiscountRuleClient returns a client for the DiscountRule from the given config.
+func NewDiscountRuleClient(c config) *DiscountRuleClient {
+	return &DiscountRuleClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `discountrule.Hooks(f(g(h())))`.
+func (c *DiscountRuleClient) Use(hooks ...Hook) {
+	c.hooks.DiscountRule = append(c.hooks.DiscountRule, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `discountrule.Intercept(f(g(h())))`.
+func (c *DiscountRuleClient) Intercept(interceptors ...Interceptor) {
+	c.inters.DiscountRule = append(c.inters.DiscountRule, interceptors...)
+}
+
+// Create returns a builder for creating a DiscountRule entity.
+func (c *DiscountRuleClient) Create() *DiscountRuleCreate {
+	mutation := newDiscountRuleMutation(c.config, OpCreate)
+	return &DiscountRuleCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of DiscountRule entities.
+func (c *DiscountRuleClient) CreateBulk(builders ...*DiscountRuleCreate) *DiscountRuleCreateBulk {
+	return &DiscountRuleCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *DiscountRuleClient) MapCreateBulk(slice any, setFunc func(*DiscountRuleCreate, int)) *DiscountRuleCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &DiscountRuleCreateBulk{err: fmt.Errorf("calling to DiscountRuleClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*DiscountRuleCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &DiscountRuleCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for DiscountRule.
+func (c *DiscountRuleClient) Update() *DiscountRuleUpdate {
+	mutation := newDiscountRuleMutation(c.config, OpUpdate)
+	return &DiscountRuleUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *DiscountRuleClient) UpdateOne(_m *DiscountRule) *DiscountRuleUpdateOne {
+	mutation := newDiscountRuleMutation(c.config, OpUpdateOne, withDiscountRule(_m))
+	return &DiscountRuleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *DiscountRuleClient) UpdateOneID(id int) *DiscountRuleUpdateOne {
+	mutation := newDiscountRuleMutation(c.config, OpUpdateOne, withDiscountRuleID(id))
+	return &DiscountRuleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for DiscountRule.
+func (c *DiscountRuleClient) Delete() *DiscountRuleDelete {
+	mutation := newDiscountRuleMutation(c.config, OpDelete)
+	return &DiscountRuleDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *DiscountRuleClient) DeleteOne(_m *DiscountRule) *DiscountRuleDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *DiscountRuleClient) DeleteOneID(id int) *DiscountRuleDeleteOne {
+	builder := c.Delete().Where(discountrule.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &DiscountRuleDeleteOne{builder}
+}
+
+// Query returns a query builder for DiscountRule.
+func (c *DiscountRuleClient) Query() *DiscountRuleQuery {
+	return &DiscountRuleQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeDiscountRule},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a DiscountRule entity by its id.
+func (c *DiscountRuleClient) Get(ctx context.Context, id int) (*DiscountRule, error) {
+	return c.Query().Where(discountrule.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *DiscountRuleClient) GetX(ctx context.Context, id int) *DiscountRule {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryDiscount queries the discount edge of a DiscountRule.
+func (c *DiscountRuleClient) QueryDiscount(_m *DiscountRule) *DiscountQuery {
+	query := (&DiscountClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(discountrule.Table, discountrule.FieldID, id),
+			sqlgraph.To(discount.Table, discount.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, discountrule.DiscountTable, discountrule.DiscountColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *DiscountRuleClient) Hooks() []Hook {
+	return c.hooks.DiscountRule
+}
+
+// Interceptors returns the client interceptors.
+func (c *DiscountRuleClient) Interceptors() []Interceptor {
+	return c.inters.DiscountRule
+}
+
+func (c *DiscountRuleClient) mutate(ctx context.Context, m *DiscountRuleMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&DiscountRuleCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&DiscountRuleUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&DiscountRuleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&DiscountRuleDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown DiscountRule mutation op: %q", m.Op())
 	}
 }
 
@@ -5431,6 +5972,304 @@ func (c *PageTranslationClient) mutate(ctx context.Context, m *PageTranslationMu
 	}
 }
 
+// PaymentProviderClient is a client for the PaymentProvider schema.
+type PaymentProviderClient struct {
+	config
+}
+
+// NewPaymentProviderClient returns a client for the PaymentProvider from the given config.
+func NewPaymentProviderClient(c config) *PaymentProviderClient {
+	return &PaymentProviderClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `paymentprovider.Hooks(f(g(h())))`.
+func (c *PaymentProviderClient) Use(hooks ...Hook) {
+	c.hooks.PaymentProvider = append(c.hooks.PaymentProvider, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `paymentprovider.Intercept(f(g(h())))`.
+func (c *PaymentProviderClient) Intercept(interceptors ...Interceptor) {
+	c.inters.PaymentProvider = append(c.inters.PaymentProvider, interceptors...)
+}
+
+// Create returns a builder for creating a PaymentProvider entity.
+func (c *PaymentProviderClient) Create() *PaymentProviderCreate {
+	mutation := newPaymentProviderMutation(c.config, OpCreate)
+	return &PaymentProviderCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of PaymentProvider entities.
+func (c *PaymentProviderClient) CreateBulk(builders ...*PaymentProviderCreate) *PaymentProviderCreateBulk {
+	return &PaymentProviderCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *PaymentProviderClient) MapCreateBulk(slice any, setFunc func(*PaymentProviderCreate, int)) *PaymentProviderCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &PaymentProviderCreateBulk{err: fmt.Errorf("calling to PaymentProviderClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*PaymentProviderCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &PaymentProviderCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for PaymentProvider.
+func (c *PaymentProviderClient) Update() *PaymentProviderUpdate {
+	mutation := newPaymentProviderMutation(c.config, OpUpdate)
+	return &PaymentProviderUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *PaymentProviderClient) UpdateOne(_m *PaymentProvider) *PaymentProviderUpdateOne {
+	mutation := newPaymentProviderMutation(c.config, OpUpdateOne, withPaymentProvider(_m))
+	return &PaymentProviderUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *PaymentProviderClient) UpdateOneID(id int) *PaymentProviderUpdateOne {
+	mutation := newPaymentProviderMutation(c.config, OpUpdateOne, withPaymentProviderID(id))
+	return &PaymentProviderUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for PaymentProvider.
+func (c *PaymentProviderClient) Delete() *PaymentProviderDelete {
+	mutation := newPaymentProviderMutation(c.config, OpDelete)
+	return &PaymentProviderDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *PaymentProviderClient) DeleteOne(_m *PaymentProvider) *PaymentProviderDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *PaymentProviderClient) DeleteOneID(id int) *PaymentProviderDeleteOne {
+	builder := c.Delete().Where(paymentprovider.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &PaymentProviderDeleteOne{builder}
+}
+
+// Query returns a query builder for PaymentProvider.
+func (c *PaymentProviderClient) Query() *PaymentProviderQuery {
+	return &PaymentProviderQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypePaymentProvider},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a PaymentProvider entity by its id.
+func (c *PaymentProviderClient) Get(ctx context.Context, id int) (*PaymentProvider, error) {
+	return c.Query().Where(paymentprovider.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *PaymentProviderClient) GetX(ctx context.Context, id int) *PaymentProvider {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QuerySessions queries the sessions edge of a PaymentProvider.
+func (c *PaymentProviderClient) QuerySessions(_m *PaymentProvider) *PaymentSessionQuery {
+	query := (&PaymentSessionClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(paymentprovider.Table, paymentprovider.FieldID, id),
+			sqlgraph.To(paymentsession.Table, paymentsession.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, paymentprovider.SessionsTable, paymentprovider.SessionsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *PaymentProviderClient) Hooks() []Hook {
+	return c.hooks.PaymentProvider
+}
+
+// Interceptors returns the client interceptors.
+func (c *PaymentProviderClient) Interceptors() []Interceptor {
+	return c.inters.PaymentProvider
+}
+
+func (c *PaymentProviderClient) mutate(ctx context.Context, m *PaymentProviderMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&PaymentProviderCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&PaymentProviderUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&PaymentProviderUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&PaymentProviderDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown PaymentProvider mutation op: %q", m.Op())
+	}
+}
+
+// PaymentSessionClient is a client for the PaymentSession schema.
+type PaymentSessionClient struct {
+	config
+}
+
+// NewPaymentSessionClient returns a client for the PaymentSession from the given config.
+func NewPaymentSessionClient(c config) *PaymentSessionClient {
+	return &PaymentSessionClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `paymentsession.Hooks(f(g(h())))`.
+func (c *PaymentSessionClient) Use(hooks ...Hook) {
+	c.hooks.PaymentSession = append(c.hooks.PaymentSession, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `paymentsession.Intercept(f(g(h())))`.
+func (c *PaymentSessionClient) Intercept(interceptors ...Interceptor) {
+	c.inters.PaymentSession = append(c.inters.PaymentSession, interceptors...)
+}
+
+// Create returns a builder for creating a PaymentSession entity.
+func (c *PaymentSessionClient) Create() *PaymentSessionCreate {
+	mutation := newPaymentSessionMutation(c.config, OpCreate)
+	return &PaymentSessionCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of PaymentSession entities.
+func (c *PaymentSessionClient) CreateBulk(builders ...*PaymentSessionCreate) *PaymentSessionCreateBulk {
+	return &PaymentSessionCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *PaymentSessionClient) MapCreateBulk(slice any, setFunc func(*PaymentSessionCreate, int)) *PaymentSessionCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &PaymentSessionCreateBulk{err: fmt.Errorf("calling to PaymentSessionClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*PaymentSessionCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &PaymentSessionCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for PaymentSession.
+func (c *PaymentSessionClient) Update() *PaymentSessionUpdate {
+	mutation := newPaymentSessionMutation(c.config, OpUpdate)
+	return &PaymentSessionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *PaymentSessionClient) UpdateOne(_m *PaymentSession) *PaymentSessionUpdateOne {
+	mutation := newPaymentSessionMutation(c.config, OpUpdateOne, withPaymentSession(_m))
+	return &PaymentSessionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *PaymentSessionClient) UpdateOneID(id int) *PaymentSessionUpdateOne {
+	mutation := newPaymentSessionMutation(c.config, OpUpdateOne, withPaymentSessionID(id))
+	return &PaymentSessionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for PaymentSession.
+func (c *PaymentSessionClient) Delete() *PaymentSessionDelete {
+	mutation := newPaymentSessionMutation(c.config, OpDelete)
+	return &PaymentSessionDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *PaymentSessionClient) DeleteOne(_m *PaymentSession) *PaymentSessionDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *PaymentSessionClient) DeleteOneID(id int) *PaymentSessionDeleteOne {
+	builder := c.Delete().Where(paymentsession.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &PaymentSessionDeleteOne{builder}
+}
+
+// Query returns a query builder for PaymentSession.
+func (c *PaymentSessionClient) Query() *PaymentSessionQuery {
+	return &PaymentSessionQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypePaymentSession},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a PaymentSession entity by its id.
+func (c *PaymentSessionClient) Get(ctx context.Context, id int) (*PaymentSession, error) {
+	return c.Query().Where(paymentsession.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *PaymentSessionClient) GetX(ctx context.Context, id int) *PaymentSession {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryTransactions queries the transactions edge of a PaymentSession.
+func (c *PaymentSessionClient) QueryTransactions(_m *PaymentSession) *TransactionQuery {
+	query := (&TransactionClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(paymentsession.Table, paymentsession.FieldID, id),
+			sqlgraph.To(transaction.Table, transaction.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, paymentsession.TransactionsTable, paymentsession.TransactionsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *PaymentSessionClient) Hooks() []Hook {
+	return c.hooks.PaymentSession
+}
+
+// Interceptors returns the client interceptors.
+func (c *PaymentSessionClient) Interceptors() []Interceptor {
+	return c.inters.PaymentSession
+}
+
+func (c *PaymentSessionClient) mutate(ctx context.Context, m *PaymentSessionMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&PaymentSessionCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&PaymentSessionUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&PaymentSessionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&PaymentSessionDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown PaymentSession mutation op: %q", m.Op())
+	}
+}
+
 // PermissionClient is a client for the Permission schema.
 type PermissionClient struct {
 	config
@@ -6208,6 +7047,139 @@ func (c *ProductOptionValueClient) mutate(ctx context.Context, m *ProductOptionV
 	}
 }
 
+// ProductShippingProfileClient is a client for the ProductShippingProfile schema.
+type ProductShippingProfileClient struct {
+	config
+}
+
+// NewProductShippingProfileClient returns a client for the ProductShippingProfile from the given config.
+func NewProductShippingProfileClient(c config) *ProductShippingProfileClient {
+	return &ProductShippingProfileClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `productshippingprofile.Hooks(f(g(h())))`.
+func (c *ProductShippingProfileClient) Use(hooks ...Hook) {
+	c.hooks.ProductShippingProfile = append(c.hooks.ProductShippingProfile, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `productshippingprofile.Intercept(f(g(h())))`.
+func (c *ProductShippingProfileClient) Intercept(interceptors ...Interceptor) {
+	c.inters.ProductShippingProfile = append(c.inters.ProductShippingProfile, interceptors...)
+}
+
+// Create returns a builder for creating a ProductShippingProfile entity.
+func (c *ProductShippingProfileClient) Create() *ProductShippingProfileCreate {
+	mutation := newProductShippingProfileMutation(c.config, OpCreate)
+	return &ProductShippingProfileCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ProductShippingProfile entities.
+func (c *ProductShippingProfileClient) CreateBulk(builders ...*ProductShippingProfileCreate) *ProductShippingProfileCreateBulk {
+	return &ProductShippingProfileCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ProductShippingProfileClient) MapCreateBulk(slice any, setFunc func(*ProductShippingProfileCreate, int)) *ProductShippingProfileCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ProductShippingProfileCreateBulk{err: fmt.Errorf("calling to ProductShippingProfileClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ProductShippingProfileCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ProductShippingProfileCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ProductShippingProfile.
+func (c *ProductShippingProfileClient) Update() *ProductShippingProfileUpdate {
+	mutation := newProductShippingProfileMutation(c.config, OpUpdate)
+	return &ProductShippingProfileUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ProductShippingProfileClient) UpdateOne(_m *ProductShippingProfile) *ProductShippingProfileUpdateOne {
+	mutation := newProductShippingProfileMutation(c.config, OpUpdateOne, withProductShippingProfile(_m))
+	return &ProductShippingProfileUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ProductShippingProfileClient) UpdateOneID(id int) *ProductShippingProfileUpdateOne {
+	mutation := newProductShippingProfileMutation(c.config, OpUpdateOne, withProductShippingProfileID(id))
+	return &ProductShippingProfileUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ProductShippingProfile.
+func (c *ProductShippingProfileClient) Delete() *ProductShippingProfileDelete {
+	mutation := newProductShippingProfileMutation(c.config, OpDelete)
+	return &ProductShippingProfileDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ProductShippingProfileClient) DeleteOne(_m *ProductShippingProfile) *ProductShippingProfileDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ProductShippingProfileClient) DeleteOneID(id int) *ProductShippingProfileDeleteOne {
+	builder := c.Delete().Where(productshippingprofile.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ProductShippingProfileDeleteOne{builder}
+}
+
+// Query returns a query builder for ProductShippingProfile.
+func (c *ProductShippingProfileClient) Query() *ProductShippingProfileQuery {
+	return &ProductShippingProfileQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeProductShippingProfile},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a ProductShippingProfile entity by its id.
+func (c *ProductShippingProfileClient) Get(ctx context.Context, id int) (*ProductShippingProfile, error) {
+	return c.Query().Where(productshippingprofile.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ProductShippingProfileClient) GetX(ctx context.Context, id int) *ProductShippingProfile {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *ProductShippingProfileClient) Hooks() []Hook {
+	return c.hooks.ProductShippingProfile
+}
+
+// Interceptors returns the client interceptors.
+func (c *ProductShippingProfileClient) Interceptors() []Interceptor {
+	return c.inters.ProductShippingProfile
+}
+
+func (c *ProductShippingProfileClient) mutate(ctx context.Context, m *ProductShippingProfileMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ProductShippingProfileCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ProductShippingProfileUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ProductShippingProfileUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ProductShippingProfileDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown ProductShippingProfile mutation op: %q", m.Op())
+	}
+}
+
 // ProductTranslationClient is a client for the ProductTranslation schema.
 type ProductTranslationClient struct {
 	config
@@ -6820,6 +7792,304 @@ func (c *RoleClient) mutate(ctx context.Context, m *RoleMutation) (Value, error)
 	}
 }
 
+// ShippingOptionClient is a client for the ShippingOption schema.
+type ShippingOptionClient struct {
+	config
+}
+
+// NewShippingOptionClient returns a client for the ShippingOption from the given config.
+func NewShippingOptionClient(c config) *ShippingOptionClient {
+	return &ShippingOptionClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `shippingoption.Hooks(f(g(h())))`.
+func (c *ShippingOptionClient) Use(hooks ...Hook) {
+	c.hooks.ShippingOption = append(c.hooks.ShippingOption, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `shippingoption.Intercept(f(g(h())))`.
+func (c *ShippingOptionClient) Intercept(interceptors ...Interceptor) {
+	c.inters.ShippingOption = append(c.inters.ShippingOption, interceptors...)
+}
+
+// Create returns a builder for creating a ShippingOption entity.
+func (c *ShippingOptionClient) Create() *ShippingOptionCreate {
+	mutation := newShippingOptionMutation(c.config, OpCreate)
+	return &ShippingOptionCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ShippingOption entities.
+func (c *ShippingOptionClient) CreateBulk(builders ...*ShippingOptionCreate) *ShippingOptionCreateBulk {
+	return &ShippingOptionCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ShippingOptionClient) MapCreateBulk(slice any, setFunc func(*ShippingOptionCreate, int)) *ShippingOptionCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ShippingOptionCreateBulk{err: fmt.Errorf("calling to ShippingOptionClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ShippingOptionCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ShippingOptionCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ShippingOption.
+func (c *ShippingOptionClient) Update() *ShippingOptionUpdate {
+	mutation := newShippingOptionMutation(c.config, OpUpdate)
+	return &ShippingOptionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ShippingOptionClient) UpdateOne(_m *ShippingOption) *ShippingOptionUpdateOne {
+	mutation := newShippingOptionMutation(c.config, OpUpdateOne, withShippingOption(_m))
+	return &ShippingOptionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ShippingOptionClient) UpdateOneID(id int) *ShippingOptionUpdateOne {
+	mutation := newShippingOptionMutation(c.config, OpUpdateOne, withShippingOptionID(id))
+	return &ShippingOptionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ShippingOption.
+func (c *ShippingOptionClient) Delete() *ShippingOptionDelete {
+	mutation := newShippingOptionMutation(c.config, OpDelete)
+	return &ShippingOptionDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ShippingOptionClient) DeleteOne(_m *ShippingOption) *ShippingOptionDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ShippingOptionClient) DeleteOneID(id int) *ShippingOptionDeleteOne {
+	builder := c.Delete().Where(shippingoption.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ShippingOptionDeleteOne{builder}
+}
+
+// Query returns a query builder for ShippingOption.
+func (c *ShippingOptionClient) Query() *ShippingOptionQuery {
+	return &ShippingOptionQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeShippingOption},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a ShippingOption entity by its id.
+func (c *ShippingOptionClient) Get(ctx context.Context, id int) (*ShippingOption, error) {
+	return c.Query().Where(shippingoption.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ShippingOptionClient) GetX(ctx context.Context, id int) *ShippingOption {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryProfile queries the profile edge of a ShippingOption.
+func (c *ShippingOptionClient) QueryProfile(_m *ShippingOption) *ShippingProfileQuery {
+	query := (&ShippingProfileClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(shippingoption.Table, shippingoption.FieldID, id),
+			sqlgraph.To(shippingprofile.Table, shippingprofile.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, shippingoption.ProfileTable, shippingoption.ProfileColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *ShippingOptionClient) Hooks() []Hook {
+	return c.hooks.ShippingOption
+}
+
+// Interceptors returns the client interceptors.
+func (c *ShippingOptionClient) Interceptors() []Interceptor {
+	return c.inters.ShippingOption
+}
+
+func (c *ShippingOptionClient) mutate(ctx context.Context, m *ShippingOptionMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ShippingOptionCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ShippingOptionUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ShippingOptionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ShippingOptionDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown ShippingOption mutation op: %q", m.Op())
+	}
+}
+
+// ShippingProfileClient is a client for the ShippingProfile schema.
+type ShippingProfileClient struct {
+	config
+}
+
+// NewShippingProfileClient returns a client for the ShippingProfile from the given config.
+func NewShippingProfileClient(c config) *ShippingProfileClient {
+	return &ShippingProfileClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `shippingprofile.Hooks(f(g(h())))`.
+func (c *ShippingProfileClient) Use(hooks ...Hook) {
+	c.hooks.ShippingProfile = append(c.hooks.ShippingProfile, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `shippingprofile.Intercept(f(g(h())))`.
+func (c *ShippingProfileClient) Intercept(interceptors ...Interceptor) {
+	c.inters.ShippingProfile = append(c.inters.ShippingProfile, interceptors...)
+}
+
+// Create returns a builder for creating a ShippingProfile entity.
+func (c *ShippingProfileClient) Create() *ShippingProfileCreate {
+	mutation := newShippingProfileMutation(c.config, OpCreate)
+	return &ShippingProfileCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ShippingProfile entities.
+func (c *ShippingProfileClient) CreateBulk(builders ...*ShippingProfileCreate) *ShippingProfileCreateBulk {
+	return &ShippingProfileCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ShippingProfileClient) MapCreateBulk(slice any, setFunc func(*ShippingProfileCreate, int)) *ShippingProfileCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ShippingProfileCreateBulk{err: fmt.Errorf("calling to ShippingProfileClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ShippingProfileCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ShippingProfileCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ShippingProfile.
+func (c *ShippingProfileClient) Update() *ShippingProfileUpdate {
+	mutation := newShippingProfileMutation(c.config, OpUpdate)
+	return &ShippingProfileUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ShippingProfileClient) UpdateOne(_m *ShippingProfile) *ShippingProfileUpdateOne {
+	mutation := newShippingProfileMutation(c.config, OpUpdateOne, withShippingProfile(_m))
+	return &ShippingProfileUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ShippingProfileClient) UpdateOneID(id int) *ShippingProfileUpdateOne {
+	mutation := newShippingProfileMutation(c.config, OpUpdateOne, withShippingProfileID(id))
+	return &ShippingProfileUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ShippingProfile.
+func (c *ShippingProfileClient) Delete() *ShippingProfileDelete {
+	mutation := newShippingProfileMutation(c.config, OpDelete)
+	return &ShippingProfileDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ShippingProfileClient) DeleteOne(_m *ShippingProfile) *ShippingProfileDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ShippingProfileClient) DeleteOneID(id int) *ShippingProfileDeleteOne {
+	builder := c.Delete().Where(shippingprofile.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ShippingProfileDeleteOne{builder}
+}
+
+// Query returns a query builder for ShippingProfile.
+func (c *ShippingProfileClient) Query() *ShippingProfileQuery {
+	return &ShippingProfileQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeShippingProfile},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a ShippingProfile entity by its id.
+func (c *ShippingProfileClient) Get(ctx context.Context, id int) (*ShippingProfile, error) {
+	return c.Query().Where(shippingprofile.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ShippingProfileClient) GetX(ctx context.Context, id int) *ShippingProfile {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryOptions queries the options edge of a ShippingProfile.
+func (c *ShippingProfileClient) QueryOptions(_m *ShippingProfile) *ShippingOptionQuery {
+	query := (&ShippingOptionClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(shippingprofile.Table, shippingprofile.FieldID, id),
+			sqlgraph.To(shippingoption.Table, shippingoption.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, shippingprofile.OptionsTable, shippingprofile.OptionsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *ShippingProfileClient) Hooks() []Hook {
+	return c.hooks.ShippingProfile
+}
+
+// Interceptors returns the client interceptors.
+func (c *ShippingProfileClient) Interceptors() []Interceptor {
+	return c.inters.ShippingProfile
+}
+
+func (c *ShippingProfileClient) mutate(ctx context.Context, m *ShippingProfileMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ShippingProfileCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ShippingProfileUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ShippingProfileUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ShippingProfileDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown ShippingProfile mutation op: %q", m.Op())
+	}
+}
+
 // StoreClient is a client for the Store schema.
 type StoreClient struct {
 	config
@@ -7416,6 +8686,155 @@ func (c *TaxRateClient) mutate(ctx context.Context, m *TaxRateMutation) (Value, 
 	}
 }
 
+// TransactionClient is a client for the Transaction schema.
+type TransactionClient struct {
+	config
+}
+
+// NewTransactionClient returns a client for the Transaction from the given config.
+func NewTransactionClient(c config) *TransactionClient {
+	return &TransactionClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `transaction.Hooks(f(g(h())))`.
+func (c *TransactionClient) Use(hooks ...Hook) {
+	c.hooks.Transaction = append(c.hooks.Transaction, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `transaction.Intercept(f(g(h())))`.
+func (c *TransactionClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Transaction = append(c.inters.Transaction, interceptors...)
+}
+
+// Create returns a builder for creating a Transaction entity.
+func (c *TransactionClient) Create() *TransactionCreate {
+	mutation := newTransactionMutation(c.config, OpCreate)
+	return &TransactionCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Transaction entities.
+func (c *TransactionClient) CreateBulk(builders ...*TransactionCreate) *TransactionCreateBulk {
+	return &TransactionCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *TransactionClient) MapCreateBulk(slice any, setFunc func(*TransactionCreate, int)) *TransactionCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &TransactionCreateBulk{err: fmt.Errorf("calling to TransactionClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*TransactionCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &TransactionCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Transaction.
+func (c *TransactionClient) Update() *TransactionUpdate {
+	mutation := newTransactionMutation(c.config, OpUpdate)
+	return &TransactionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *TransactionClient) UpdateOne(_m *Transaction) *TransactionUpdateOne {
+	mutation := newTransactionMutation(c.config, OpUpdateOne, withTransaction(_m))
+	return &TransactionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *TransactionClient) UpdateOneID(id int) *TransactionUpdateOne {
+	mutation := newTransactionMutation(c.config, OpUpdateOne, withTransactionID(id))
+	return &TransactionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Transaction.
+func (c *TransactionClient) Delete() *TransactionDelete {
+	mutation := newTransactionMutation(c.config, OpDelete)
+	return &TransactionDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *TransactionClient) DeleteOne(_m *Transaction) *TransactionDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *TransactionClient) DeleteOneID(id int) *TransactionDeleteOne {
+	builder := c.Delete().Where(transaction.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &TransactionDeleteOne{builder}
+}
+
+// Query returns a query builder for Transaction.
+func (c *TransactionClient) Query() *TransactionQuery {
+	return &TransactionQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeTransaction},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Transaction entity by its id.
+func (c *TransactionClient) Get(ctx context.Context, id int) (*Transaction, error) {
+	return c.Query().Where(transaction.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *TransactionClient) GetX(ctx context.Context, id int) *Transaction {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QuerySession queries the session edge of a Transaction.
+func (c *TransactionClient) QuerySession(_m *Transaction) *PaymentSessionQuery {
+	query := (&PaymentSessionClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(transaction.Table, transaction.FieldID, id),
+			sqlgraph.To(paymentsession.Table, paymentsession.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, transaction.SessionTable, transaction.SessionColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *TransactionClient) Hooks() []Hook {
+	return c.hooks.Transaction
+}
+
+// Interceptors returns the client interceptors.
+func (c *TransactionClient) Interceptors() []Interceptor {
+	return c.inters.Transaction
+}
+
+func (c *TransactionClient) mutate(ctx context.Context, m *TransactionMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&TransactionCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&TransactionUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&TransactionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&TransactionDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Transaction mutation op: %q", m.Op())
+	}
+}
+
 // VariantClient is a client for the Variant schema.
 type VariantClient struct {
 	config
@@ -7900,23 +9319,28 @@ type (
 	hooks struct {
 		AdminUser, BlogPost, BlogPostTranslation, Cart, CartItem, Category,
 		CategoryTranslation, Collection, CollectionTranslation, Currency, Customer,
-		CustomerAddress, CustomerGroup, EmailTemplate, EmailTemplateTranslation,
-		FormDefinition, FormDefinitionTranslation, Fulfillment, FulfillmentItem,
-		Inquiry, Locale, Media, MediaTranslation, Menu, MenuItem, MenuItemTranslation,
-		Notification, Order, OrderItem, OrderReturn, Page, PageTranslation, Permission,
-		Product, ProductMedia, ProductOption, ProductOptionValue, ProductTranslation,
-		Region, ReturnItem, Role, Store, Tag, TagTranslation, TaxRate, Variant,
-		VariantOptionValue, VariantPrice []ent.Hook
+		CustomerAddress, CustomerGroup, Discount, DiscountCondition, DiscountRule,
+		EmailTemplate, EmailTemplateTranslation, FormDefinition,
+		FormDefinitionTranslation, Fulfillment, FulfillmentItem, Inquiry, Locale,
+		Media, MediaTranslation, Menu, MenuItem, MenuItemTranslation, Notification,
+		Order, OrderItem, OrderReturn, Page, PageTranslation, PaymentProvider,
+		PaymentSession, Permission, Product, ProductMedia, ProductOption,
+		ProductOptionValue, ProductShippingProfile, ProductTranslation, Region,
+		ReturnItem, Role, ShippingOption, ShippingProfile, Store, Tag, TagTranslation,
+		TaxRate, Transaction, Variant, VariantOptionValue, VariantPrice []ent.Hook
 	}
 	inters struct {
 		AdminUser, BlogPost, BlogPostTranslation, Cart, CartItem, Category,
 		CategoryTranslation, Collection, CollectionTranslation, Currency, Customer,
-		CustomerAddress, CustomerGroup, EmailTemplate, EmailTemplateTranslation,
-		FormDefinition, FormDefinitionTranslation, Fulfillment, FulfillmentItem,
-		Inquiry, Locale, Media, MediaTranslation, Menu, MenuItem, MenuItemTranslation,
-		Notification, Order, OrderItem, OrderReturn, Page, PageTranslation, Permission,
-		Product, ProductMedia, ProductOption, ProductOptionValue, ProductTranslation,
-		Region, ReturnItem, Role, Store, Tag, TagTranslation, TaxRate, Variant,
-		VariantOptionValue, VariantPrice []ent.Interceptor
+		CustomerAddress, CustomerGroup, Discount, DiscountCondition, DiscountRule,
+		EmailTemplate, EmailTemplateTranslation, FormDefinition,
+		FormDefinitionTranslation, Fulfillment, FulfillmentItem, Inquiry, Locale,
+		Media, MediaTranslation, Menu, MenuItem, MenuItemTranslation, Notification,
+		Order, OrderItem, OrderReturn, Page, PageTranslation, PaymentProvider,
+		PaymentSession, Permission, Product, ProductMedia, ProductOption,
+		ProductOptionValue, ProductShippingProfile, ProductTranslation, Region,
+		ReturnItem, Role, ShippingOption, ShippingProfile, Store, Tag, TagTranslation,
+		TaxRate, Transaction, Variant, VariantOptionValue,
+		VariantPrice []ent.Interceptor
 	}
 )

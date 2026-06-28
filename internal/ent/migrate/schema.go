@@ -449,6 +449,115 @@ var (
 			},
 		},
 	}
+	// DiscountsColumns holds the columns for the "discounts" table.
+	DiscountsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "updated_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "tenant_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "code", Type: field.TypeString, Nullable: true},
+		{Name: "name", Type: field.TypeString},
+		{Name: "is_dynamic", Type: field.TypeBool, Default: false},
+		{Name: "starts_at", Type: field.TypeTime, Nullable: true},
+		{Name: "ends_at", Type: field.TypeTime, Nullable: true},
+		{Name: "usage_limit", Type: field.TypeInt, Nullable: true},
+		{Name: "usage_count", Type: field.TypeInt, Default: 0},
+		{Name: "status", Type: field.TypeEnum, Enums: []string{"active", "expired", "disabled"}, Default: "active"},
+	}
+	// DiscountsTable holds the schema information for the "discounts" table.
+	DiscountsTable = &schema.Table{
+		Name:       "discounts",
+		Columns:    DiscountsColumns,
+		PrimaryKey: []*schema.Column{DiscountsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "discount_code",
+				Unique:  false,
+				Columns: []*schema.Column{DiscountsColumns[8]},
+			},
+			{
+				Name:    "discount_status",
+				Unique:  false,
+				Columns: []*schema.Column{DiscountsColumns[15]},
+			},
+		},
+	}
+	// DiscountConditionsColumns holds the columns for the "discount_conditions" table.
+	DiscountConditionsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "updated_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "tenant_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "type", Type: field.TypeEnum, Enums: []string{"products", "collections", "categories", "customer_groups"}},
+		{Name: "values", Type: field.TypeJSON, Nullable: true},
+		{Name: "discount_id", Type: field.TypeInt},
+	}
+	// DiscountConditionsTable holds the schema information for the "discount_conditions" table.
+	DiscountConditionsTable = &schema.Table{
+		Name:       "discount_conditions",
+		Columns:    DiscountConditionsColumns,
+		PrimaryKey: []*schema.Column{DiscountConditionsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "discount_conditions_discounts_conditions",
+				Columns:    []*schema.Column{DiscountConditionsColumns[10]},
+				RefColumns: []*schema.Column{DiscountsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "discountcondition_discount_id",
+				Unique:  false,
+				Columns: []*schema.Column{DiscountConditionsColumns[10]},
+			},
+		},
+	}
+	// DiscountRulesColumns holds the columns for the "discount_rules" table.
+	DiscountRulesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "updated_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "tenant_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "type", Type: field.TypeEnum, Enums: []string{"percentage", "fixed", "shipping", "free_item"}, Default: "percentage"},
+		{Name: "value", Type: field.TypeInt64, Default: 0},
+		{Name: "allocation", Type: field.TypeEnum, Enums: []string{"all", "items"}, Default: "all"},
+		{Name: "target", Type: field.TypeJSON, Nullable: true},
+		{Name: "discount_id", Type: field.TypeInt},
+	}
+	// DiscountRulesTable holds the schema information for the "discount_rules" table.
+	DiscountRulesTable = &schema.Table{
+		Name:       "discount_rules",
+		Columns:    DiscountRulesColumns,
+		PrimaryKey: []*schema.Column{DiscountRulesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "discount_rules_discounts_rules",
+				Columns:    []*schema.Column{DiscountRulesColumns[12]},
+				RefColumns: []*schema.Column{DiscountsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "discountrule_discount_id",
+				Unique:  false,
+				Columns: []*schema.Column{DiscountRulesColumns[12]},
+			},
+		},
+	}
 	// EmailTemplatesColumns holds the columns for the "email_templates" table.
 	EmailTemplatesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -1128,6 +1237,78 @@ var (
 			},
 		},
 	}
+	// PaymentProvidersColumns holds the columns for the "payment_providers" table.
+	PaymentProvidersColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "updated_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "tenant_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "code", Type: field.TypeString, Unique: true},
+		{Name: "name", Type: field.TypeString},
+		{Name: "is_active", Type: field.TypeBool, Default: false},
+		{Name: "config", Type: field.TypeJSON, Nullable: true},
+	}
+	// PaymentProvidersTable holds the schema information for the "payment_providers" table.
+	PaymentProvidersTable = &schema.Table{
+		Name:       "payment_providers",
+		Columns:    PaymentProvidersColumns,
+		PrimaryKey: []*schema.Column{PaymentProvidersColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "paymentprovider_is_active",
+				Unique:  false,
+				Columns: []*schema.Column{PaymentProvidersColumns[10]},
+			},
+		},
+	}
+	// PaymentSessionsColumns holds the columns for the "payment_sessions" table.
+	PaymentSessionsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "updated_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "tenant_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "order_id", Type: field.TypeInt},
+		{Name: "provider_code", Type: field.TypeString},
+		{Name: "status", Type: field.TypeEnum, Enums: []string{"pending", "authorized", "captured", "canceled", "failed"}, Default: "pending"},
+		{Name: "amount", Type: field.TypeInt64, Default: 0},
+		{Name: "currency_code", Type: field.TypeString, Size: 3, Default: "USD"},
+		{Name: "provider_data", Type: field.TypeJSON, Nullable: true},
+		{Name: "payment_provider_sessions", Type: field.TypeInt, Nullable: true},
+	}
+	// PaymentSessionsTable holds the schema information for the "payment_sessions" table.
+	PaymentSessionsTable = &schema.Table{
+		Name:       "payment_sessions",
+		Columns:    PaymentSessionsColumns,
+		PrimaryKey: []*schema.Column{PaymentSessionsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "payment_sessions_payment_providers_sessions",
+				Columns:    []*schema.Column{PaymentSessionsColumns[14]},
+				RefColumns: []*schema.Column{PaymentProvidersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "paymentsession_order_id",
+				Unique:  false,
+				Columns: []*schema.Column{PaymentSessionsColumns[8]},
+			},
+			{
+				Name:    "paymentsession_status",
+				Unique:  false,
+				Columns: []*schema.Column{PaymentSessionsColumns[10]},
+			},
+		},
+	}
 	// PermissionsColumns holds the columns for the "permissions" table.
 	PermissionsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -1316,6 +1497,37 @@ var (
 			},
 		},
 	}
+	// ProductShippingProfilesColumns holds the columns for the "product_shipping_profiles" table.
+	ProductShippingProfilesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "updated_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "tenant_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "product_id", Type: field.TypeInt},
+		{Name: "profile_id", Type: field.TypeInt},
+	}
+	// ProductShippingProfilesTable holds the schema information for the "product_shipping_profiles" table.
+	ProductShippingProfilesTable = &schema.Table{
+		Name:       "product_shipping_profiles",
+		Columns:    ProductShippingProfilesColumns,
+		PrimaryKey: []*schema.Column{ProductShippingProfilesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "productshippingprofile_product_id",
+				Unique:  false,
+				Columns: []*schema.Column{ProductShippingProfilesColumns[8]},
+			},
+			{
+				Name:    "productshippingprofile_profile_id",
+				Unique:  false,
+				Columns: []*schema.Column{ProductShippingProfilesColumns[9]},
+			},
+		},
+	}
 	// ProductTranslationsColumns holds the columns for the "product_translations" table.
 	ProductTranslationsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -1452,6 +1664,69 @@ var (
 			},
 		},
 	}
+	// ShippingOptionsColumns holds the columns for the "shipping_options" table.
+	ShippingOptionsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "updated_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "tenant_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "name", Type: field.TypeString},
+		{Name: "price_amount", Type: field.TypeInt64, Default: 0},
+		{Name: "price_currency", Type: field.TypeString, Size: 3, Default: "USD"},
+		{Name: "estimated_days", Type: field.TypeInt, Default: 7},
+		{Name: "requirements", Type: field.TypeJSON, Nullable: true},
+		{Name: "is_active", Type: field.TypeBool, Default: true},
+		{Name: "profile_id", Type: field.TypeInt},
+	}
+	// ShippingOptionsTable holds the schema information for the "shipping_options" table.
+	ShippingOptionsTable = &schema.Table{
+		Name:       "shipping_options",
+		Columns:    ShippingOptionsColumns,
+		PrimaryKey: []*schema.Column{ShippingOptionsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "shipping_options_shipping_profiles_options",
+				Columns:    []*schema.Column{ShippingOptionsColumns[14]},
+				RefColumns: []*schema.Column{ShippingProfilesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "shippingoption_profile_id",
+				Unique:  false,
+				Columns: []*schema.Column{ShippingOptionsColumns[14]},
+			},
+			{
+				Name:    "shippingoption_is_active",
+				Unique:  false,
+				Columns: []*schema.Column{ShippingOptionsColumns[13]},
+			},
+		},
+	}
+	// ShippingProfilesColumns holds the columns for the "shipping_profiles" table.
+	ShippingProfilesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "updated_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "tenant_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "name", Type: field.TypeString},
+		{Name: "product_type", Type: field.TypeString, Default: "physical"},
+	}
+	// ShippingProfilesTable holds the schema information for the "shipping_profiles" table.
+	ShippingProfilesTable = &schema.Table{
+		Name:       "shipping_profiles",
+		Columns:    ShippingProfilesColumns,
+		PrimaryKey: []*schema.Column{ShippingProfilesColumns[0]},
+	}
 	// StoresColumns holds the columns for the "stores" table.
 	StoresColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -1569,6 +1844,44 @@ var (
 				Name:    "taxrate_country_code",
 				Unique:  false,
 				Columns: []*schema.Column{TaxRatesColumns[8]},
+			},
+		},
+	}
+	// TransactionsColumns holds the columns for the "transactions" table.
+	TransactionsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "updated_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "tenant_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "amount", Type: field.TypeInt64, Default: 0},
+		{Name: "currency_code", Type: field.TypeString, Size: 3, Default: "USD"},
+		{Name: "type", Type: field.TypeEnum, Enums: []string{"authorize", "capture", "refund"}, Default: "capture"},
+		{Name: "status", Type: field.TypeEnum, Enums: []string{"pending", "succeeded", "failed"}, Default: "pending"},
+		{Name: "reference", Type: field.TypeString, Nullable: true, Default: ""},
+		{Name: "payment_session_id", Type: field.TypeInt},
+	}
+	// TransactionsTable holds the schema information for the "transactions" table.
+	TransactionsTable = &schema.Table{
+		Name:       "transactions",
+		Columns:    TransactionsColumns,
+		PrimaryKey: []*schema.Column{TransactionsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "transactions_payment_sessions_transactions",
+				Columns:    []*schema.Column{TransactionsColumns[13]},
+				RefColumns: []*schema.Column{PaymentSessionsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "transaction_payment_session_id",
+				Unique:  false,
+				Columns: []*schema.Column{TransactionsColumns[13]},
 			},
 		},
 	}
@@ -1751,6 +2064,9 @@ var (
 		CustomersTable,
 		CustomerAddressesTable,
 		CustomerGroupsTable,
+		DiscountsTable,
+		DiscountConditionsTable,
+		DiscountRulesTable,
 		EmailTemplatesTable,
 		EmailTemplateTranslationsTable,
 		FormDefinitionsTable,
@@ -1770,19 +2086,25 @@ var (
 		OrderReturnsTable,
 		PagesTable,
 		PageTranslationsTable,
+		PaymentProvidersTable,
+		PaymentSessionsTable,
 		PermissionsTable,
 		ProductsTable,
 		ProductMediaTable,
 		ProductOptionsTable,
 		ProductOptionValuesTable,
+		ProductShippingProfilesTable,
 		ProductTranslationsTable,
 		RegionsTable,
 		ReturnItemsTable,
 		RolesTable,
+		ShippingOptionsTable,
+		ShippingProfilesTable,
 		StoresTable,
 		TagsTable,
 		TagTranslationsTable,
 		TaxRatesTable,
+		TransactionsTable,
 		VariantsTable,
 		VariantOptionValuesTable,
 		VariantPricesTable,
@@ -1798,6 +2120,8 @@ func init() {
 	CollectionTranslationsTable.ForeignKeys[0].RefTable = CollectionsTable
 	CustomerAddressesTable.ForeignKeys[0].RefTable = CustomersTable
 	CustomerGroupsTable.ForeignKeys[0].RefTable = CustomersTable
+	DiscountConditionsTable.ForeignKeys[0].RefTable = DiscountsTable
+	DiscountRulesTable.ForeignKeys[0].RefTable = DiscountsTable
 	EmailTemplateTranslationsTable.ForeignKeys[0].RefTable = EmailTemplatesTable
 	FormDefinitionTranslationsTable.ForeignKeys[0].RefTable = FormDefinitionsTable
 	FulfillmentsTable.ForeignKeys[0].RefTable = OrdersTable
@@ -1809,14 +2133,17 @@ func init() {
 	OrderItemsTable.ForeignKeys[0].RefTable = OrdersTable
 	OrderReturnsTable.ForeignKeys[0].RefTable = OrdersTable
 	PageTranslationsTable.ForeignKeys[0].RefTable = PagesTable
+	PaymentSessionsTable.ForeignKeys[0].RefTable = PaymentProvidersTable
 	ProductsTable.ForeignKeys[0].RefTable = CollectionsTable
 	ProductsTable.ForeignKeys[1].RefTable = TagsTable
 	ProductOptionsTable.ForeignKeys[0].RefTable = ProductsTable
 	ProductOptionValuesTable.ForeignKeys[0].RefTable = ProductOptionsTable
 	ProductTranslationsTable.ForeignKeys[0].RefTable = ProductsTable
 	ReturnItemsTable.ForeignKeys[0].RefTable = OrderReturnsTable
+	ShippingOptionsTable.ForeignKeys[0].RefTable = ShippingProfilesTable
 	TagTranslationsTable.ForeignKeys[0].RefTable = TagsTable
 	TaxRatesTable.ForeignKeys[0].RefTable = RegionsTable
+	TransactionsTable.ForeignKeys[0].RefTable = PaymentSessionsTable
 	VariantsTable.ForeignKeys[0].RefTable = ProductsTable
 	VariantOptionValuesTable.ForeignKeys[0].RefTable = VariantsTable
 	VariantPricesTable.ForeignKeys[0].RefTable = VariantsTable

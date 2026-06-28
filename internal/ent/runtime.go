@@ -18,6 +18,9 @@ import (
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/customer"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/customeraddress"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/customergroup"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/discount"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/discountcondition"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/discountrule"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/emailtemplate"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/emailtemplatetranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/formdefinition"
@@ -37,20 +40,26 @@ import (
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/orderreturn"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/page"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/pagetranslation"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/paymentprovider"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/paymentsession"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/permission"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/product"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/productmedia"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/productoption"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/productoptionvalue"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/productshippingprofile"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/producttranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/region"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/returnitem"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/role"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/schema"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/shippingoption"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/shippingprofile"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/store"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/tag"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/tagtranslation"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/taxrate"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/transaction"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/variant"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/variantoptionvalue"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent/variantprice"
@@ -513,6 +522,79 @@ func init() {
 	customergroupDescName := customergroupFields[1].Descriptor()
 	// customergroup.NameValidator is a validator for the "name" field. It is called by the builders before save.
 	customergroup.NameValidator = customergroupDescName.Validators[0].(func(string) error)
+	discountMixin := schema.Discount{}.Mixin()
+	discountMixinFields0 := discountMixin[0].Fields()
+	_ = discountMixinFields0
+	discountFields := schema.Discount{}.Fields()
+	_ = discountFields
+	// discountDescVersion is the schema descriptor for version field.
+	discountDescVersion := discountMixinFields0[3].Descriptor()
+	// discount.DefaultVersion holds the default value on creation for the version field.
+	discount.DefaultVersion = discountDescVersion.Default.(int)
+	// discountDescCreatedAt is the schema descriptor for created_at field.
+	discountDescCreatedAt := discountMixinFields0[4].Descriptor()
+	// discount.DefaultCreatedAt holds the default value on creation for the created_at field.
+	discount.DefaultCreatedAt = discountDescCreatedAt.Default.(func() time.Time)
+	// discountDescUpdatedAt is the schema descriptor for updated_at field.
+	discountDescUpdatedAt := discountMixinFields0[5].Descriptor()
+	// discount.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	discount.DefaultUpdatedAt = discountDescUpdatedAt.Default.(func() time.Time)
+	// discount.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	discount.UpdateDefaultUpdatedAt = discountDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// discountDescName is the schema descriptor for name field.
+	discountDescName := discountFields[1].Descriptor()
+	// discount.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	discount.NameValidator = discountDescName.Validators[0].(func(string) error)
+	// discountDescIsDynamic is the schema descriptor for is_dynamic field.
+	discountDescIsDynamic := discountFields[2].Descriptor()
+	// discount.DefaultIsDynamic holds the default value on creation for the is_dynamic field.
+	discount.DefaultIsDynamic = discountDescIsDynamic.Default.(bool)
+	// discountDescUsageCount is the schema descriptor for usage_count field.
+	discountDescUsageCount := discountFields[6].Descriptor()
+	// discount.DefaultUsageCount holds the default value on creation for the usage_count field.
+	discount.DefaultUsageCount = discountDescUsageCount.Default.(int)
+	discountconditionMixin := schema.DiscountCondition{}.Mixin()
+	discountconditionMixinFields0 := discountconditionMixin[0].Fields()
+	_ = discountconditionMixinFields0
+	discountconditionFields := schema.DiscountCondition{}.Fields()
+	_ = discountconditionFields
+	// discountconditionDescVersion is the schema descriptor for version field.
+	discountconditionDescVersion := discountconditionMixinFields0[3].Descriptor()
+	// discountcondition.DefaultVersion holds the default value on creation for the version field.
+	discountcondition.DefaultVersion = discountconditionDescVersion.Default.(int)
+	// discountconditionDescCreatedAt is the schema descriptor for created_at field.
+	discountconditionDescCreatedAt := discountconditionMixinFields0[4].Descriptor()
+	// discountcondition.DefaultCreatedAt holds the default value on creation for the created_at field.
+	discountcondition.DefaultCreatedAt = discountconditionDescCreatedAt.Default.(func() time.Time)
+	// discountconditionDescUpdatedAt is the schema descriptor for updated_at field.
+	discountconditionDescUpdatedAt := discountconditionMixinFields0[5].Descriptor()
+	// discountcondition.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	discountcondition.DefaultUpdatedAt = discountconditionDescUpdatedAt.Default.(func() time.Time)
+	// discountcondition.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	discountcondition.UpdateDefaultUpdatedAt = discountconditionDescUpdatedAt.UpdateDefault.(func() time.Time)
+	discountruleMixin := schema.DiscountRule{}.Mixin()
+	discountruleMixinFields0 := discountruleMixin[0].Fields()
+	_ = discountruleMixinFields0
+	discountruleFields := schema.DiscountRule{}.Fields()
+	_ = discountruleFields
+	// discountruleDescVersion is the schema descriptor for version field.
+	discountruleDescVersion := discountruleMixinFields0[3].Descriptor()
+	// discountrule.DefaultVersion holds the default value on creation for the version field.
+	discountrule.DefaultVersion = discountruleDescVersion.Default.(int)
+	// discountruleDescCreatedAt is the schema descriptor for created_at field.
+	discountruleDescCreatedAt := discountruleMixinFields0[4].Descriptor()
+	// discountrule.DefaultCreatedAt holds the default value on creation for the created_at field.
+	discountrule.DefaultCreatedAt = discountruleDescCreatedAt.Default.(func() time.Time)
+	// discountruleDescUpdatedAt is the schema descriptor for updated_at field.
+	discountruleDescUpdatedAt := discountruleMixinFields0[5].Descriptor()
+	// discountrule.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	discountrule.DefaultUpdatedAt = discountruleDescUpdatedAt.Default.(func() time.Time)
+	// discountrule.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	discountrule.UpdateDefaultUpdatedAt = discountruleDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// discountruleDescValue is the schema descriptor for value field.
+	discountruleDescValue := discountruleFields[2].Descriptor()
+	// discountrule.DefaultValue holds the default value on creation for the value field.
+	discountrule.DefaultValue = discountruleDescValue.Default.(int64)
 	emailtemplateMixin := schema.EmailTemplate{}.Mixin()
 	emailtemplateMixinFields0 := emailtemplateMixin[0].Fields()
 	_ = emailtemplateMixinFields0
@@ -1056,6 +1138,66 @@ func init() {
 	pagetranslationDescSeoDesc := pagetranslationFields[5].Descriptor()
 	// pagetranslation.DefaultSeoDesc holds the default value on creation for the seo_desc field.
 	pagetranslation.DefaultSeoDesc = pagetranslationDescSeoDesc.Default.(string)
+	paymentproviderMixin := schema.PaymentProvider{}.Mixin()
+	paymentproviderMixinFields0 := paymentproviderMixin[0].Fields()
+	_ = paymentproviderMixinFields0
+	paymentproviderFields := schema.PaymentProvider{}.Fields()
+	_ = paymentproviderFields
+	// paymentproviderDescVersion is the schema descriptor for version field.
+	paymentproviderDescVersion := paymentproviderMixinFields0[3].Descriptor()
+	// paymentprovider.DefaultVersion holds the default value on creation for the version field.
+	paymentprovider.DefaultVersion = paymentproviderDescVersion.Default.(int)
+	// paymentproviderDescCreatedAt is the schema descriptor for created_at field.
+	paymentproviderDescCreatedAt := paymentproviderMixinFields0[4].Descriptor()
+	// paymentprovider.DefaultCreatedAt holds the default value on creation for the created_at field.
+	paymentprovider.DefaultCreatedAt = paymentproviderDescCreatedAt.Default.(func() time.Time)
+	// paymentproviderDescUpdatedAt is the schema descriptor for updated_at field.
+	paymentproviderDescUpdatedAt := paymentproviderMixinFields0[5].Descriptor()
+	// paymentprovider.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	paymentprovider.DefaultUpdatedAt = paymentproviderDescUpdatedAt.Default.(func() time.Time)
+	// paymentprovider.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	paymentprovider.UpdateDefaultUpdatedAt = paymentproviderDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// paymentproviderDescName is the schema descriptor for name field.
+	paymentproviderDescName := paymentproviderFields[1].Descriptor()
+	// paymentprovider.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	paymentprovider.NameValidator = paymentproviderDescName.Validators[0].(func(string) error)
+	// paymentproviderDescIsActive is the schema descriptor for is_active field.
+	paymentproviderDescIsActive := paymentproviderFields[2].Descriptor()
+	// paymentprovider.DefaultIsActive holds the default value on creation for the is_active field.
+	paymentprovider.DefaultIsActive = paymentproviderDescIsActive.Default.(bool)
+	paymentsessionMixin := schema.PaymentSession{}.Mixin()
+	paymentsessionMixinFields0 := paymentsessionMixin[0].Fields()
+	_ = paymentsessionMixinFields0
+	paymentsessionFields := schema.PaymentSession{}.Fields()
+	_ = paymentsessionFields
+	// paymentsessionDescVersion is the schema descriptor for version field.
+	paymentsessionDescVersion := paymentsessionMixinFields0[3].Descriptor()
+	// paymentsession.DefaultVersion holds the default value on creation for the version field.
+	paymentsession.DefaultVersion = paymentsessionDescVersion.Default.(int)
+	// paymentsessionDescCreatedAt is the schema descriptor for created_at field.
+	paymentsessionDescCreatedAt := paymentsessionMixinFields0[4].Descriptor()
+	// paymentsession.DefaultCreatedAt holds the default value on creation for the created_at field.
+	paymentsession.DefaultCreatedAt = paymentsessionDescCreatedAt.Default.(func() time.Time)
+	// paymentsessionDescUpdatedAt is the schema descriptor for updated_at field.
+	paymentsessionDescUpdatedAt := paymentsessionMixinFields0[5].Descriptor()
+	// paymentsession.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	paymentsession.DefaultUpdatedAt = paymentsessionDescUpdatedAt.Default.(func() time.Time)
+	// paymentsession.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	paymentsession.UpdateDefaultUpdatedAt = paymentsessionDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// paymentsessionDescProviderCode is the schema descriptor for provider_code field.
+	paymentsessionDescProviderCode := paymentsessionFields[1].Descriptor()
+	// paymentsession.ProviderCodeValidator is a validator for the "provider_code" field. It is called by the builders before save.
+	paymentsession.ProviderCodeValidator = paymentsessionDescProviderCode.Validators[0].(func(string) error)
+	// paymentsessionDescAmount is the schema descriptor for amount field.
+	paymentsessionDescAmount := paymentsessionFields[3].Descriptor()
+	// paymentsession.DefaultAmount holds the default value on creation for the amount field.
+	paymentsession.DefaultAmount = paymentsessionDescAmount.Default.(int64)
+	// paymentsessionDescCurrencyCode is the schema descriptor for currency_code field.
+	paymentsessionDescCurrencyCode := paymentsessionFields[4].Descriptor()
+	// paymentsession.DefaultCurrencyCode holds the default value on creation for the currency_code field.
+	paymentsession.DefaultCurrencyCode = paymentsessionDescCurrencyCode.Default.(string)
+	// paymentsession.CurrencyCodeValidator is a validator for the "currency_code" field. It is called by the builders before save.
+	paymentsession.CurrencyCodeValidator = paymentsessionDescCurrencyCode.Validators[0].(func(string) error)
 	permissionMixin := schema.Permission{}.Mixin()
 	permissionMixinFields0 := permissionMixin[0].Fields()
 	_ = permissionMixinFields0
@@ -1191,6 +1333,25 @@ func init() {
 	productoptionvalueDescPosition := productoptionvalueFields[2].Descriptor()
 	// productoptionvalue.DefaultPosition holds the default value on creation for the position field.
 	productoptionvalue.DefaultPosition = productoptionvalueDescPosition.Default.(int)
+	productshippingprofileMixin := schema.ProductShippingProfile{}.Mixin()
+	productshippingprofileMixinFields0 := productshippingprofileMixin[0].Fields()
+	_ = productshippingprofileMixinFields0
+	productshippingprofileFields := schema.ProductShippingProfile{}.Fields()
+	_ = productshippingprofileFields
+	// productshippingprofileDescVersion is the schema descriptor for version field.
+	productshippingprofileDescVersion := productshippingprofileMixinFields0[3].Descriptor()
+	// productshippingprofile.DefaultVersion holds the default value on creation for the version field.
+	productshippingprofile.DefaultVersion = productshippingprofileDescVersion.Default.(int)
+	// productshippingprofileDescCreatedAt is the schema descriptor for created_at field.
+	productshippingprofileDescCreatedAt := productshippingprofileMixinFields0[4].Descriptor()
+	// productshippingprofile.DefaultCreatedAt holds the default value on creation for the created_at field.
+	productshippingprofile.DefaultCreatedAt = productshippingprofileDescCreatedAt.Default.(func() time.Time)
+	// productshippingprofileDescUpdatedAt is the schema descriptor for updated_at field.
+	productshippingprofileDescUpdatedAt := productshippingprofileMixinFields0[5].Descriptor()
+	// productshippingprofile.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	productshippingprofile.DefaultUpdatedAt = productshippingprofileDescUpdatedAt.Default.(func() time.Time)
+	// productshippingprofile.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	productshippingprofile.UpdateDefaultUpdatedAt = productshippingprofileDescUpdatedAt.UpdateDefault.(func() time.Time)
 	producttranslationMixin := schema.ProductTranslation{}.Mixin()
 	producttranslationMixinFields0 := producttranslationMixin[0].Fields()
 	_ = producttranslationMixinFields0
@@ -1339,6 +1500,74 @@ func init() {
 	roleDescIsSystem := roleFields[3].Descriptor()
 	// role.DefaultIsSystem holds the default value on creation for the is_system field.
 	role.DefaultIsSystem = roleDescIsSystem.Default.(bool)
+	shippingoptionMixin := schema.ShippingOption{}.Mixin()
+	shippingoptionMixinFields0 := shippingoptionMixin[0].Fields()
+	_ = shippingoptionMixinFields0
+	shippingoptionFields := schema.ShippingOption{}.Fields()
+	_ = shippingoptionFields
+	// shippingoptionDescVersion is the schema descriptor for version field.
+	shippingoptionDescVersion := shippingoptionMixinFields0[3].Descriptor()
+	// shippingoption.DefaultVersion holds the default value on creation for the version field.
+	shippingoption.DefaultVersion = shippingoptionDescVersion.Default.(int)
+	// shippingoptionDescCreatedAt is the schema descriptor for created_at field.
+	shippingoptionDescCreatedAt := shippingoptionMixinFields0[4].Descriptor()
+	// shippingoption.DefaultCreatedAt holds the default value on creation for the created_at field.
+	shippingoption.DefaultCreatedAt = shippingoptionDescCreatedAt.Default.(func() time.Time)
+	// shippingoptionDescUpdatedAt is the schema descriptor for updated_at field.
+	shippingoptionDescUpdatedAt := shippingoptionMixinFields0[5].Descriptor()
+	// shippingoption.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	shippingoption.DefaultUpdatedAt = shippingoptionDescUpdatedAt.Default.(func() time.Time)
+	// shippingoption.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	shippingoption.UpdateDefaultUpdatedAt = shippingoptionDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// shippingoptionDescName is the schema descriptor for name field.
+	shippingoptionDescName := shippingoptionFields[1].Descriptor()
+	// shippingoption.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	shippingoption.NameValidator = shippingoptionDescName.Validators[0].(func(string) error)
+	// shippingoptionDescPriceAmount is the schema descriptor for price_amount field.
+	shippingoptionDescPriceAmount := shippingoptionFields[2].Descriptor()
+	// shippingoption.DefaultPriceAmount holds the default value on creation for the price_amount field.
+	shippingoption.DefaultPriceAmount = shippingoptionDescPriceAmount.Default.(int64)
+	// shippingoptionDescPriceCurrency is the schema descriptor for price_currency field.
+	shippingoptionDescPriceCurrency := shippingoptionFields[3].Descriptor()
+	// shippingoption.DefaultPriceCurrency holds the default value on creation for the price_currency field.
+	shippingoption.DefaultPriceCurrency = shippingoptionDescPriceCurrency.Default.(string)
+	// shippingoption.PriceCurrencyValidator is a validator for the "price_currency" field. It is called by the builders before save.
+	shippingoption.PriceCurrencyValidator = shippingoptionDescPriceCurrency.Validators[0].(func(string) error)
+	// shippingoptionDescEstimatedDays is the schema descriptor for estimated_days field.
+	shippingoptionDescEstimatedDays := shippingoptionFields[4].Descriptor()
+	// shippingoption.DefaultEstimatedDays holds the default value on creation for the estimated_days field.
+	shippingoption.DefaultEstimatedDays = shippingoptionDescEstimatedDays.Default.(int)
+	// shippingoptionDescIsActive is the schema descriptor for is_active field.
+	shippingoptionDescIsActive := shippingoptionFields[6].Descriptor()
+	// shippingoption.DefaultIsActive holds the default value on creation for the is_active field.
+	shippingoption.DefaultIsActive = shippingoptionDescIsActive.Default.(bool)
+	shippingprofileMixin := schema.ShippingProfile{}.Mixin()
+	shippingprofileMixinFields0 := shippingprofileMixin[0].Fields()
+	_ = shippingprofileMixinFields0
+	shippingprofileFields := schema.ShippingProfile{}.Fields()
+	_ = shippingprofileFields
+	// shippingprofileDescVersion is the schema descriptor for version field.
+	shippingprofileDescVersion := shippingprofileMixinFields0[3].Descriptor()
+	// shippingprofile.DefaultVersion holds the default value on creation for the version field.
+	shippingprofile.DefaultVersion = shippingprofileDescVersion.Default.(int)
+	// shippingprofileDescCreatedAt is the schema descriptor for created_at field.
+	shippingprofileDescCreatedAt := shippingprofileMixinFields0[4].Descriptor()
+	// shippingprofile.DefaultCreatedAt holds the default value on creation for the created_at field.
+	shippingprofile.DefaultCreatedAt = shippingprofileDescCreatedAt.Default.(func() time.Time)
+	// shippingprofileDescUpdatedAt is the schema descriptor for updated_at field.
+	shippingprofileDescUpdatedAt := shippingprofileMixinFields0[5].Descriptor()
+	// shippingprofile.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	shippingprofile.DefaultUpdatedAt = shippingprofileDescUpdatedAt.Default.(func() time.Time)
+	// shippingprofile.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	shippingprofile.UpdateDefaultUpdatedAt = shippingprofileDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// shippingprofileDescName is the schema descriptor for name field.
+	shippingprofileDescName := shippingprofileFields[0].Descriptor()
+	// shippingprofile.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	shippingprofile.NameValidator = shippingprofileDescName.Validators[0].(func(string) error)
+	// shippingprofileDescProductType is the schema descriptor for product_type field.
+	shippingprofileDescProductType := shippingprofileFields[1].Descriptor()
+	// shippingprofile.DefaultProductType holds the default value on creation for the product_type field.
+	shippingprofile.DefaultProductType = shippingprofileDescProductType.Default.(string)
 	storeMixin := schema.Store{}.Mixin()
 	storeMixinFields0 := storeMixin[0].Fields()
 	_ = storeMixinFields0
@@ -1455,6 +1684,39 @@ func init() {
 	taxrateDescPriority := taxrateFields[4].Descriptor()
 	// taxrate.DefaultPriority holds the default value on creation for the priority field.
 	taxrate.DefaultPriority = taxrateDescPriority.Default.(int)
+	transactionMixin := schema.Transaction{}.Mixin()
+	transactionMixinFields0 := transactionMixin[0].Fields()
+	_ = transactionMixinFields0
+	transactionFields := schema.Transaction{}.Fields()
+	_ = transactionFields
+	// transactionDescVersion is the schema descriptor for version field.
+	transactionDescVersion := transactionMixinFields0[3].Descriptor()
+	// transaction.DefaultVersion holds the default value on creation for the version field.
+	transaction.DefaultVersion = transactionDescVersion.Default.(int)
+	// transactionDescCreatedAt is the schema descriptor for created_at field.
+	transactionDescCreatedAt := transactionMixinFields0[4].Descriptor()
+	// transaction.DefaultCreatedAt holds the default value on creation for the created_at field.
+	transaction.DefaultCreatedAt = transactionDescCreatedAt.Default.(func() time.Time)
+	// transactionDescUpdatedAt is the schema descriptor for updated_at field.
+	transactionDescUpdatedAt := transactionMixinFields0[5].Descriptor()
+	// transaction.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	transaction.DefaultUpdatedAt = transactionDescUpdatedAt.Default.(func() time.Time)
+	// transaction.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	transaction.UpdateDefaultUpdatedAt = transactionDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// transactionDescAmount is the schema descriptor for amount field.
+	transactionDescAmount := transactionFields[1].Descriptor()
+	// transaction.DefaultAmount holds the default value on creation for the amount field.
+	transaction.DefaultAmount = transactionDescAmount.Default.(int64)
+	// transactionDescCurrencyCode is the schema descriptor for currency_code field.
+	transactionDescCurrencyCode := transactionFields[2].Descriptor()
+	// transaction.DefaultCurrencyCode holds the default value on creation for the currency_code field.
+	transaction.DefaultCurrencyCode = transactionDescCurrencyCode.Default.(string)
+	// transaction.CurrencyCodeValidator is a validator for the "currency_code" field. It is called by the builders before save.
+	transaction.CurrencyCodeValidator = transactionDescCurrencyCode.Validators[0].(func(string) error)
+	// transactionDescReference is the schema descriptor for reference field.
+	transactionDescReference := transactionFields[5].Descriptor()
+	// transaction.DefaultReference holds the default value on creation for the reference field.
+	transaction.DefaultReference = transactionDescReference.Default.(string)
 	variantMixin := schema.Variant{}.Mixin()
 	variantMixinFields0 := variantMixin[0].Fields()
 	_ = variantMixinFields0
