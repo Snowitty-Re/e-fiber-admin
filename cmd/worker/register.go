@@ -46,9 +46,20 @@ func RegisterEventHandlers(sub *events.Subscriber, entClient *ent.Client, jobsCl
 	sub.Subscribe([]string{"order.fulfilled"},
 		handleOrderFulfilled(jobsClient),
 	)
+	sub.Subscribe([]string{"payment.authorized", "payment.captured", "payment.refunded"},
+		handlePaymentEvent(),
+	)
+	sub.Subscribe([]string{"shipping_option.quoted"},
+		handleShippingEvent(),
+	)
+	sub.Subscribe([]string{"discount.redeemed", "discount.expired"},
+		handleDiscountEvent(),
+	)
 	slog.Info("event handlers registered", "events", []string{
 		"inquiry.received", "customer.registered",
 		"order.placed", "order.cancelled", "order.paid", "order.fulfilled",
+		"payment.authorized", "payment.captured", "payment.refunded",
+		"shipping_option.quoted", "discount.redeemed", "discount.expired",
 	})
 }
 
@@ -158,6 +169,27 @@ func handleOrderPaid(jobsClient *jobs.Client) events.Handler {
 func handleOrderFulfilled(jobsClient *jobs.Client) events.Handler {
 	return func(ctx context.Context, event *events.Event) error {
 		slog.Info("order.fulfilled event", "data", event.Data)
+		return nil
+	}
+}
+
+func handlePaymentEvent() events.Handler {
+	return func(ctx context.Context, event *events.Event) error {
+		slog.Info("payment event", "name", event.Name, "data", event.Data)
+		return nil
+	}
+}
+
+func handleShippingEvent() events.Handler {
+	return func(ctx context.Context, event *events.Event) error {
+		slog.Info("shipping event", "name", event.Name, "data", event.Data)
+		return nil
+	}
+}
+
+func handleDiscountEvent() events.Handler {
+	return func(ctx context.Context, event *events.Event) error {
+		slog.Info("discount event", "name", event.Name, "data", event.Data)
 		return nil
 	}
 }
