@@ -22,6 +22,9 @@ type Deps struct {
 	InquiryH                 *handler.InquiryHandler
 	CartH                    *handler.CartHandler
 	OrderH                   *handler.OrderHandler
+	PaymentH                 *handler.PaymentHandler
+	ShippingH                *handler.ShippingHandler
+	DiscountH                *handler.DiscountHandler
 	JWTAuthFunc              fiber.Handler
 	CustomerJWTAuthFunc      fiber.Handler
 	CustomerOptionalAuthFunc fiber.Handler
@@ -164,4 +167,31 @@ func Register(app *fiber.App, deps Deps) {
 	orders.Get("/:id/fulfillments", middleware.RBAC("order:read"), deps.OrderH.AdminListFulfillments)
 	orders.Post("/:id/fulfillments", middleware.RBAC("order:fulfill"), deps.OrderH.AdminCreateFulfillment)
 	orders.Post("/:id/returns", middleware.RBAC("order:refund"), deps.OrderH.AdminCreateReturn)
+
+	payProviders := adminProtected.Group("/payment-providers")
+	payProviders.Get("/", middleware.RBAC("payment:read"), deps.PaymentH.AdminListProviders)
+	payProviders.Post("/", middleware.RBAC("payment:write"), deps.PaymentH.AdminCreateProvider)
+
+	paySessions := adminProtected.Group("/payment-sessions")
+	paySessions.Post("/", middleware.RBAC("payment:write"), deps.PaymentH.AdminCreateSession)
+	paySessions.Get("/:id", middleware.RBAC("payment:read"), deps.PaymentH.AdminGetSession)
+	paySessions.Post("/authorize", middleware.RBAC("payment:write"), deps.PaymentH.AdminAuthorize)
+	paySessions.Post("/capture", middleware.RBAC("payment:write"), deps.PaymentH.AdminCapture)
+	paySessions.Post("/:id/refund", middleware.RBAC("payment:write"), deps.PaymentH.AdminRefund)
+
+	shipping := adminProtected.Group("/shipping")
+	shipping.Get("/profiles/", middleware.RBAC("shipping:read"), deps.ShippingH.AdminListProfiles)
+	shipping.Post("/profiles/", middleware.RBAC("shipping:write"), deps.ShippingH.AdminCreateProfile)
+	shipping.Post("/options/", middleware.RBAC("shipping:write"), deps.ShippingH.AdminCreateOption)
+
+	discounts := adminProtected.Group("/discounts")
+	discounts.Get("/", middleware.RBAC("discount:read"), deps.DiscountH.AdminList)
+	discounts.Post("/", middleware.RBAC("discount:write"), deps.DiscountH.AdminCreate)
+	discounts.Post("/validate", deps.DiscountH.ValidateCode)
+
+	storeShipping := store.Group("/shipping-options")
+	storeShipping.Get("/", deps.ShippingH.StoreQuote)
+
+	storePayment := store.Group("/payment-sessions")
+	storePayment.Post("/", deps.CustomerOptionalAuthFunc, deps.PaymentH.StoreCreateSession)
 }

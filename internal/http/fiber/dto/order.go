@@ -1,10 +1,12 @@
 package dto
 
 type CheckoutRequest struct {
-	CartID          int            `json:"cart_id" validate:"required"`
-	Email           string         `json:"email" validate:"required"`
-	ShippingAddress map[string]any `json:"shipping_address"`
-	BillingAddress  map[string]any `json:"billing_address,omitempty"`
+	CartID           int            `json:"cart_id" validate:"required"`
+	Email            string         `json:"email" validate:"required"`
+	ShippingAddress  map[string]any `json:"shipping_address"`
+	BillingAddress   map[string]any `json:"billing_address,omitempty"`
+	ShippingOptionID int            `json:"shipping_option_id,omitempty"`
+	DiscountCode     string         `json:"discount_code,omitempty"`
 }
 
 type OrderItemResponse struct {

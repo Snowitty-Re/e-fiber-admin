@@ -40,6 +40,7 @@ func (h *OrderHandler) StoreCheckout(c fiber.Ctx) error {
 		CartID: req.CartID, Email: req.Email, CustomerID: int(customerID),
 		CurrencyCode: store.DefaultCurrency, Locale: store.DefaultLocale,
 		ShippingAddress: req.ShippingAddress, BillingAddress: req.BillingAddress,
+		ShippingOptionID: req.ShippingOptionID, DiscountCode: req.DiscountCode,
 	})
 	if err != nil {
 		return err

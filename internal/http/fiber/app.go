@@ -21,12 +21,15 @@ import (
 	"github.com/Snowitty-Re/e-fiber-admin/internal/domain/cart"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/domain/cms"
 	customersvc "github.com/Snowitty-Re/e-fiber-admin/internal/domain/customer"
+	"github.com/Snowitty-Re/e-fiber-admin/internal/domain/discount"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/domain/inquiry"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/domain/media"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/domain/order"
+	paysvc "github.com/Snowitty-Re/e-fiber-admin/internal/domain/payment"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/domain/product"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/domain/region"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/domain/settings"
+	shipsvc "github.com/Snowitty-Re/e-fiber-admin/internal/domain/shipping"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/ent"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/events"
 	"github.com/Snowitty-Re/e-fiber-admin/internal/http/fiber/handler"
@@ -100,6 +103,13 @@ func NewApp(deps Deps) *fiber.App {
 	cartH := handler.NewCartHandler(cartSvc, deps.EntClient)
 	orderSvc := order.NewService(deps.EntClient, deps.EventBus)
 	orderH := handler.NewOrderHandler(orderSvc, deps.EntClient)
+	paymentSvc := paysvc.NewService(deps.EntClient, deps.EventBus)
+	paymentSvc.RegisterProvider(paysvc.MockProvider{})
+	paymentH := handler.NewPaymentHandler(paymentSvc)
+	shippingSvc := shipsvc.NewService(deps.EntClient, deps.EventBus)
+	shippingH := handler.NewShippingHandler(shippingSvc)
+	discountSvc := discount.NewService(deps.EntClient, deps.EventBus)
+	discountH := handler.NewDiscountHandler(discountSvc)
 
 	router.Register(app, router.Deps{
 		HealthH:                  healthH,
@@ -114,6 +124,9 @@ func NewApp(deps Deps) *fiber.App {
 		InquiryH:                 inquiryH,
 		CartH:                    cartH,
 		OrderH:                   orderH,
+		PaymentH:                 paymentH,
+		ShippingH:                shippingH,
+		DiscountH:                discountH,
 		JWTAuthFunc:              pkgmw.JWTAuth(authService),
 		CustomerJWTAuthFunc:      pkgmw.CustomerJWTAuth(customerSvc),
 		CustomerOptionalAuthFunc: pkgmw.OptionalCustomerJWTAuth(customerSvc),
